@@ -1937,6 +1937,116 @@ textarea{resize:vertical;}
 
 
 <script>
+// SUPABASE CONFIG
+var SB_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
+var SB_ON  = true;
+
+var SB = {
+  h: function() {
+    return {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+  },
+  get: async function(t,p){
+    var r=await fetch(SB_URL+'/rest/v1/'+t+(p||''),{headers:SB.h()});
+    if(!r.ok)throw new Error('GET '+t+' '+r.status);
+    return r.json();
+  },
+  post: async function(t,d){
+    var r=await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:SB.h(),body:JSON.stringify(d)});
+    if(!r.ok)throw new Error('POST '+t+' '+r.status);
+    var rows=await r.json();return Array.isArray(rows)?rows[0]:rows;
+  },
+  patch: async function(t,m,d){
+    var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+m,{method:'PATCH',headers:SB.h(),body:JSON.stringify(d)});
+    if(!r.ok)throw new Error('PATCH '+t+' '+r.status);
+    var rows=await r.json();return Array.isArray(rows)?rows[0]:rows;
+  }
+};
+
+async function chargerDonnees(){
+  try{
+    var membres=await SB.get('membres','?order=nom.asc');
+    var enfants=await SB.get('enfants','?order=nom.asc');
+    DEMO_FAMS=membres.map(function(m){
+      var kids=enfants.filter(function(e){return e.membre_id===m.id;});
+      return{_id:m.id,prenom:m.prenom,nom:m.nom,email:m.email,tel:m.tel||'',
+        adresse:m.adresse_vacances||'',urgence:[m.urgence_nom,m.urgence_tel].filter(Boolean).join(' . '),
+        droit_image:m.droit_image,date:(m.created_at||'').slice(0,10),
+        children:kids.map(function(e){return{_id:e.id,name:e.prenom+' '+e.nom,age:e.age,dob:e.date_naissance,medical:e.medical};})};
+    });
+    DEMO_KIDS=enfants.map(function(e){
+      var m=membres.find(function(x){return x.id===e.membre_id;})||{};
+      return{_id:e.id,prenom:e.prenom,nom:e.nom,age:parseFloat(e.age)||0,
+        parent:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',
+        medical:e.medical||'RAS',urgence:m.urgence_tel||'',
+        periode:['matin'],inscrit:(e.created_at||'').slice(0,10).split('-').reverse().join('/')};
+    });
+    var resas=await SB.get('reservations','?order=created_at.desc&select=*,membres(prenom,nom,email,tel),enfants(prenom,nom,age)');
+    DEMO_RESAS=resas.map(function(r){
+      var m=r.membres||{},e=r.enfants||{};
+      return{_id:r.id,nom:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',
+        slot:{time:r.periode==='matin'?'Matin':'Apres-midi',date:(r.semaine_debut||'').split('-').reverse().join('/')},
+        saisonLabel:r.saison==='ete'?'Ete 2026':r.saison==='automne'?'Automne 2026':'Printemps 2027',
+        children:[{name:(e.prenom||'')+' '+(e.nom||''),age:e.age||0}],
+        paid:parseFloat(r.montant)||0,
+        statut:r.statut==='valide'?'valide':r.statut==='annule'?'annule':'en attente',
+        modePaiement:r.mode_paiement||'',date:(r.created_at||'').slice(0,10).split('-').reverse().join('/')};
+    });
+    var pais=await SB.get('paiements','?order=created_at.desc&select=*,membres(prenom,nom)');
+    var PAL=['#2196F3','#9C27B0','#F97316','#10B981','#EF4444','#8B5CF6','#F59E0B'];
+    DEMO_PAYMENTS=pais.map(function(p){
+      var m=p.membres||{},nom='Fam. '+(m.nom||'');
+      return{_id:p.id,nom:nom,
+        initiale:((m.prenom||'?').charAt(0)+(m.nom||'?').charAt(0)).toUpperCase(),
+        color:PAL[nom.charCodeAt(4)%PAL.length]||'#2196F3',
+        formule:p.reference||'',montant:parseFloat(p.montant)||0,
+        statut:p.statut==='paye'?'paye':'attente',mode:p.mode||'',date:p.date_paiement||''};
+    });
+    var avrs=await SB.get('avoirs','?order=created_at.asc');
+    var anN=new Date().getFullYear();
+    AVOIRS={
+      nMoins1:avrs.filter(function(a){return a.annee<anN;}).map(function(a){
+        return{_id:a.id,membre:a.membre_nom||'',somme:a.somme,motif:a.motif,solde:a.solde,dateSolde:a.date_solde||''};
+      }),
+      n:avrs.filter(function(a){return a.annee>=anN;}).map(function(a){
+        return{_id:a.id,membre:a.membre_nom||'',somme:a.somme,motif:a.motif,solde:a.solde,dateSolde:a.date_solde||''};
+      })
+    };
+    var suivi=await SB.get('suivi_quotidien','?order=date.asc');
+    SUIVI_QUOTIDIEN=suivi.map(function(s){
+      return{_id:s.id,date:(s.date||'').split('-').reverse().join('/'),ref:s.reference||'',
+        cb:parseFloat(s.cb)||0,vir:parseFloat(s.virement)||0,chq:parseFloat(s.cheque)||0,
+        chqvac:parseFloat(s.cheques_vacances)||0,esp:parseFloat(s.especes)||0,
+        avoir24:parseFloat(s.avoir_n_moins_1)||0,remb25:parseFloat(s.remboursement)||0};
+    });
+    console.log('Supabase OK - '+DEMO_KIDS.length+' enfants, '+DEMO_FAMS.length+' familles, '+DEMO_RESAS.length+' resas');
+    if(typeof toast==='function')toast('Donnees chargees','ok');
+    if(window.adminUnlocked&&typeof renderAdmin==='function')renderAdmin();
+  }catch(err){
+    console.warn('Supabase erreur:',err.message);
+  }
+}
+
+async function validerResaSB(id,mode,montant){
+  await SB.patch('reservations','id=eq.'+id,{statut:'valide',mode_paiement:mode});
+  await SB.post('paiements',{reservation_id:id,montant:montant||120,mode:mode,statut:'paye',date_paiement:new Date().toISOString().slice(0,10)});
+  await chargerDonnees();
+}
+async function ajouterAvoirSB(nom,somme,motif){
+  await SB.post('avoirs',{membre_nom:nom,somme:somme,motif:motif,annee:new Date().getFullYear(),solde:false});
+  await chargerDonnees();
+}
+async function solderAvoirSB(id){
+  await SB.patch('avoirs','id=eq.'+id,{solde:true,date_solde:new Date().toISOString().slice(0,10)});
+  await chargerDonnees();
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',chargerDonnees);
+}else{
+  chargerDonnees();
+}
+
+
 
 
 
@@ -2675,7 +2785,8 @@ function confirmerValidationResa() {
   document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el&&el.checked) checked=el.value;});
   if(!checked){var e=document.getElementById('err-mode-paiement');if(e) e.textContent='Veuillez choisir un mode de paiement';return;}
   var r=_adminResas[window._validatingResaIdx];
-  if(r){r.statut='validé';r.modePaiement=checked;r.paid=r.paid||120;}
+  if(r){r.statut='validé';r.modePaiement=checked;r.paid=r.paid||120;
+    if(r._id) validerResaSB(r._id,checked,r.paid).catch(function(){});}
   fermerValidationResa();
   toast('✅ Réservation validée · '+checked,'ok');
   renderAdminResas(); renderAdmin();
