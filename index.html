@@ -2272,24 +2272,81 @@ function submitInscription() {
   if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
   if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
   if(!ok) return;
-  var nom=(document.getElementById('i-nom')||{value:''}).value;
-  var prenom=(document.getElementById('i-prenom')||{value:''}).value;
-  var dob=(document.getElementById('i-dob')||{value:''}).value;
-  ST.members.push({
-    prenom:(document.getElementById('i-resp-prenom')||{value:''}).value, nom:(document.getElementById('i-resp-nom')||{value:''}).value,
-    email:(document.getElementById('i-email')||{value:''}).value, tel:(document.getElementById('i-tel')||{value:''}).value,
-    adresse:(document.getElementById('i-adresse-vacances')||{value:''}).value, medical:(document.getElementById('i-medical')||{value:''}).value,
-    urgence:(document.getElementById('i-urgence')||{value:''}).value, droitImage:inscDroit,
-    children:[{name:nom+' '+prenom, age:parseAge(dob), dob:dob, periode:'matin'}],
-    date:new Date().toLocaleDateString('fr-FR'),
-  });
-  toast('✅ Inscription enregistrée !','ok');
-  inscDroit=null;
-  ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  var ad=document.getElementById('i-age-display'); if(ad) ad.textContent='— ans';
-  if(ri)ri.checked=false; if(cgv)cgv.checked=false; if(resp)resp.checked=false;
-  inscGoStep(1);
-  setTimeout(function(){ navigate('home'); }, 1200);
+
+  var f = function(id){ return (document.getElementById(id)||{value:''}).value.trim(); };
+  var nomEnfant    = f('i-nom');
+  var prenomEnfant = f('i-prenom');
+  var dob          = f('i-dob');
+  var age          = parseAge(dob);
+
+  // Données membre (responsable légal)
+  var membreData = {
+    prenom:           f('i-resp-prenom'),
+    nom:              f('i-resp-nom'),
+    email:            f('i-email'),
+    tel:              f('i-tel'),
+    adresse_vacances: f('i-adresse-vacances'),
+    adresse_fixe:     f('i-adresse'),
+    urgence_nom:      f('i-urgence').split('·')[0].trim(),
+    urgence_tel:      f('i-urgence').split('·')[1] ? f('i-urgence').split('·')[1].trim() : '',
+    droit_image:      inscDroit === 'oui'
+  };
+
+  // Données enfant
+  var enfantData = {
+    prenom:         nomEnfant,
+    nom:            f('i-resp-nom'),
+    date_naissance: dob,
+    age:            age,
+    medical:        f('i-medical') || 'RAS'
+  };
+
+  // Reset formulaire
+  function resetForm() {
+    inscDroit = null;
+    ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse',
+     'i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){
+      var el=document.getElementById(id); if(el)el.value='';
+    });
+    var ad=document.getElementById('i-age-display'); if(ad) ad.textContent='— ans';
+    if(ri)ri.checked=false; if(cgv)cgv.checked=false; if(resp)resp.checked=false;
+    inscGoStep(1);
+  }
+
+  // Sauvegarde Supabase
+  if (typeof SB !== 'undefined' && SB_ON) {
+    toast('Enregistrement en cours…');
+    SB.post('membres', membreData)
+      .then(function(membre) {
+        enfantData.membre_id = membre.id;
+        return SB.post('enfants', enfantData);
+      })
+      .then(function() {
+        return chargerDonnees();
+      })
+      .then(function() {
+        toast('✅ Inscription enregistrée !', 'ok');
+        resetForm();
+        setTimeout(function(){ navigate('home'); }, 1200);
+      })
+      .catch(function(err) {
+        console.error('Erreur inscription:', err);
+        toast('❌ Erreur : ' + err.message, 'ko');
+      });
+  } else {
+    // Mode démo sans Supabase
+    ST.members.push({
+      prenom: membreData.prenom, nom: membreData.nom,
+      email: membreData.email, tel: membreData.tel,
+      adresse: membreData.adresse_vacances,
+      droit_image: membreData.droit_image,
+      children: [{name: nomEnfant + ' ' + prenomEnfant, age: age, dob: dob, medical: enfantData.medical}],
+      date: new Date().toLocaleDateString('fr-FR')
+    });
+    toast('✅ Inscription enregistrée !', 'ok');
+    resetForm();
+    setTimeout(function(){ navigate('home'); }, 1200);
+  }
 }
 
 function addInscChild(){}
@@ -3398,6 +3455,9 @@ function solderAvoir(tableIdx, rowIdx) {
   if (!real) return;
   real.solde = true;
   real.dateSolde = new Date().toLocaleDateString('fr-FR');
+  if (typeof SB !== 'undefined' && SB_ON && real._id) {
+    solderAvoirSB(real._id).catch(function(err){ console.error('solderAvoir:', err); });
+  }
   toast('✅ Avoir soldé','ok');
   renderAvoirs();
 }
@@ -3409,6 +3469,9 @@ function ajouterAvoir(tableIdx) {
   var motif  = prompt('Motif :') || '';
   var table  = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
   table.push({id:Date.now(), membre:membre, somme:somme, motif:motif, solde:false, dateSolde:''});
+  if (typeof SB !== 'undefined' && SB_ON) {
+    ajouterAvoirSB(membre, somme, motif).catch(function(err){ console.error('ajouterAvoir:', err); });
+  }
   toast('Avoir ajouté ✅','ok');
   renderAvoirs();
 }
