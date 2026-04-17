@@ -346,22 +346,22 @@ textarea{resize:vertical;}
   margin-bottom:18px;
 }
 .stat-card{
-  border-radius:16px;padding:14px 12px;
-  display:flex;flex-direction:column;gap:4px;
+  border-radius:12px;padding:10px 10px;
+  display:flex;flex-direction:column;gap:2px;
   background:rgba(255,255,255,.18);
   border:1.5px solid rgba(255,255,255,.35);
   backdrop-filter:blur(12px);
   position:relative;overflow:hidden;
-  box-shadow:0 4px 20px rgba(0,0,0,.12);
+  box-shadow:0 3px 12px rgba(0,0,0,.1);
 }
 .stat-card::before{
   content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%);
   pointer-events:none;
 }
-.stat-icon{font-size:24px;margin-bottom:4px;}
-.stat-val{font-size:26px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.15);}
-.stat-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.8px;}
+.stat-icon{font-size:18px;margin-bottom:2px;}
+.stat-val{font-size:20px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.15);}
+.stat-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.6px;}
 
 .admin-tabs{
   display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;
@@ -1641,7 +1641,7 @@ textarea{resize:vertical;}
       </div>
 
       <!-- KPI cards -->
-      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px;"></div>
+      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 20px 14px;"></div>
 
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
       <div class="admin-tabs" style="display:flex;gap:6px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.12);justify-content:center;">
@@ -1982,9 +1982,10 @@ async function chargerDonnees(){
         medical:e.medical||'RAS',urgence:m.urgence_tel||'',
         periode:['matin'],inscrit:(e.created_at||'').slice(0,10).split('-').reverse().join('/')};
     });
-    var resas=await SB.get('reservations','?order=created_at.desc&select=*,membres(prenom,nom,email,tel),enfants(prenom,nom,age)');
+    var resas=await SB.get('reservations','?order=created_at.desc');
     DEMO_RESAS=resas.map(function(r){
-      var m=r.membres||{},e=r.enfants||{};
+      var m=membres.find(function(x){return x.id===r.membre_id;})||{};
+      var e=enfants.find(function(x){return x.id===r.enfant_id;})||{};
       return{_id:r.id,nom:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',
         slot:{time:r.periode==='matin'?'Matin':'Apres-midi',date:(r.semaine_debut||'').split('-').reverse().join('/')},
         saisonLabel:r.saison==='ete'?'Ete 2026':r.saison==='automne'?'Automne 2026':'Printemps 2027',
@@ -1993,10 +1994,10 @@ async function chargerDonnees(){
         statut:r.statut==='valide'?'valide':r.statut==='annule'?'annule':'en attente',
         modePaiement:r.mode_paiement||'',date:(r.created_at||'').slice(0,10).split('-').reverse().join('/')};
     });
-    var pais=await SB.get('paiements','?order=created_at.desc&select=*,membres(prenom,nom)');
+    var pais=await SB.get('paiements','?order=created_at.desc');
     var PAL=['#2196F3','#9C27B0','#F97316','#10B981','#EF4444','#8B5CF6','#F59E0B'];
     DEMO_PAYMENTS=pais.map(function(p){
-      var m=p.membres||{},nom='Fam. '+(m.nom||'');
+      var m=membres.find(function(x){return x.id===p.membre_id;})||{},nom='Fam. '+(m.nom||'');
       return{_id:p.id,nom:nom,
         initiale:((m.prenom||'?').charAt(0)+(m.nom||'?').charAt(0)).toUpperCase(),
         color:PAL[nom.charCodeAt(4)%PAL.length]||'#2196F3',
@@ -2572,11 +2573,9 @@ function renderAdmin() {
   var el=document.getElementById('admin-stats'); if(!el) return;
   var kids=allKids(), fams=[].concat(DEMO_FAMS,ST.members), resas=[].concat(DEMO_RESAS,ST.reservations);
   var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  var pl=0; GROUPES.forEach(function(g){var cnt=kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id;}).length;pl+=Math.max(0,MAX_G-cnt);});
-  el.innerHTML='<div class="stat-card" style="background:linear-gradient(135deg,#6366F1,#4F46E5);"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#F97316,#EA580C);"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#10B981,#059669);"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#E9B10D,#F57F17);"><div class="stat-icon">✅</div><div class="stat-val">'+pl+'</div><div class="stat-lbl">Places libres</div></div>';
+  el.innerHTML='<div class="stat-card"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
+    +'<div class="stat-card"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
+    +'<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>';
   if(ST.adminTab==='dashboard')        renderDashboard();
   else if(ST.adminTab==='membres')     renderMembres();
   else if(ST.adminTab==='groupes')     renderAdminGroupes();
