@@ -1,0 +1,3334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Club des Léopards</title>
+<style>
+/* ── RESET & BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Rockwell','Rockwell Nova','Georgia',serif;
+  background:#F2F4F8;
+  color:#1A1A2E;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#C7D2FE;border-radius:2px;}
+
+/* ── APP SHELL ── */
+.app{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  background:#F2F4F8;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── PAGES ── */
+.page{display:none;flex:1;overflow-y:auto;padding-bottom:90px;animation:fadeUp .3s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── HERO HEADER ── */
+.hero-header{
+  background:linear-gradient(175deg,#3BC4E8 0%,#1A8FD1 40%,#0D5FAA 100%);
+  padding:48px 24px 70px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero-header::after{
+  content:'';
+  position:absolute;
+  bottom:-2px;left:0;right:0;
+  height:50px;
+  background:#F2F4F8;
+  clip-path:ellipse(55% 100% at 50% 100%);
+}
+.hero-waves{
+  position:absolute;
+  bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(to top,rgba(255,255,255,0.15),transparent);
+}
+.club-badge{
+  display:inline-block;
+  background:rgba(255,255,255,0.22);
+  border:2px solid rgba(255,255,255,0.5);
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:3px;
+  padding:7px 18px;
+  border-radius:30px;
+  margin-bottom:16px;
+}
+.hero-title{
+  font-size:36px;
+  font-weight:700;
+  color:#fff;
+  line-height:1.1;
+  margin-bottom:8px;
+  text-shadow:0 2px 12px rgba(0,0,0,0.2);
+}
+.hero-sub{
+  font-size:15px;
+  color:rgba(255,255,255,0.85);
+  margin-bottom:0;
+}
+
+/* ── INNER PAGE HEADER (non-home) ── */
+.inner-header{
+  background:linear-gradient(135deg,#3BC4E8 0%,#1A8FD1 100%);
+  padding:24px 20px 20px;
+  position:relative;
+}
+.inner-header::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:20px;
+  background:#F2F4F8;clip-path:ellipse(55% 100% at 50% 100%);
+}
+.ih-row{display:flex;align-items:center;gap:10px;}
+.ih-back{background:rgba(255,255,255,0.2);border:none;width:36px;height:36px;border-radius:12px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ih-title{font-size:20px;font-weight:700;color:#fff;}
+
+/* ── CONTENT AREA ── */
+.content{padding:20px 16px;}
+
+/* ── NOUVEAU AU CLUB card ── */
+.new-member-card{
+  background:#FFF4DB;
+  border:2.5px dashed #E9B10D;
+  border-radius:22px;
+  padding:22px 20px;
+  text-align:center;
+  margin-bottom:20px;
+}
+.nmc-title{font-size:19px;font-weight:700;color:#1A1A2E;margin-bottom:6px;}
+.nmc-sub{font-size:14px;color:#6B7280;margin-bottom:16px;}
+.btn-coral{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#FF7043,#F4511E);
+  color:#fff;font-size:16px;font-weight:700;
+  border:none;border-radius:30px;
+  padding:14px 32px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(255,112,67,0.4);
+  transition:all .2s;width:100%;justify-content:center;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+}
+.btn-coral:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,112,67,0.5);}
+
+/* ── BIG COLOR GRID ── */
+.big-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:20px;
+}
+.big-card{
+  border-radius:22px;
+  padding:24px 16px 20px;
+  cursor:pointer;
+  display:flex;flex-direction:column;
+  gap:10px;
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  min-height:140px;
+}
+.big-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.18);}
+.big-card::before{
+  content:'';position:absolute;
+  top:-20px;right:-20px;
+  width:90px;height:90px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.12);
+}
+.bc-icon{font-size:36px;line-height:1;}
+.bc-title{font-size:17px;font-weight:700;color:#fff;line-height:1.2;}
+.bc-sub{font-size:12px;color:rgba(255,255,255,0.8);}
+.bc-blue{background:linear-gradient(135deg,#2196F3,#1565C0);}
+.bc-teal{background:linear-gradient(135deg,#26C6A4,#00897B);}
+.bc-coral{background:linear-gradient(135deg,#FF7043,#E64A19);}
+.bc-green{background:linear-gradient(135deg,#66BB6A,#2E7D32);}
+.bc-purple{background:linear-gradient(135deg,#AB47BC,#6A1B9A);}
+.bc-amber{background:linear-gradient(135deg,#E9B10D,#F57F17);}
+
+/* ── INFOS CLUB ── */
+.info-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:#fff;border:2px solid #E0E7FF;border-radius:16px;
+  padding:14px;color:#1A6FD4;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+}
+.info-btn:hover{background:#EFF6FF;border-color:#BFDBFE;}
+
+/* ── SECTION TITLE ── */
+.section-title{
+  font-size:18px;font-weight:700;color:#1A1A2E;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.section-title span{font-size:20px;}
+
+/* ── WHITE CARDS ── */
+.wcard{
+  background:#fff;border-radius:18px;
+  padding:20px;margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+.wcard-title{
+  font-size:15px;font-weight:700;color:#1A1A2E;
+  margin-bottom:14px;display:flex;align-items:center;gap:7px;
+}
+
+/* ── FORMS ── */
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+label{font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.7px;}
+input,select,textarea{
+  padding:12px 14px;
+  border:2px solid #E5E7EB;border-radius:12px;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+  font-size:14px;color:#1A1A2E;background:#fff;
+  transition:border .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:#3B82F6;
+  box-shadow:0 0 0 3px rgba(59,130,246,.12);
+}
+textarea{resize:vertical;}
+.form-row{display:grid;grid-template-columns:1fr;gap:12px;}
+.form-full{grid-column:1/-1;}
+.err{border-color:#EF4444!important;}
+.err-txt{color:#EF4444;font-size:12px;font-weight:600;}
+
+/* ── CHIPS ── */
+.chip-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#EFF6FF;color:#1D4ED8;
+  border:1.5px solid #BFDBFE;
+  padding:5px 12px;border-radius:20px;
+  font-size:13px;font-weight:700;
+}
+.chip button{background:none;border:none;cursor:pointer;color:#3B82F6;font-size:13px;}
+.add-row{display:flex;gap:8px;align-items:flex-start;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:12px 22px;border-radius:14px;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;
+  transition:all .18s;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+}
+.btn-full{width:100%;}
+.btn-blue{background:linear-gradient(135deg,#2196F3,#1565C0);color:#fff;box-shadow:0 3px 12px rgba(33,150,243,.35);}
+.btn-blue:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(33,150,243,.45);}
+.btn-amber{background:linear-gradient(135deg,#E9B10D,#F57F17);color:#fff;box-shadow:0 3px 12px rgba(233,177,13,.4);}
+.btn-amber:hover{transform:translateY(-1px);}
+.btn-ghost{background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB;}
+.btn-ghost:hover{background:#E5E7EB;}
+.btn-green{background:linear-gradient(135deg,#10B981,#059669);color:#fff;box-shadow:0 3px 12px rgba(16,185,129,.35);}
+.btn-danger{background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:10px;}
+.btn-xs{padding:5px 10px;font-size:12px;border-radius:8px;}
+.btn-icon{
+  width:38px;height:38px;border-radius:12px;
+  background:#F3F4F6;border:1.5px solid #E5E7EB;
+  color:#374151;font-size:17px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* ── RÉSERVATION ── */
+.type-seg{
+  display:flex;gap:0;
+  background:#E8EDF5;border-radius:14px;padding:4px;
+  margin-bottom:18px;
+}
+.type-seg-btn{
+  flex:1;padding:10px;border-radius:10px;border:none;
+  background:none;font-size:13px;font-weight:700;
+  color:#6B7280;cursor:pointer;transition:all .18s;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+}
+.type-seg-btn.active{
+  background:#fff;color:#1565C0;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.week-nav-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.week-lbl{font-size:15px;font-weight:700;color:#1A1A2E;}
+
+.day-pills{display:flex;gap:8px;margin-bottom:18px;overflow-x:auto;padding-bottom:4px;}
+.day-pill{
+  flex-shrink:0;
+  padding:10px 14px;border-radius:14px;
+  border:2px solid #E5E7EB;background:#fff;
+  cursor:pointer;text-align:center;
+  transition:all .18s;min-width:60px;
+}
+.day-pill.active{
+  background:linear-gradient(135deg,#2196F3,#1565C0);
+  border-color:transparent;color:#fff;
+  box-shadow:0 4px 14px rgba(33,150,243,.4);
+}
+.dp-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;opacity:.7;}
+.day-pill.active .dp-name{opacity:.9;}
+.dp-num{font-size:20px;font-weight:700;}
+
+.slot-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border-radius:16px;
+  border:2px solid #E5E7EB;background:#fff;
+  margin-bottom:10px;transition:all .18s;
+}
+.slot-row:active{transform:scale(.99);}
+.slot-time{font-size:15px;font-weight:700;color:#1A1A2E;min-width:86px;flex-shrink:0;}
+.slot-info{flex:1;min-width:0;}
+.slot-name{font-size:14px;font-weight:700;color:#1A1A2E;white-space:nowrap;}
+.slot-avail{font-size:12px;margin-top:2px;font-weight:600;}
+.av-ok{color:#10B981;} .av-low{color:#F97316;} .av-none{color:#EF4444;}
+.slot-bar{width:50px;height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden;flex-shrink:0;}
+.slot-bar-fill{height:100%;border-radius:3px;}
+.complet-tag{
+  background:#FEE2E2;color:#EF4444;
+  font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:20px;
+}
+
+/* Semaine cards */
+.sem-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.sem-card{
+  border:2.5px solid #E5E7EB;border-radius:18px;padding:18px 14px;
+  cursor:pointer;transition:all .18s;background:#fff;
+}
+.sem-card.selected{border-color:#E9B10D;background:#FFFBEB;}
+.sem-card.span2{grid-column:1/-1;}
+.sem-icon{font-size:28px;margin-bottom:8px;}
+.sem-title{font-size:14px;font-weight:700;color:#1A1A2E;}
+.sem-sub{font-size:12px;color:#9CA3AF;margin-top:2px;}
+.sem-price{font-size:18px;font-weight:700;color:#E9B10D;margin-top:6px;}
+
+/* ── MES RÉSERVATIONS ── */
+.resa-item{
+  display:flex;align-items:center;gap:14px;
+  background:#fff;border-radius:18px;padding:16px;
+  margin-bottom:10px;
+  border-left:5px solid #10B981;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.resa-dot{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.resa-main{flex:1;}
+.resa-title{font-size:15px;font-weight:700;color:#1A1A2E;}
+.resa-sub{font-size:12px;color:#9CA3AF;margin-top:2px;}
+.resa-amt{font-size:16px;font-weight:700;color:#1A1A2E;}
+.resa-ok{background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px;}
+
+/* ── ADMIN ── */
+.admin-hero{
+  background:linear-gradient(135deg,#1E1B4B,#4C1D95,#1A6FD4);
+  padding:28px 20px 20px;
+  position:relative;
+}
+.admin-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:20px;background:#F2F4F8;clip-path:ellipse(55% 100% at 50% 100%);}
+.admin-hero-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+.admin-hero-sub{font-size:13px;color:rgba(255,255,255,0.7);}
+
+.stats-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  margin-bottom:18px;
+}
+.stat-card{
+  border-radius:16px;padding:14px 12px;
+  display:flex;flex-direction:column;gap:4px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);
+  position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.stat-icon{font-size:22px;margin-bottom:2px;}
+.stat-val{font-size:24px;font-weight:800;color:#fff;line-height:1;}
+.stat-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.8px;}
+
+.admin-tabs{
+  display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;
+  margin-bottom:18px;
+}
+.admin-tab{
+  flex-shrink:0;
+  padding:8px 16px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.08);
+  font-size:12px;font-weight:700;
+  color:rgba(255,255,255,.7);
+  cursor:pointer;transition:all .18s;
+  white-space:nowrap;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+}
+.admin-tab:hover{
+  background:rgba(255,255,255,.16);
+  color:#fff;
+}
+.admin-tab.active{
+  background:#E9B10D;
+  border-color:transparent;
+  color:#1A1A2E;
+  box-shadow:0 3px 12px rgba(233,177,13,.45);
+}
+
+.g-card{background:#fff;border-radius:18px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.g-head{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;cursor:pointer;
+}
+.g-emoji{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.g-name{font-size:14px;font-weight:700;color:#1A1A2E;}
+.g-ages{font-size:11px;color:#9CA3AF;margin-top:1px;}
+.g-meta{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.g-count{font-size:13px;font-weight:700;}
+.g-bar{width:50px;height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden;}
+.g-bar-fill{height:100%;border-radius:3px;}
+.g-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.g-chev{color:#D1D5DB;font-size:13px;flex-shrink:0;transition:transform .2s;}
+.g-head.open .g-chev{transform:rotate(180deg);}
+.g-body{display:none;border-top:1px solid #F3F4F6;}
+.g-body.open{display:block;}
+.g-body-top{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 6px;}
+.g-body-lbl{font-size:12px;font-weight:700;color:#9CA3AF;}
+
+.kid-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  border-top:1px solid #F9FAFB;
+  transition:background .15s;
+}
+.kid-row:hover{background:#FAFAFA;}
+.kid-ava{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.kid-name{font-size:13px;font-weight:700;color:#1A1A2E;}
+.kid-detail{font-size:11px;color:#9CA3AF;margin-top:1px;}
+.kid-age{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:auto;flex-shrink:0;}
+.kid-period{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:#DBEAFE;color:#1D4ED8;flex-shrink:0;}
+
+/* Fiche */
+.fiche{background:#fff;border-radius:18px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.fiche-top{display:flex;align-items:center;gap:14px;padding:16px;}
+.f-ava{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+.f-name{font-size:17px;font-weight:700;color:#1A1A2E;}
+.f-meta{font-size:12px;color:#9CA3AF;margin-top:2px;}
+.f-grp{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;color:#fff;margin-left:auto;flex-shrink:0;}
+.fiche-body{padding:0 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid #F3F4F6;padding-top:14px;}
+.fs-label{font-size:10px;font-weight:700;color:#D1D5DB;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.fs-row{display:flex;gap:6px;margin-bottom:5px;font-size:12px;}
+.fs-row .k{color:#9CA3AF;min-width:55px;flex-shrink:0;}
+.fs-row .v{font-weight:700;color:#1A1A2E;}
+.ptag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;background:#F3F4F6;color:#9CA3AF;border:1.5px solid #E5E7EB;display:inline-block;margin-right:4px;margin-top:4px;}
+.ptag.on{background:#DBEAFE;color:#1D4ED8;border-color:#BFDBFE;}
+.med-ok{color:#10B981;font-weight:700;font-size:12px;}
+.med-warn{color:#EF4444;font-weight:700;font-size:12px;}
+
+.u-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F3F4F6;}
+.u-row:last-child{border:none;}
+.u-ava{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,#2196F3,#1565C0);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
+.u-name{font-size:14px;font-weight:700;color:#1A1A2E;}
+.u-det{font-size:12px;color:#9CA3AF;margin-top:2px;}
+.u-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.u-chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.r-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #F3F4F6;}
+.r-row:last-child{border:none;}
+.r-dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);flex-shrink:0;margin-top:5px;box-shadow:0 0 0 3px rgba(16,185,129,.2);}
+.filter-bar{display:flex;gap:10px;margin-bottom:14px;}
+.filter-bar input,.filter-bar select{flex:1;min-width:0;}
+
+
+/* ── PAIEMENTS & FREQUENTATION ── */
+.period-seg{display:flex;gap:0;background:#E8EDF5;border-radius:12px;padding:3px;margin-bottom:16px;}
+.period-btn{flex:1;padding:8px 6px;border-radius:9px;border:none;background:none;font-size:12px;font-weight:700;color:#6B7280;cursor:pointer;transition:all .18s;font-family:'Rockwell','Rockwell Nova',Georgia,serif;}
+.period-btn.active{background:#fff;color:#1565C0;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.kpi{border-radius:16px;padding:14px 16px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:-15px;right:-15px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.12);}
+.kpi-icon{font-size:20px;margin-bottom:6px;}
+.kpi-val{font-size:26px;font-weight:700;color:#fff;line-height:1;}
+.kpi-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+.kpi-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
+
+.trend-up{color:#10B981;font-size:11px;font-weight:700;}
+.trend-dn{color:#EF4444;font-size:11px;font-weight:700;}
+
+/* Bar chart */
+.bar-chart{display:flex;flex-direction:column;gap:8px;}
+.bar-row{display:flex;align-items:center;gap:8px;}
+.bar-lbl{font-size:12px;font-weight:700;color:#374151;min-width:32px;flex-shrink:0;}
+.bar-track{flex:1;background:#F3F4F6;border-radius:6px;height:28px;overflow:hidden;position:relative;}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.bar-val{font-size:12px;font-weight:700;color:#374151;min-width:40px;text-align:right;flex-shrink:0;}
+
+/* Donut */
+.donut-wrap{display:flex;align-items:center;gap:16px;padding:4px 0;}
+.donut-svg{flex-shrink:0;}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:6px;}
+.donut-item{display:flex;align-items:center;gap:6px;font-size:12px;}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.donut-name{color:#374151;font-weight:600;flex:1;}
+.donut-pct{font-weight:700;color:#1A1A2E;}
+
+/* Paiement status rows */
+.pay-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F3F4F6;}
+.pay-row:last-child{border:none;}
+.pay-avatar{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.pay-name{font-size:13px;font-weight:700;color:#1A1A2E;}
+.pay-detail{font-size:11px;color:#9CA3AF;}
+.pay-amount{font-size:14px;font-weight:700;margin-left:auto;flex-shrink:0;}
+.pay-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;display:block;text-align:center;margin-top:3px;}
+.badge-paid{background:#D1FAE5;color:#065F46;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-partial{background:#DBEAFE;color:#1D4ED8;}
+
+/* Section sub-title */
+.sub-title{font-size:13px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.6px;margin:16px 0 10px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;
+  bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  background:#fff;
+  border-top:1px solid #F3F4F6;
+  display:flex;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+  z-index:100;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.bnav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:10px 4px 8px;cursor:pointer;
+  transition:all .18s;
+  background:none;border:none;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+  position:relative;
+}
+.bnav-icon{font-size:22px;margin-bottom:3px;transition:transform .2s;}
+.bnav-label{font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;}
+.bnav-item.active .bnav-label{color:#1565C0;}
+.bnav-item.active .bnav-icon{transform:scale(1.15);}
+.bnav-dot{
+  position:absolute;top:8px;right:calc(50% - 14px);
+  width:8px;height:8px;border-radius:50%;
+  background:#EF4444;border:2px solid #fff;
+  display:none;
+}
+.bnav-dot.show{display:block;}
+
+/* ── MODAL ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(15,15,30,0.55);
+  z-index:200;align-items:flex-end;justify-content:center;
+  padding:0;backdrop-filter:blur(5px);
+}
+.overlay.open{display:flex;}
+.modal{
+  background:#fff;
+  border-radius:28px 28px 0 0;
+  width:100%;max-width:480px;
+  max-height:92vh;overflow-y:auto;
+  padding:0 0 32px;
+  box-shadow:0 -8px 40px rgba(0,0,0,.2);
+  animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:40px;height:4px;background:#E5E7EB;border-radius:2px;margin:12px auto 0;}
+.modal-head{padding:16px 20px 12px;}
+.modal-title{font-size:20px;font-weight:700;color:#1A1A2E;}
+.modal-sub{font-size:13px;color:#9CA3AF;margin-top:3px;}
+.modal-body{padding:0 20px 8px;}
+.modal-close{float:right;background:#F3F4F6;border:none;width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:16px;color:#6B7280;}
+
+.steps{display:flex;align-items:center;margin:0 20px 20px;}
+.step-c{width:28px;height:28px;border-radius:50%;border:2px solid #E5E7EB;background:#fff;color:#D1D5DB;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.step-c.active{border:none;background:linear-gradient(135deg,#2196F3,#7C3AED);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.4);}
+.step-c.done{border:none;background:linear-gradient(135deg,#10B981,#06B6D4);color:#fff;}
+.step-line{flex:1;height:2px;background:#E5E7EB;margin:0 4px;}
+.step-line.done{background:linear-gradient(90deg,#10B981,#06B6D4);}
+
+.seance-pill{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,#1E1B4B,#1A6FD4);
+  border-radius:16px;padding:14px 16px;
+  margin:0 20px 18px;
+}
+.sp-time{font-size:22px;font-weight:700;color:#fff;}
+.sp-date{font-size:12px;color:rgba(255,255,255,.65);}
+.sp-price{margin-left:auto;font-size:14px;font-weight:700;color:#E9B10D;background:rgba(233,177,13,.15);padding:5px 12px;border-radius:20px;}
+
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.pm{border:2px solid #E5E7EB;border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .18s;}
+.pm.active{border-color:#E9B10D;background:#FFFBEB;}
+.pm-icon{font-size:26px;margin-bottom:5px;}
+.pm-lbl{font-size:13px;font-weight:700;color:#374151;}
+.card-wrap{position:relative;}
+.card-wrap input{padding-right:46px;}
+.card-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:20px;}
+.secure{display:flex;align-items:center;gap:8px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;font-weight:700;color:#10B981;}
+
+.price-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:14px;margin:10px 0;}
+.pb-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;}
+.pb-row.total{font-size:15px;font-weight:700;border-top:1px solid #BFDBFE;padding-top:9px;margin-top:5px;}
+.pb-row span:last-child{font-weight:700;color:#1D4ED8;}
+
+.confirm-view{text-align:center;padding:16px 0 8px;}
+.conf-icon{font-size:72px;margin-bottom:12px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.conf-title{font-size:22px;font-weight:700;color:#1A1A2E;margin-bottom:6px;}
+.conf-sub{font-size:14px;color:#9CA3AF;margin-bottom:16px;}
+.conf-ref{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#D1FAE5,#DBEAFE);border-radius:12px;padding:8px 18px;font-size:13px;font-weight:700;color:#065F46;margin-bottom:18px;}
+.sum-box{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:14px;padding:14px;text-align:left;}
+.sum-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #F3F4F6;}
+.sum-row:last-child{border:none;font-weight:700;font-size:14px;}
+.sum-row span:first-child{color:#9CA3AF;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:90px;left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:linear-gradient(135deg,#1E1B4B,#4C1D95);
+  color:#fff;padding:12px 22px;border-radius:14px;
+  font-size:14px;font-weight:700;z-index:999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 28px rgba(76,29,149,.3);
+  white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.ok{background:linear-gradient(135deg,#10B981,#059669);}
+.toast.ko{background:linear-gradient(135deg,#EF4444,#DC2626);}
+
+/* ── SPINNER ── */
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{display:inline-block;width:15px;height:15px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 20px;}
+.empty-icon{font-size:52px;margin-bottom:12px;}
+.empty p{font-size:15px;color:#9CA3AF;}
+
+
+/* ── PANIER ── */
+.panier-item {
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;border-bottom:1px solid #F3F4F6;
+}
+.panier-item:last-child{border:none;}
+.pi-icon{
+  width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.pi-title{font-size:14px;font-weight:700;color:#1A1A2E;}
+.pi-sub{font-size:12px;color:#9CA3AF;margin-top:2px;}
+.pi-price{font-size:15px;font-weight:700;color:#E9B10D;margin-left:auto;flex-shrink:0;}
+.pi-del{background:#FEE2E2;border:none;border-radius:8px;padding:6px 10px;color:#EF4444;cursor:pointer;font-size:12px;font-weight:700;flex-shrink:0;}
+
+/* Saisie sous-onglets */
+.btn-green{background:linear-gradient(135deg,#10B981,#059669);color:#fff;box-shadow:0 3px 12px rgba(16,185,129,.3);}
+
+/* ── PERIOD SEGMENTED CONTROL ── */
+.period-seg{
+  display:flex;gap:0;
+  background:#E8EDF5;border-radius:14px;padding:4px;
+  margin-bottom:16px;
+}
+.period-btn{
+  flex:1;padding:9px 6px;border-radius:10px;border:none;
+  background:none;font-size:12px;font-weight:700;
+  color:#6B7280;cursor:pointer;transition:all .18s;
+  font-family:'Rockwell','Rockwell Nova',Georgia,serif;
+}
+.period-btn.active{
+  background:#fff;color:#1A1A2E;
+  box-shadow:0 2px 8px rgba(0,0,0,.10);
+}
+
+/* ── KPI CARDS ── */
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.kpi{border-radius:18px;padding:16px 14px;color:#fff;}
+.kpi-icon{font-size:24px;margin-bottom:6px;}
+.kpi-val{font-size:28px;font-weight:700;line-height:1;}
+.kpi-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:4px;opacity:.9;}
+.kpi-sub{font-size:11px;opacity:.7;margin-top:2px;}
+
+/* ── PAYMENT ROWS ── */
+.pay-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid #F3F4F6;
+}
+.pay-row:last-child{border:none;}
+.pay-avatar{
+  width:38px;height:38px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.pay-name{font-size:13px;font-weight:700;color:#1A1A2E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pay-detail{font-size:11px;color:#9CA3AF;margin-top:1px;}
+.pay-amount{font-size:15px;font-weight:700;white-space:nowrap;}
+.pay-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;display:inline-block;margin-top:3px;white-space:nowrap;}
+.badge-paid{background:#D1FAE5;color:#065F46;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-partial{background:#DBEAFE;color:#1D4ED8;}
+
+/* ── BAR CHART ── */
+.bar-chart{display:flex;flex-direction:column;gap:10px;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-lbl{font-size:12px;font-weight:700;color:#374151;min-width:52px;flex-shrink:0;}
+.bar-track{flex:1;background:#F3F4F6;border-radius:20px;height:22px;overflow:hidden;position:relative;}
+.bar-fill{
+  height:100%;border-radius:20px;
+  display:flex;align-items:center;padding-left:8px;
+  font-size:11px;font-weight:700;color:#fff;
+  transition:width .5s cubic-bezier(.34,1.2,.64,1);
+  min-width:28px;
+}
+.bar-val{font-size:12px;font-weight:700;color:#6B7280;min-width:24px;text-align:right;flex-shrink:0;}
+
+/* ── DONUT ── */
+.donut-wrap{display:flex;align-items:center;gap:16px;}
+.donut-svg{flex-shrink:0;}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:7px;}
+.donut-item{display:flex;align-items:center;gap:8px;}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.donut-name{font-size:12px;font-weight:700;color:#374151;flex:1;}
+.donut-pct{font-size:12px;font-weight:700;color:#1A1A2E;}
+
+/* ── MINI SPARKLINE ── */
+.sparkline-row{display:flex;align-items:flex-end;gap:4px;height:48px;margin-top:8px;}
+.spark-bar{flex:1;border-radius:4px 4px 0 0;min-width:6px;transition:height .4s ease;}
+.spark-lbl{font-size:9px;font-weight:700;color:#9CA3AF;text-align:center;margin-top:4px;}
+.spark-col{display:flex;flex-direction:column;align-items:center;flex:1;}
+
+/* ── TREND BADGE ── */
+.trend-up{background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;}
+.trend-dn{background:#FEE2E2;color:#991B1B;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;}
+
+/* ── RECAP TABLE ── */
+.recap-table{width:100%;border-collapse:collapse;}
+.recap-table th{font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:2px solid #F3F4F6;text-align:left;}
+.recap-table td{font-size:13px;padding:8px 8px;border-bottom:1px solid #F9FAFB;color:#374151;}
+.recap-table td:last-child{font-weight:700;text-align:right;}
+.recap-table tr:last-child td{border:none;}
+
+/* ── INSCRIPTION STEPPER ── */
+.insc-stepper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px 12px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.ist-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.ist-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2.5px solid #E5E7EB;
+  background: #fff;
+  color: #D1D5DB;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .25s;
+}
+.ist-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #D1D5DB;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  text-align: center;
+  transition: color .25s;
+  white-space: nowrap;
+}
+.ist-item.active .ist-circle {
+  border: none;
+  background: linear-gradient(135deg, #2196F3, #7C3AED);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(33,150,243,.4);
+}
+.ist-item.active .ist-label { color: #1565C0; }
+.ist-item.done .ist-circle {
+  border: none;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+}
+.ist-item.done .ist-label { color: #10B981; }
+.ist-line {
+  flex: 1;
+  height: 2.5px;
+  background: #E5E7EB;
+  margin: 0 4px 18px;
+  border-radius: 2px;
+  transition: background .3s;
+}
+.ist-line.done { background: linear-gradient(90deg, #10B981, #06B6D4); }
+
+/* ── DROIT IMAGE OPTIONS ── */
+.droit-option.selected-oui {
+  border-color: #10B981 !important;
+  background: #F0FDF4 !important;
+}
+.droit-option.selected-non {
+  border-color: #EF4444 !important;
+  background: #FEF2F2 !important;
+}
+
+/* ── RECAP CARD ── */
+.recap-section {
+  background: #fff;
+  border-radius: 18px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+.recap-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #F9FAFB;
+  border-bottom: 1px solid #F3F4F6;
+  cursor: pointer;
+}
+.recap-section-title { font-size: 14px; font-weight: 700; color: #1A1A2E; }
+.recap-edit { margin-left: auto; font-size: 12px; font-weight: 700; color: #2196F3; cursor: pointer; }
+.recap-body { padding: 14px 16px; }
+.recap-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px solid #F9FAFB; }
+.recap-row:last-child { border: none; }
+.recap-row span:first-child { color: #9CA3AF; }
+.recap-row span:last-child { font-weight: 700; color: #1A1A2E; }
+.recap-child-card {
+  background: #F9FAFB;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.recap-child-card:last-child { margin-bottom: 0; }
+.rcc-avatar {
+  width: 36px; height: 36px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+
+/* ══ RESPONSIVE DESKTOP ══ */
+@media (min-width: 769px) {
+  html, body { height:100%; margin:0; padding:0; }
+  body {
+    background:#F2F4F8;
+    min-height:100vh;
+  }
+  /* App pleine largeur */
+  .app {
+    width:100%;
+    max-width:100%;
+    margin:0;
+    background:#F2F4F8;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+
+  /* Pages */
+  .page { padding-bottom:80px; background:#F2F4F8; flex:1; overflow-y:visible; }
+  .page.active { display:block; }
+
+  /* Barre de nav en bas, pleine largeur */
+  .bottom-nav {
+    position:sticky; bottom:0; z-index:100;
+    transform:none; width:100%; max-width:100%;
+    background:rgba(13,47,100,0.92);
+    backdrop-filter:blur(16px);
+    border-top:1px solid rgba(255,255,255,0.15);
+    border-bottom:none;
+    box-shadow:0 -2px 20px rgba(0,0,0,0.2);
+    order:99;
+    padding:0;
+    justify-content:center;
+    gap:0;
+    flex-shrink:0;
+  }
+  .bnav-item {
+    padding:14px 0 12px;
+    flex:1; max-width:140px;
+    border-radius:0;
+    text-align:center;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .bnav-item:hover { background:rgba(255,255,255,0.1); }
+  .bnav-icon { font-size:18px; margin-bottom:1px; }
+  .bnav-label { font-size:11px; color:rgba(255,255,255,0.75); }
+  .bnav-item.active { background:rgba(255,255,255,0.15); }
+  .bnav-item.active .bnav-label { color:#fff; font-weight:800; }
+  .bnav-dot { top:10px; }
+
+  /* Hero pleine largeur */
+  .hero-header { border-radius:0; padding:64px 80px 90px; text-align:center; overflow:visible; }
+  .hero-header::after { clip-path:ellipse(52% 100% at 50% 100%); }
+  .hero-title { font-size:52px; }
+  .hero-sub { font-size:18px; }
+  .club-badge { display:inline-block; }
+
+  /* Inner header */
+  .inner-header { border-radius:0; }
+
+  /* Contenu centré avec max-width */
+  .content { max-width:1020px; margin:0 auto; padding:32px 40px; width:100%; box-sizing:border-box; }
+  .page > .hero-header, .page > .inner-header, .page > .admin-hero { width:100%; }
+
+  /* Grilles desktop */
+  .big-grid { grid-template-columns:repeat(4,1fr); }
+  .form-row { grid-template-columns:1fr 1fr; }
+  .stats-row { grid-template-columns:repeat(4,1fr); }
+  .kpi-row { grid-template-columns:repeat(4,1fr); }
+
+  /* Admin */
+  #page-admin .content { padding:24px 32px; }
+  .admin-tabs { flex-wrap:nowrap; overflow-x:auto; }
+
+  /* Cards */
+  .wcard { padding:24px 28px; }
+
+  /* Modals */
+  .overlay { align-items:center; }
+  .modal {
+    border-radius:20px; max-width:560px;
+    max-height:85vh;
+    animation:mIn 0.28s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes mIn { from{transform:scale(.92);opacity:0;} to{transform:none;opacity:1;} }
+  .modal-handle { display:none; }
+  @keyframes slideUp { from{transform:translateY(0);} to{transform:translateY(0);} }
+
+  /* Inscription */
+  .insc-stepper { padding:20px 32px; }
+  .desktop-brand { display:flex !important; }
+}
+
+/* ══ DESKTOP BRAND BAR ══ */
+.desktop-brand {
+  display:none;
+  align-items:center; gap:12px;
+  padding:0 0 0 0; margin-right:32px;
+  color:#fff; font-weight:700; font-size:17px;
+  white-space:nowrap; text-decoration:none;
+}
+.desktop-brand-icon { font-size:28px; }
+
+/* ══ ADMIN LOGIN SCREEN ══ */
+.admin-login-overlay {
+  display:none; position:fixed; inset:0;
+  background:linear-gradient(135deg,#1E1B4B 0%,#1A6FD4 60%,#3BC4E8 100%);
+  z-index:500; align-items:center; justify-content:center;
+  padding:20px;
+}
+.admin-login-overlay.open { display:flex; }
+.admin-login-card {
+  background:#fff; border-radius:24px; padding:40px 32px;
+  width:100%; max-width:380px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.3);
+  text-align:center; animation:popIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+.al-logo { font-size:56px; margin-bottom:8px; }
+.al-title { font-size:22px; font-weight:700; color:#1A1A2E; margin-bottom:4px; }
+.al-sub { font-size:14px; color:#9CA3AF; margin-bottom:28px; }
+.al-input-wrap { position:relative; margin-bottom:14px; }
+.al-input {
+  width:100%; padding:16px 50px 16px 20px;
+  font-size:24px; font-weight:700; letter-spacing:8px;
+  text-align:center; border:2px solid #E5E7EB; border-radius:14px;
+  font-family:"Rockwell","Rockwell Nova",Georgia,serif;
+  color:#1A1A2E; background:#F9FAFB;
+  transition:border .2s, box-shadow .2s;
+}
+.al-input:focus { outline:none; border-color:#1A6FD4; box-shadow:0 0 0 3px rgba(26,111,212,.12); background:#fff; }
+.al-input.error { border-color:#EF4444; animation:shake .3s ease; }
+@keyframes shake { 0%,100%{transform:none;} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+.al-eye { position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:18px; color:#9CA3AF; background:none; border:none; }
+.al-btn {
+  width:100%; padding:16px; font-size:16px; font-weight:700;
+  border:none; border-radius:14px; cursor:pointer;
+  background:linear-gradient(135deg,#1A6FD4,#0D4FA0); color:#fff;
+  font-family:"Rockwell","Rockwell Nova",Georgia,serif;
+  box-shadow:0 4px 16px rgba(26,111,212,.4);
+  transition:all .2s; margin-bottom:12px;
+}
+.al-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,111,212,.5); }
+.al-err { color:#EF4444; font-size:13px; font-weight:700; margin-bottom:12px; min-height:18px; }
+.al-cancel { background:none; border:none; color:#9CA3AF; font-size:13px; cursor:pointer; font-family:"Rockwell","Rockwell Nova",Georgia,serif; }
+.al-cancel:hover { color:#374151; }
+.al-dots { display:flex; justify-content:center; gap:10px; margin-bottom:24px; }
+.al-dot { width:14px; height:14px; border-radius:50%; background:#E5E7EB; transition:all .2s; }
+.al-dot.filled { background:linear-gradient(135deg,#1A6FD4,#7C3AED); transform:scale(1.15); }
+
+
+
+
+
+/* ══════════ ADMIN DASHBOARD — COLORFUL THEME ══════════ */
+
+/* Hero gradient */
+.admin-hero {
+  background: linear-gradient(135deg, #1E1B4B 0%, #1A6FD4 55%, #06B6D4 100%);
+  padding: 28px 20px 52px;
+  position: relative;
+}
+.admin-hero::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0; height:28px;
+  background:#F2F4F8; clip-path:ellipse(55% 100% at 50% 100%);
+}
+
+/* Stats row */
+.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+.stat-card {
+  border-radius:18px; padding:18px;
+  display:flex; flex-direction:column; gap:5px;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+}
+.stat-icon { font-size:26px; }
+.stat-val  { font-size:30px; font-weight:700; color:#fff; line-height:1; }
+.stat-lbl  { font-size:10px; font-weight:700; color:rgba(255,255,255,.75); text-transform:uppercase; letter-spacing:.6px; }
+
+/* Tabs */
+.admin-tabs {
+  display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;
+  margin-bottom:18px; scrollbar-width:none;
+}
+.admin-tabs::-webkit-scrollbar { display:none; }
+.admin-tab {
+  flex-shrink:0; padding:9px 14px; border-radius:12px;
+  border:2px solid #E5E7EB; background:#fff;
+  font-size:12px; font-weight:700; color:#6B7280;
+  cursor:pointer; transition:all .2s;
+  font-family:"Rockwell","Rockwell Nova",Georgia,serif;
+  white-space:nowrap;
+}
+.admin-tab:hover { border-color:#C4B5FD; color:#7C3AED; background:#F5F3FF; }
+.admin-tab.active {
+  background:linear-gradient(135deg,#1E1B4B,#4C1D95);
+  border-color:transparent; color:#fff;
+  box-shadow:0 3px 12px rgba(124,58,237,.35);
+}
+
+/* KPI cards */
+.kpi-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.kpi {
+  border-radius:18px; padding:18px 16px; color:#fff;
+  position:relative; overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+.kpi::before {
+  content:''; position:absolute;
+  top:-20px; right:-20px; width:80px; height:80px;
+  border-radius:50%; background:rgba(255,255,255,.1);
+}
+.kpi-val { font-size:28px; font-weight:700; line-height:1; }
+.kpi-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-top:4px; opacity:.85; }
+.kpi-sub { font-size:11px; opacity:.65; margin-top:2px; }
+
+/* Period segmented */
+.period-seg { background:#F3F0FF; border-radius:14px; padding:4px; }
+.period-btn { color:#7C3AED; }
+.period-btn.active { background:linear-gradient(135deg,#7C3AED,#4C1D95); color:#fff; box-shadow:0 2px 8px rgba(124,58,237,.3); }
+
+/* Group cards */
+.g-card {
+  background:#fff; border-radius:18px; margin-bottom:12px;
+  overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.07);
+}
+.g-head { padding:14px 16px; }
+.g-name { color:#1A1A2E; font-weight:700; }
+
+/* Bar fills */
+.bar-track { background:#F3F4F6; border-radius:8px; overflow:hidden; }
+.bar-fill  { border-radius:8px; }
+
+/* Fiche cards */
+.fiche {
+  border-radius:18px; overflow:hidden; margin-bottom:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+}
+
+/* Pay badges */
+.badge-paid    { background:#D1FAE5; color:#065F46; }
+.badge-pending { background:#FEF3C7; color:#92400E; }
+.badge-partial { background:#DBEAFE; color:#1D4ED8; }
+
+/* Panier badge */
+#panier-badge { background:#EF4444 !important; color:#fff !important; }
+
+/* Admin login overlay */
+.admin-login-overlay {
+  background:linear-gradient(135deg,#1E1B4B 0%,#1A6FD4 60%,#06B6D4 100%) !important;
+}
+.admin-login-card { border:none; box-shadow:0 24px 80px rgba(0,0,0,.3) !important; }
+.al-title  { color:#1A6FD4 !important; }
+.al-btn    { background:linear-gradient(135deg,#1A6FD4,#0D4FA0) !important; }
+.al-dot    { background:#DBEAFE !important; }
+.al-dot.filled { background:linear-gradient(135deg,#1A6FD4,#7C3AED) !important; }
+
+/* Desktop navbar */
+@media (min-width:769px){
+  .bottom-nav {
+    background:linear-gradient(90deg,#1E1B4B,#1A6FD4,#06B6D4) !important;
+    backdrop-filter:blur(0) !important;
+    border-bottom:none !important;
+    box-shadow:0 2px 20px rgba(0,0,0,.2) !important;
+  }
+  .bnav-label { color:rgba(255,255,255,.7) !important; }
+  .bnav-item:hover { background:rgba(255,255,255,.12) !important; }
+  .bnav-item.active { background:rgba(255,255,255,.18) !important; }
+  .bnav-item.active .bnav-label { color:#fff !important; }
+  .desktop-brand { color:#fff !important; }
+}
+/* ══ END ADMIN COLORFUL THEME ══ */
+
+
+.sem-card-inner:hover { background: #F9FAFB; }
+
+/* Doc modal accordion */
+.doc-item { border:1.5px solid #E5E7EB; border-radius:14px; overflow:hidden; margin-bottom:8px; }
+.doc-item-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; background:#fff; transition:background .15s; }
+.doc-item-head:hover { background:#F9FAFB; }
+.doc-item-body { padding:0 16px 14px; border-top:1px solid #F3F4F6; }
+.doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ══════════ PAGE : HOME ══════════ -->
+  <div class="page active" id="page-home">
+    <div class="hero-header">
+      <div class="club-badge">🐆 CLUB DES LÉOPARDS</div>
+      <div class="hero-title" style="color:#E9B10D;">Club de Plage</div>
+      <div class="hero-sub">Plage · Soleil · Bonne humeur !</div>
+    </div>
+    <div class="content">
+      <div class="new-member-card">
+        <div class="nmc-title">Nouveau au club ? 🎉</div>
+        <div class="nmc-sub">Vos enfants accueillis par catégories d'âge, encadrés par des moniteurs diplômés !</div>
+        <button class="btn-coral" onclick="navigate('inscription')">📋 S'inscrire maintenant</button>
+      </div>
+      <div class="big-grid">
+        <div class="big-card bc-coral" onclick="goSaison('ete')">
+          <div class="bc-icon">☀️</div>
+          <div class="bc-title">Été</div>
+          <div class="bc-sub">29 juin → 28 août · 120€ / sem.</div>
+        </div>
+        <div class="big-card bc-amber" onclick="goSaison('automne')">
+          <div class="bc-icon">🍂</div>
+          <div class="bc-title">Automne</div>
+          <div class="bc-sub">19 oct. → 30 oct. · 120€ / sem.</div>
+        </div>
+        <div class="big-card bc-green" onclick="goSaison('printemps')">
+          <div class="bc-icon">🌸</div>
+          <div class="bc-title">Printemps</div>
+          <div class="bc-sub">5 avr. → 30 avr. 2027 · 120€ / sem.</div>
+        </div>
+        <div class="big-card bc-blue" onclick="navigate('mes-resa')">
+          <div class="bc-icon">📅</div>
+          <div class="bc-title">Mes réservations</div>
+          <div class="bc-sub">Historique & suivi</div>
+        </div>
+      </div>
+      <button class="info-btn btn-full" onclick="showInfos()">
+        <span style="font-size:18px;">ℹ️</span> Infos Club
+      </button>
+      <!-- Infos panel -->
+      <div id="infos-panel" style="display:none;margin-top:14px;">
+
+        <div class="wcard">
+          <div class="wcard-title"><span>🌊</span> Le Club</div>
+          <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:0;">Vos enfants sont accueillis <strong>par catégories d'âges</strong> pour une meilleure organisation et plus de plaisir entre eux dans les jeux. Ils sont pris en charge par des <strong>monitrices et moniteurs diplômés</strong> ayant l'expérience et l'envie du travail avec les enfants.</p>
+        </div>
+
+        <div class="wcard">
+          <div class="wcard-title"><span>🕘</span> Horaires par saison</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <!-- Été -->
+            <div style="border-radius:14px;overflow:hidden;border:1.5px solid #FFC4A8;">
+              <div style="background:linear-gradient(135deg,#FFF1EC,#FFE4D6);padding:10px 14px;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:16px;">☀️</span>
+                <span style="font-size:13px;font-weight:700;color:#C2410C;">Été 2026</span>
+                <span style="font-size:11px;color:#9CA3AF;margin-left:auto;">29 juin → 28 août</span>
+              </div>
+              <div style="padding:10px 14px;background:#fff;display:grid;gap:6px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;"><span>🌅 Matin</span><span style="font-weight:700;color:#EF6B4A;">9h30 – 12h30</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;"><span>🌞 Après-midi</span><span style="font-weight:700;color:#EF6B4A;">15h00 – 18h15</span></div>
+              </div>
+            </div>
+
+            <!-- Automne -->
+            <div style="border-radius:14px;overflow:hidden;border:1.5px solid #FDE68A;">
+              <div style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);padding:10px 14px;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:16px;">🍂</span>
+                <span style="font-size:13px;font-weight:700;color:#9A3412;">Automne 2026</span>
+                <span style="font-size:11px;color:#9CA3AF;margin-left:auto;">19 → 30 oct.</span>
+              </div>
+              <div style="padding:10px 14px;background:#fff;display:grid;gap:6px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;"><span>🌅 Matin</span><span style="font-weight:700;color:#F59E0B;">10h00 – 12h30</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;"><span>🌞 Après-midi</span><span style="font-weight:700;color:#F59E0B;">15h00 – 18h00</span></div>
+              </div>
+            </div>
+
+            <!-- Printemps -->
+            <div style="border-radius:14px;overflow:hidden;border:1.5px solid #BBF7D0;">
+              <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);padding:10px 14px;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:16px;">🌸</span>
+                <span style="font-size:13px;font-weight:700;color:#065F46;">Printemps 2027</span>
+                <span style="font-size:11px;color:#9CA3AF;margin-left:auto;">5 → 30 avr.</span>
+              </div>
+              <div style="padding:10px 14px;background:#fff;display:grid;gap:6px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;"><span>🌅 Matin</span><span style="font-weight:700;color:#10B981;">10h00 – 12h30</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;"><span>🌞 Après-midi</span><span style="font-weight:700;color:#10B981;">15h00 – 18h00</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="wcard">
+          <div class="wcard-title"><span>📜</span> Règlement intérieur (extraits)</div>
+          <div style="display:grid;gap:7px;">
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#F9FAFB;border-radius:10px;">
+              <span style="font-weight:700;color:#1565C0;flex-shrink:0;">Art.1</span>Ouvert 9h30–12h30 et 15h00–18h15, lundi au vendredi, Juillet et Août.
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#F9FAFB;border-radius:10px;">
+              <span style="font-weight:700;color:#1565C0;flex-shrink:0;">Art.7</span>Dépôt et reprise sur la plage, en bas de l'escalier d'accès.
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#F9FAFB;border-radius:10px;">
+              <span style="font-weight:700;color:#1565C0;flex-shrink:0;">Art.8</span>Enfants crémés, chapeau, lunettes, tee-shirt, maillot de bain obligatoires.
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#F9FAFB;border-radius:10px;">
+              <span style="font-weight:700;color:#1565C0;flex-shrink:0;">Art.9</span>Prévoir goûter et gourde d'eau pour les après-midis.
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#FEF2F2;border-radius:10px;">
+              <span style="font-weight:700;color:#EF4444;flex-shrink:0;">Art.11</span>Autorisation écrite requise pour les enfants rentrant seuls.
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#FEF2F2;border-radius:10px;">
+              <span style="font-weight:700;color:#EF4444;flex-shrink:0;">Art.12</span>Déclarer toutes allergies ou pathologies à l'inscription.
+            </div>
+            <div style="display:flex;gap:10px;font-size:13px;color:#374151;line-height:1.5;padding:8px 10px;background:#F9FAFB;border-radius:10px;">
+              <span style="font-weight:700;color:#1565C0;flex-shrink:0;">Art.14</span>Baignades surveillées par un adulte après accord du moniteur.
+            </div>
+          </div>
+        </div>
+
+        <div class="wcard">
+          <div class="wcard-title"><span>📋</span> CGV — points clés</div>
+          <div style="display:grid;gap:7px;">
+            <div style="font-size:13px;color:#374151;line-height:1.5;padding:8px 12px;background:#F9FAFB;border-radius:10px;">Paiement à l'inscription. Aucun remboursement sauf fermeture imputable au club.</div>
+            <div style="font-size:13px;color:#374151;line-height:1.5;padding:8px 12px;background:#F9FAFB;border-radius:10px;">Tarif dégressif fratrie uniquement (frères et sœurs d'une même famille).</div>
+            <div style="font-size:13px;color:#374151;line-height:1.5;padding:8px 12px;background:#F9FAFB;border-radius:10px;">Le club est ouvert par temps de pluie.</div>
+            <div style="font-size:13px;color:#374151;line-height:1.5;padding:8px 12px;background:#FFFBEB;border-radius:10px;">Inscriptions nominatives — non cessibles à un tiers.</div>
+          </div>
+        </div>
+
+        <div class="wcard" style="background:linear-gradient(135deg,#EFF6FF,#FFFBEB);border:1.5px solid #FDE68A;">
+          <p style="font-size:14px;color:#374151;line-height:1.7;text-align:center;font-style:italic;">
+            « Au plaisir de vous retrouver sur la plage pour de nouvelles aventures plein de soleil dans le corps, le cœur et l'esprit pour 2026. »<br><br>
+            <strong style="color:#1A1A2E;">L'équipe du Club vous attend. À bientôt. 🐆</strong>
+          </p>
+          <div style="text-align:center;margin-top:12px;font-size:12px;color:#9CA3AF;">
+            clubdesleopards.fr · Face au 28 Bd de l'Océan, La Baule · T. 06 52 03 96 37
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PAGE : INSCRIPTION ══════════ -->
+  <div class="page" id="page-inscription">
+    <div class="inner-header">
+      <div class="ih-row">
+        <button class="ih-back" onclick="inscBack()">←</button>
+        <div class="ih-title" id="insc-header-title">📋 Inscription</div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- ── STEPPER 3 étapes ── -->
+      <div class="insc-stepper">
+        <div class="ist-item active" id="ist-1">
+          <div class="ist-circle">1</div>
+          <div class="ist-label">Enfant</div>
+        </div>
+        <div class="ist-line" id="isl-1"></div>
+        <div class="ist-item" id="ist-2">
+          <div class="ist-circle">2</div>
+          <div class="ist-label">Autorisations</div>
+        </div>
+        <div class="ist-line" id="isl-2"></div>
+        <div class="ist-item" id="ist-3">
+          <div class="ist-circle">✓</div>
+          <div class="ist-label">Récap.</div>
+        </div>
+      </div>
+
+      <!-- ══ ÉTAPE 1 : ENFANT & RESPONSABLE ══ -->
+      <div id="insc-step-1">
+
+        <!-- ── L'ENFANT ── -->
+        <div class="wcard">
+          <div class="wcard-title"><span>🧒</span> L'enfant</div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label>Nom *</label>
+              <input id="i-nom" placeholder="DUPONT">
+              <span class="err-txt" id="err-nom"></span>
+            </div>
+            <div class="fg">
+              <label>Prénom *</label>
+              <input id="i-prenom" placeholder="Emma">
+              <span class="err-txt" id="err-prenom"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label>Date de naissance *</label>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <input id="i-dob" type="date" style="flex:1;" oninput="calcAge()">
+                <div id="i-age-display" style="background:linear-gradient(135deg,#1A6FD4,#7C3AED);color:#fff;padding:8px 14px;border-radius:12px;font-size:14px;font-weight:700;white-space:nowrap;min-width:70px;text-align:center;">— ans</div>
+              </div>
+              <span class="err-txt" id="err-dob"></span>
+            </div>
+            <div class="fg">
+              <label>Allergies / Conditions médicales</label>
+              <textarea id="i-medical" rows="2" placeholder="Aucune — ou précisez (allergie, asthme…)" style="height:100%;min-height:48px;resize:none;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── COORDONNÉES ── -->
+        <div class="wcard">
+          <div class="wcard-title"><span>📍</span> Coordonnées</div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label>Adresse de vacances *</label>
+              <input id="i-adresse-vacances" placeholder="12 rue de la Plage, La Baule">
+              <span class="err-txt" id="err-adresse-vacances"></span>
+            </div>
+            <div class="fg">
+              <label>Adresse fixe</label>
+              <input id="i-adresse" placeholder="12 rue des Palmiers, Paris">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label>Téléphone de vacances *</label>
+              <input id="i-tel" type="tel" placeholder="06 00 00 00 00">
+              <span class="err-txt" id="err-tel"></span>
+            </div>
+            <div class="fg">
+              <label>Email *</label>
+              <input id="i-email" type="email" placeholder="jean@email.com">
+              <span class="err-txt" id="err-email"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── RESPONSABLE LÉGAL ── -->
+        <div class="wcard">
+          <div class="wcard-title"><span>👤</span> Responsable légal</div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label>Nom *</label>
+              <input id="i-resp-nom" placeholder="DUPONT">
+              <span class="err-txt" id="err-resp-nom"></span>
+            </div>
+            <div class="fg">
+              <label>Prénom *</label>
+              <input id="i-resp-prenom" placeholder="Jean">
+              <span class="err-txt" id="err-resp-prenom"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label>Lien avec l'enfant *</label>
+              <select id="i-resp-lien">
+                <option value="pere">Père</option>
+                <option value="mere">Mère</option>
+                <option value="tuteur">Tuteur légal</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Contact d'urgence (si différent)</label>
+              <input id="i-urgence" placeholder="Nom · Téléphone">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-blue btn-full" style="padding:15px;font-size:15px;" onclick="inscNext(1)">
+          Suivant → Autorisations
+        </button>
+      </div>
+
+      <!-- ══ ÉTAPE 2 : AUTORISATIONS ══ -->
+      <div id="insc-step-2" style="display:none;">
+        <div class="wcard">
+          <div class="wcard-title"><span>📸</span> Droit à l'image</div>
+          <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:20px;">
+            Dans le cadre de nos activités, des photos de votre enfant pourront être prises pour illustrer notre communication.
+          </p>
+
+          <!-- Checkbox simple -->
+          <label id="droit-label" onclick="toggleDroit()" style="display:flex;align-items:flex-start;gap:14px;padding:18px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid #BBF7D0;border-radius:16px;cursor:pointer;transition:all .2s;">
+            <div id="droit-checkbox" style="width:26px;height:26px;border-radius:8px;border:2px solid #10B981;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:1px;"></div>
+            <div style="font-size:14px;color:#065F46;line-height:1.6;">
+              <strong>J'autorise</strong> le Club des Léopards à publier des photos de mon enfant sur ses supports de communication.
+            </div>
+          </label>
+
+          <p style="font-size:12px;color:#9CA3AF;margin-top:10px;line-height:1.5;">
+            ℹ️ Si vous ne cochez pas cette case, aucune photo de votre enfant ne sera publiée.
+          </p>
+          <span class="err-txt" id="err-droit" style="display:block;margin-top:4px;"></span>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <button class="btn btn-ghost" style="flex:1;padding:14px;" onclick="inscBack()">← Retour</button>
+          <button class="btn btn-blue" style="flex:2;padding:14px;font-size:15px;" onclick="inscNext(2)">Suivant → Récapitulatif</button>
+        </div>
+      </div>
+
+      <!-- ══ ÉTAPE 3 : RÉCAPITULATIF ══ -->
+      <div id="insc-step-3" style="display:none;">
+        <div id="insc-recap-content"></div>
+
+        <!-- Engagements -->
+        <div class="wcard" style="margin-bottom:12px;">
+          <div class="wcard-title"><span>📜</span> Engagements & CGV</div>
+
+          <div style="display:flex;gap:10px;margin-bottom:16px;">
+            <button onclick="ouvrirDocModal('ri')" style="flex:1;padding:14px 10px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:14px;cursor:pointer;font-family:inherit;text-align:center;">
+              <div style="font-size:22px;margin-bottom:6px;">📋</div>
+              <div style="font-size:12px;font-weight:700;color:#1565C0;">Règlement intérieur</div>
+              <div style="font-size:10px;color:#93C5FD;margin-top:2px;">Lire →</div>
+            </button>
+            <button onclick="ouvrirDocModal('cgv')" style="flex:1;padding:14px 10px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:14px;cursor:pointer;font-family:inherit;text-align:center;">
+              <div style="font-size:22px;margin-bottom:6px;">📄</div>
+              <div style="font-size:12px;font-weight:700;color:#065F46;">CGV</div>
+              <div style="font-size:10px;color:#6EE7B7;margin-top:2px;">Lire →</div>
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-transform:none;letter-spacing:0;">
+              <input type="checkbox" id="i-accept-ri" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1A6FD4;">
+              <span>J'ai lu et j'accepte le <strong>règlement intérieur</strong> du Club des Léopards *</span>
+            </label>
+            <span class="err-txt" id="err-accept-ri"></span>
+
+            <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-transform:none;letter-spacing:0;">
+              <input type="checkbox" id="i-accept-cgv" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1A6FD4;">
+              <span>J'accepte les <strong>conditions générales de vente</strong> *</span>
+            </label>
+            <span class="err-txt" id="err-accept-cgv"></span>
+
+            <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-transform:none;letter-spacing:0;">
+              <input type="checkbox" id="i-accept-resp" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1A6FD4;">
+              <span>Je certifie être le <strong>responsable légal</strong> de l'enfant et l'autoriser à participer aux activités *</span>
+            </label>
+            <span class="err-txt" id="err-accept-resp"></span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <button class="btn btn-ghost" style="flex:1;padding:14px;" onclick="inscBack()">← Modifier</button>
+          <button class="btn btn-amber" style="flex:2;padding:14px;font-size:15px;" onclick="submitInscription()">✅ Confirmer</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ PAGE : RÉSERVATION ══════════ -->
+  <div class="page" id="page-reservation">
+    <div class="inner-header">
+      <div class="ih-row">
+        <button class="ih-back" id="resa-back-btn" onclick="resaBack()">←</button>
+        <div class="ih-title" id="resa-season-title">🏖️ Réserver</div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- Vue choix saisons (défaut) -->
+      <div id="rv-choix">
+        <p style="text-align:center;font-size:14px;color:#9CA3AF;margin-bottom:20px;">Choisissez votre saison</p>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+          <div onclick="goSaisonDirect('ete')" style="background:linear-gradient(135deg,#FFF1EC,#FFE4D6);border:1.5px solid #FFC4A8;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
+            <div style="font-size:40px;">☀️</div>
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:800;color:#C2410C;margin-bottom:4px;">Été 2026</div>
+              <div style="font-size:13px;color:#78716C;">29 juin → 28 août · 9 semaines</div>
+              <div style="font-size:12px;color:#EF6B4A;margin-top:4px;font-weight:600;">9h30–12h30 · 15h00–18h15</div>
+            </div>
+            <div style="font-size:22px;color:#FFC4A8;">→</div>
+          </div>
+
+          <div onclick="goSaisonDirect('automne')" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1.5px solid #FDE68A;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
+            <div style="font-size:40px;">🍂</div>
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:800;color:#9A3412;margin-bottom:4px;">Automne 2026</div>
+              <div style="font-size:13px;color:#4B5563;">19 oct. → 30 oct. · 2 semaines</div>
+              <div style="font-size:12px;color:#F59E0B;margin-top:4px;font-weight:600;">10h00–12h30 · 15h00–18h00</div>
+            </div>
+            <div style="font-size:22px;color:#FDE68A;">→</div>
+          </div>
+
+          <div onclick="goSaisonDirect('printemps')" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
+            <div style="font-size:40px;">🌸</div>
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:800;color:#065F46;margin-bottom:4px;">Printemps 2027</div>
+              <div style="font-size:13px;color:#4B5563;">5 avril → 30 avril · 4 semaines</div>
+              <div style="font-size:12px;color:#10B981;margin-top:4px;font-weight:600;">10h00–12h30 · 15h00–18h00</div>
+            </div>
+            <div style="font-size:22px;color:#BBF7D0;">→</div>
+          </div>
+
+          <div onclick="navigate('mes-resa')" style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
+            <div style="font-size:40px;">📅</div>
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:800;color:#1565C0;margin-bottom:4px;">Mes réservations</div>
+              <div style="font-size:13px;color:#4B5563;">Historique &amp; suivi</div>
+            </div>
+            <div style="font-size:22px;color:#BFDBFE;">→</div>
+          </div>
+
+        </div>
+      </div>
+      <!-- Vue semaines d'une saison (masquée par défaut) -->
+      <div id="rv-semaines" style="display:none;">
+        <div id="resa-saison-banner" style="border-radius:16px;padding:14px 16px;margin-bottom:16px;"></div>
+        <div id="resa-semaines-content"></div>
+        <!-- Barre panier sticky -->
+        <div id="client-panier-bar" style="display:none;position:sticky;bottom:80px;z-index:50;margin:0 -4px 16px;">
+          <div style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);border-radius:18px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 28px rgba(0,0,0,.25);">
+            <div style="color:#fff;">
+              <div style="font-size:10px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Mon panier</div>
+              <div id="panier-client-summary" style="font-size:14px;font-weight:700;">0 prestation · 0€</div>
+            </div>
+            <button onclick="openClientPanier()" style="background:#E9B10D;color:#1A1A2E;border:none;border-radius:12px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">🛒 Voir →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ MODAL PANIER CLIENT ══ -->
+  <div id="client-panier-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:flex-end;justify-content:center;flex-direction:column;">
+    <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:32px;">
+      <div style="width:40px;height:4px;background:#E5E7EB;border-radius:2px;margin:12px auto 0;"></div>
+      <div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:18px;font-weight:700;color:#1A1A2E;">🛒 Mon panier</div>
+        <button onclick="closeClientPanier()" style="background:#F3F4F6;border:none;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px;">✕</button>
+      </div>
+      <div id="client-panier-items" style="padding:0 20px;"></div>
+      <div id="client-panier-footer" style="padding:16px 20px 0;border-top:1px solid #F3F4F6;margin-top:8px;display:none;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:16px;font-weight:700;">Total</div>
+          <div id="client-panier-total-amt" style="font-size:22px;font-weight:700;color:#E9B10D;">0€</div>
+        </div>
+        <div style="background:#EFF6FF;border-radius:12px;padding:12px;margin-bottom:14px;font-size:13px;color:#1565C0;line-height:1.5;">
+          📬 Votre demande sera transmise à l'équipe. La réservation est confirmée à réception du paiement.
+        </div>
+        <button onclick="envoyerDemandeReservation()" style="width:100%;padding:16px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
+          ✅ Envoyer ma demande
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL VALIDATION RÉSA ADMIN ══ -->
+  <div id="validation-resa-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:20px;width:92%;max-width:400px;padding:24px;">
+      <div style="font-size:17px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">✅ Valider la réservation</div>
+      <div id="validation-resa-info" style="font-size:13px;color:#9CA3AF;margin-bottom:16px;"></div>
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;">Mode de paiement :</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Carte bleue" style="accent-color:#1A6FD4;"> 💳 Carte bleue</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Virement"> 🏦 Virement</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Chèque"> 📝 Chèque</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Chèques vacances"> 🏖️ Chèques vacances</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Espèces"> 💵 Espèces</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Avoirs"> 🎫 Avoirs</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Offert"> 🎁 Offert</label>
+      </div>
+      <div class="err-txt" id="err-mode-paiement" style="margin-bottom:8px;"></div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="fermerValidationResa()" style="flex:1;padding:13px;background:#F3F4F6;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Annuler</button>
+        <button onclick="confirmerValidationResa()" style="flex:2;padding:13px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">✅ Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PAGE : MES RÉSA ══════════ -->
+  <div class="page" id="page-mes-resa">
+    <div class="inner-header">
+      <div class="ih-row">
+        <button class="ih-back" onclick="navigate('home')">←</button>
+        <div class="ih-title">📅 Mes réservations</div>
+      </div>
+    </div>
+    <div class="content" id="mes-resa-content"></div>
+  </div>
+
+  <!-- ══════════ PAGE : ADMIN ══════════ -->
+  <div class="page" id="page-admin">
+
+    <!-- HEADER -->
+    <div class="admin-hero" style="background:linear-gradient(135deg,#0F0C29 0%,#302B63 45%,#24243E 100%);padding:0;position:relative;overflow:hidden;">
+
+      <!-- Accent blobs décoratifs -->
+      <div style="position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(233,177,13,.25) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;top:20px;left:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(99,102,241,.2) 0%,transparent 70%);pointer-events:none;"></div>
+
+      <!-- Top bar : titre + badge -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#E9B10D,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(233,177,13,.4);">🐆</div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1.5px;">Club des Léopards</div>
+            <div style="font-size:17px;font-weight:800;color:#fff;margin-top:1px;line-height:1.2;">Dashboard Admin</div>
+          </div>
+        </div>
+        <div style="background:rgba(233,177,13,.15);border:1px solid rgba(233,177,13,.35);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;color:#E9B10D;letter-spacing:.5px;">Saison 2026</div>
+      </div>
+
+      <!-- KPI cards -->
+      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px;"></div>
+
+      <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
+      <div class="admin-tabs" style="display:flex;gap:6px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.06);">
+        <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
+        <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
+        <button class="admin-tab"        id="an-groupes"       onclick="setAdminTab('groupes')">🏖️ Groupes</button>
+        <button class="admin-tab"        id="an-reservations"  onclick="setAdminTab('reservations')">📅 Résa</button>
+        <button class="admin-tab"        id="an-paiements"     onclick="setAdminTab('paiements')">💳 Paiements</button>
+        <button class="admin-tab"        id="an-frequentation" onclick="setAdminTab('frequentation')">📊 Fréquentation</button>
+        <button class="admin-tab"        id="an-comptabilite"  onclick="setAdminTab('comptabilite')">🧾 Compta</button>
+        <button class="admin-tab"        id="an-facture"       onclick="setAdminTab('facture')">📄 Facture</button>
+        <button class="admin-tab"        id="an-avoirs"        onclick="setAdminTab('avoirs')">🎫 Avoirs</button>
+        <button class="admin-tab"        id="an-recherche"     onclick="setAdminTab('recherche')">🔍 Recherche</button>
+      </div>
+    </div>
+
+    <div class="content" style="padding-top:16px;">
+
+      <!-- DASHBOARD -->
+      <div id="at-dashboard">
+        <div id="admin-dashboard-content"></div>
+      </div>
+
+      <!-- MEMBRES -->
+      <div id="at-membres" style="display:none;">
+        <input id="membre-search" placeholder="🔍 Chercher nom, email, enfant..." style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid #E5E7EB;font-size:14px;font-family:inherit;margin-bottom:12px;box-sizing:border-box;" oninput="renderMembres()">
+        <div id="admin-membres-content"></div>
+      </div>
+
+      <!-- GROUPES -->
+      <div id="at-groupes" style="display:none;">
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+          <button class="btn btn-sm active" id="gp-matin" onclick="setGPeriod('matin')">🌅 Matin</button>
+          <button class="btn btn-sm btn-ghost" id="gp-aprem" onclick="setGPeriod('aprem')">🌞 Après-midi</button>
+          <div style="flex:1;min-width:8px;"></div>
+          <button class="btn btn-sm btn-ghost" onclick="adminPrevWeek()">‹</button>
+          <div id="admin-week-lbl" style="padding:6px 12px;background:#F3F4F6;border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap;"></div>
+          <button class="btn btn-sm btn-ghost" onclick="adminNextWeek()">›</button>
+          <button class="btn btn-sm" style="background:#E9B10D;color:#1A1A2E;" onclick="imprimerGroupes()">🖨️</button>
+        </div>
+        <div id="groupes-grid"></div>
+      </div>
+
+      <!-- RESERVATIONS -->
+      <div id="at-reservations" style="display:none;">
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+          <button class="btn btn-sm active"   id="rs-admin-ete"       onclick="setResaAdminSaison('ete')">☀️ Été</button>
+          <button class="btn btn-sm btn-ghost" id="rs-admin-printemps" onclick="setResaAdminSaison('printemps')">🌸 Printemps</button>
+          <button class="btn btn-sm btn-ghost" id="rs-admin-automne"   onclick="setResaAdminSaison('automne')">🍂 Automne</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+          <button class="btn btn-sm active"   id="rf-all"     onclick="setResaFilter('all')">Toutes</button>
+          <button class="btn btn-sm btn-ghost" id="rf-attente" onclick="setResaFilter('attente')">⏳ En attente</button>
+          <button class="btn btn-sm btn-ghost" id="rf-valide"  onclick="setResaFilter('valide')">✅ Validées</button>
+        </div>
+        <div id="admin-resa-content"></div>
+      </div>
+
+      <!-- PAIEMENTS -->
+      <div id="at-paiements" style="display:none;">
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+          <button class="btn btn-sm active"    id="pp-jour"    onclick="setPaiPeriod('jour')">Jour</button>
+          <button class="btn btn-sm btn-ghost" id="pp-semaine" onclick="setPaiPeriod('semaine')">Semaine</button>
+          <button class="btn btn-sm btn-ghost" id="pp-mois"    onclick="setPaiPeriod('mois')">Mois</button>
+          <button class="btn btn-sm btn-ghost" id="pp-saison"  onclick="setPaiPeriod('saison')">Saison</button>
+        </div>
+        <div id="paiements-content"></div>
+      </div>
+
+      <!-- FREQUENTATION -->
+      <div id="at-frequentation" style="display:none;">
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+          <button class="btn btn-sm active"    id="fp-jour"    onclick="setFreqPeriod('jour')">Jour</button>
+          <button class="btn btn-sm btn-ghost" id="fp-semaine" onclick="setFreqPeriod('semaine')">Semaine</button>
+          <button class="btn btn-sm btn-ghost" id="fp-mois"    onclick="setFreqPeriod('mois')">Mois</button>
+          <button class="btn btn-sm btn-ghost" id="fp-saison"  onclick="setFreqPeriod('saison')">Saison</button>
+        </div>
+        <div id="frequentation-content"></div>
+      </div>
+
+      <!-- COMPTABILITE -->
+      <div id="at-comptabilite" style="display:none;">
+        <!-- Sub-tabs -->
+        <div style="display:flex;gap:6px;margin-bottom:14px;">
+          <button class="btn btn-sm active" id="ct-bilan"  onclick="setComptaTab('bilan')">📊 Bilan</button>
+          <button class="btn btn-sm btn-ghost" id="ct-suivi" onclick="setComptaTab('suivi')">📋 Suivi quotidien</button>
+        </div>
+        <div id="compta-bilan-content" style="display:block;"><div id="comptabilite-content"></div></div>
+        <div id="compta-suivi-content" style="display:none;"><div id="suivi-quotidien-content"></div></div>
+      </div>
+
+      <!-- AVOIRS -->
+      <div id="at-avoirs" style="display:none;">
+        <div id="admin-avoirs-content"></div>
+      </div>
+
+      <!-- FACTURE -->
+      <div id="at-facture" style="display:none;">
+        <div class="wcard" style="margin-bottom:12px;">
+          <div class="wcard-title"><span>🧾</span> Générer une facture</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="fg"><label>Famille *</label><input id="fac-famille" placeholder="Dupont"></div>
+            <div class="fg"><label>Email</label><input id="fac-email" type="email" placeholder="dupont@email.com"></div>
+            <div class="fg"><label>Enfant</label><input id="fac-enfant" placeholder="Prénom de l'enfant"></div>
+            <div class="fg"><label>Prestation *</label>
+              <select id="fac-prestation">
+                <option>Semaine Matin - Été 2026</option>
+                <option>Semaine Après-midi - Été 2026</option>
+                <option>Semaine Matin - Printemps 2027</option>
+                <option>Semaine Après-midi - Printemps 2027</option>
+                <option>Semaine Matin - Automne 2026</option>
+                <option>Semaine Après-midi - Automne 2026</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="fg"><label>Dates</label><input id="fac-dates" placeholder="Ex: 7 - 11 juillet"></div>
+              <div class="fg"><label>Montant (€)</label><input id="fac-montant" type="number" value="120"></div>
+            </div>
+            <div class="fg"><label>Mode de paiement</label>
+              <select id="fac-mode">
+                <option>Carte bleue</option><option>Virement</option><option>Chèque</option>
+                <option>Chèques vacances</option><option>Espèces</option><option>Avoirs</option><option>Offert</option>
+              </select>
+            </div>
+            <div class="fg"><label>Date de facturation</label><input id="fac-date" type="date"></div>
+            <button class="btn btn-blue btn-full" onclick="genererFacture()" style="padding:14px;font-size:14px;font-weight:700;">🖨️ Générer la facture</button>
+          </div>
+        </div>
+        <div id="facture-preview"></div>
+      </div>
+
+      <!-- RECHERCHE -->
+      <div id="at-recherche" style="display:none;">
+        <input id="global-search" placeholder="🔍 Nom, prénom, email, téléphone..." style="width:100%;padding:14px 16px;border-radius:16px;border:2px solid #E5E7EB;font-size:15px;font-family:inherit;margin-bottom:16px;box-sizing:border-box;" oninput="globalSearch()">
+        <div id="search-results"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ BOTTOM NAV ══════════ -->
+  <nav class="bottom-nav">
+    <button class="bnav-item active" id="bn-home" onclick="navigate('home')">
+      <div class="bnav-icon">🏠</div>
+      <div class="bnav-label">Accueil</div>
+    </button>
+    <button class="bnav-item" id="bn-inscription" onclick="navigate('inscription')">
+      <div class="bnav-icon">📋</div>
+      <div class="bnav-label">Inscription</div>
+    </button>
+    <button class="bnav-item" id="bn-reservation" onclick="navigate('reservation')">
+      <div class="bnav-icon">🏖️</div>
+      <div class="bnav-label">Réserver</div>
+    </button>
+    <button class="bnav-item" id="bn-mes-resa" onclick="navigate('mes-resa')">
+      <div class="bnav-icon">📅</div>
+      <div class="bnav-label">Mes résa</div>
+      <div class="bnav-dot" id="resa-dot"></div>
+    </button>
+    <button class="bnav-item" id="bn-admin" onclick="navigate('admin')">
+      <div class="bnav-icon">⚙️</div>
+      <div class="bnav-label">Admin</div>
+    </button>
+    <a class="desktop-brand" onclick="navigate('home')" style="cursor:pointer;">
+    <span class="desktop-brand-icon">🐆</span>
+    Club des Léopards
+  </a>
+</nav>
+
+<!-- ADMIN LOGIN OVERLAY -->
+<div class="admin-login-overlay" id="admin-login-overlay">
+  <div class="admin-login-card">
+    <div class="al-logo">🐆</div>
+    <div class="al-title">Espace Administrateur</div>
+    <div class="al-sub">Entrez le code d'accès pour continuer</div>
+    <div class="al-dots">
+      <div class="al-dot" id="al-d1"></div>
+      <div class="al-dot" id="al-d2"></div>
+      <div class="al-dot" id="al-d3"></div>
+      <div class="al-dot" id="al-d4"></div>
+    </div>
+    <div class="al-input-wrap">
+      <input class="al-input" id="al-code" type="password" maxlength="4"
+        placeholder="••••" oninput="onAdminCodeInput(this)" onkeydown="if(event.key==='Enter')checkAdminCode()">
+      <button class="al-eye" onclick="toggleAdminEye()" id="al-eye-btn">👁</button>
+    </div>
+    <div class="al-err" id="al-err"></div>
+    <button class="al-btn" onclick="checkAdminCode()">Accéder au Dashboard</button>
+    <button class="al-cancel" onclick="closeAdminLogin()">Annuler</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ══════════ BOOKING MODAL ══════════ -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title" id="m-title">Réserver</div>
+      <div class="modal-sub" id="m-sub"></div>
+    </div>
+
+    <div class="steps" id="m-steps">
+      <div class="step-c active" id="sd-1">1</div>
+      <div class="step-line" id="sl-1"></div>
+      <div class="step-c" id="sd-2">2</div>
+      <div class="step-line" id="sl-2"></div>
+      <div class="step-c" id="sd-3">3</div>
+      <div class="step-line" id="sl-3"></div>
+      <div class="step-c" id="sd-4">✓</div>
+    </div>
+
+    <div class="seance-pill" id="m-seance-pill">
+      <div><div class="sp-time" id="m-pill-time">09:30</div><div class="sp-date" id="m-pill-date">Mercredi 9 Juillet</div></div>
+      <div class="sp-price" id="m-pill-price">8€ / enfant</div>
+    </div>
+
+    <div class="modal-body">
+      <!-- Step 1 -->
+      <div id="ms-1">
+        <div style="font-size:13px;font-weight:700;color:#9CA3AF;margin-bottom:12px;">👤 Vos coordonnées</div>
+        <div class="fg"><label>Nom complet *</label><input id="m-nom" placeholder="Jean Dupont"></div>
+        <div class="form-row" style="margin-bottom:0;">
+          <div class="fg"><label>Email *</label><input id="m-email" type="email" placeholder="jean@email.com"></div>
+          <div class="fg"><label>Téléphone *</label><input id="m-tel" type="tel" placeholder="06 00 00 00"></div>
+        </div>
+        <button class="btn btn-blue btn-full" style="margin-top:16px;padding:14px;" onclick="mGoStep(2)">Suivant → Enfants</button>
+      </div>
+      <!-- Step 2 -->
+      <div id="ms-2" style="display:none;">
+        <div style="font-size:13px;font-weight:700;color:#9CA3AF;margin-bottom:10px;">🧒 Enfants participants</div>
+        <div class="chip-list" id="m-children-tags"></div>
+        <div class="add-row" style="margin-bottom:10px;">
+          <input id="mc-name" placeholder="Prénom de l'enfant" style="flex:1;">
+          <input id="mc-age" type="number" placeholder="Âge" style="width:70px;" min="3" max="13">
+          <button class="btn btn-blue btn-sm" onclick="addModalChild()">+</button>
+        </div>
+        <div class="price-box" id="price-box" style="display:none;">
+          <div class="pb-row"><span>Enfants</span><span id="pb-count">0</span></div>
+          <div class="pb-row"><span>Tarif unitaire</span><span id="pb-unit">8€</span></div>
+          <div class="pb-row total"><span>Total</span><span id="pb-total">0€</span></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn btn-ghost" onclick="mGoStep(1)">← Retour</button>
+          <button class="btn btn-blue" style="flex:1;" onclick="mGoStep(3)">Suivant → Paiement</button>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div id="ms-3" style="display:none;">
+        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:14px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:700;color:#D1D5DB;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Récapitulatif</div>
+          <div id="m-recap"></div>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:#D1D5DB;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Mode de paiement</div>
+        <div class="pay-methods">
+          <div class="pm active" id="pm-card" onclick="selPayMethod('card')"><div class="pm-icon">💳</div><div class="pm-lbl">Carte bancaire</div></div>
+          <div class="pm" id="pm-paypal" onclick="selPayMethod('paypal')"><div class="pm-icon">🅿️</div><div class="pm-lbl">PayPal</div></div>
+        </div>
+        <div id="card-form">
+          <div class="fg" style="margin-bottom:10px;"><label>Numéro de carte *</label>
+            <div class="card-wrap"><input id="p-card" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"><span class="card-ico" id="card-ico">💳</span></div>
+          </div>
+          <div class="form-row" style="margin-bottom:10px;">
+            <div class="fg"><label>Expiration *</label><input id="p-exp" placeholder="MM/AA" maxlength="5" oninput="fmtExp(this)"></div>
+            <div class="fg"><label>CVV *</label><input id="p-cvv" placeholder="123" maxlength="3" type="password"></div>
+          </div>
+          <div class="fg" style="margin-bottom:14px;"><input id="p-name" placeholder="NOM PRÉNOM (sur la carte)"></div>
+        </div>
+        <div id="paypal-form" style="display:none;padding:16px;text-align:center;">
+          <div style="font-size:36px;margin-bottom:12px;">🅿️</div>
+          <p style="font-size:14px;color:#9CA3AF;">Redirection vers PayPal...</p>
+        </div>
+        <div class="secure">🔒 Paiement 100% sécurisé</div>
+        <button class="btn btn-amber btn-full" id="pay-btn" onclick="processPayment()" style="padding:15px;font-size:15px;margin-top:8px;">🔒 Payer <span id="pay-amt">0€</span></button>
+      </div>
+      <div id="ms-4" style="display:none;padding:0 20px 20px;">
+        <div class="confirm-view">
+          <div class="conf-icon">🎉</div>
+          <div class="conf-title">Réservation confirmée !</div>
+          <div class="conf-sub">Confirmation envoyée à<br><strong id="conf-email"></strong></div>
+          <div class="conf-ref">🎫 Réf. <span id="conf-ref"></span></div>
+          <div class="sum-box" id="conf-summary"></div>
+        </div>
+        <button class="btn btn-blue btn-full" style="margin-top:16px;" onclick="closeModal()">Fermer</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+
+
+
+
+<script>
+
+
+
+// ═══ ÉTAT GLOBAL ═══
+var ST = {
+  adminTab:'dashboard', gPeriod:'matin',
+  reservations:[], members:[],
+};
+
+// ═══ DONNÉES ═══
+// Groupes MATIN (4 groupes)
+var GROUPES_MATIN = [
+  {id:1, name:'GM1', ages:'3–5 ans',      emoji:'🐠', color:'#F97316', min:3,   max:5.4,  periode:'matin'},
+  {id:2, name:'GM2', ages:'5½–6 ans',     emoji:'🐬', color:'#8B5CF6', min:5.5, max:6.4,  periode:'matin'},
+  {id:3, name:'GM3', ages:'6½–7 ans',     emoji:'🐋', color:'#1A6FD4', min:6.5, max:7.9,  periode:'matin'},
+  {id:4, name:'GM4', ages:'8–13 ans',     emoji:'🦈', color:'#059669', min:8,   max:13.9, periode:'matin'},
+];
+// Groupes APRÈS-MIDI (5 groupes)
+var GROUPES_APREM = [
+  {id:5,  name:'GA1', ages:'3–5 ans',      emoji:'🐠', color:'#F97316', min:3,   max:5.4,  periode:'aprem'},
+  {id:6,  name:'GA2', ages:'5½–6½ ans',   emoji:'🐬', color:'#8B5CF6', min:5.5, max:6.9,  periode:'aprem'},
+  {id:7,  name:'GA3', ages:'7–8 ans',      emoji:'🐋', color:'#1A6FD4', min:7,   max:8.9,  periode:'aprem'},
+  {id:8,  name:'GA4', ages:'9–10 ans',     emoji:'🦈', color:'#059669', min:9,   max:10.9, periode:'aprem'},
+  {id:9,  name:'GA5', ages:'11–13 ans',    emoji:'🏄', color:'#DC2626', min:11,  max:13.9, periode:'aprem'},
+];
+// Alias global (pour compatibilité)
+var GROUPES = GROUPES_MATIN.concat(GROUPES_APREM);
+var MAX_G = 20;
+var MONTHS = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
+
+var DEMO_KIDS = [
+  {id:1, prenom:'Emma',   nom:'Bousin',     age:6, parent:'Fam. Bousin',   email:'bousin@email.com',   tel:'06 01 01 01 01',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'01/06/2025'},
+  {id:2, prenom:'Lucas',  nom:'Bousin',     age:8, parent:'Fam. Bousin',   email:'bousin@email.com',   tel:'06 01 01 01 01',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'01/06/2025'},
+  {id:3, prenom:'Léa',    nom:'Ammanet',    age:5, parent:'Fam. Ammanet',  email:'ammanet@email.com',  tel:'06 02 02 02 02',medical:'Allergie arachides',urgence:'06 99 99 99 99',periode:['aprem'], inscrit:'02/06/2025'},
+  {id:4, prenom:'Noah',   nom:'Ammanet',    age:9, parent:'Fam. Ammanet',  email:'ammanet@email.com',  tel:'06 02 02 02 02',medical:'RAS',       urgence:'',              periode:['matin','aprem'],inscrit:'02/06/2025'},
+  {id:5, prenom:'Chloé',  nom:'Mouthet',    age:7, parent:'Fam. Mouthet',  email:'mouthet@email.com',  tel:'06 03 03 03 03',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'03/06/2025'},
+  {id:6, prenom:'Hugo',   nom:'de Robalis', age:11,parent:'Fam. de Robalis',email:'robalis@email.com', tel:'06 04 04 04 04',medical:'Asthme',   urgence:'06 88 88 88 88',periode:['matin'],        inscrit:'03/06/2025'},
+  {id:7, prenom:'Inès',   nom:'Lecoeur',    age:4, parent:'Fam. Lecoeur',  email:'lecoeur@email.com',  tel:'06 05 05 05 05',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'04/06/2025'},
+  {id:8, prenom:'Tom',    nom:'Manach',     age:10,parent:'Fam. Manach',   email:'manach@email.com',   tel:'06 06 06 06 06',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'04/06/2025'},
+  {id:9, prenom:'Alice',  nom:'Foute',      age:6, parent:'Fam. Foute',    email:'foute@email.com',    tel:'06 07 07 07 07',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'05/06/2025'},
+  {id:10,prenom:'Maxime', nom:'Foute',      age:8, parent:'Fam. Foute',    email:'foute@email.com',    tel:'06 07 07 07 07',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'05/06/2025'},
+  {id:11,prenom:'Camille',nom:'Romanoissa', age:12,parent:'Fam. Romanoissa',email:'romanoissa@email.com',tel:'06 08 08 08 08',medical:'RAS',     urgence:'',              periode:['matin'],        inscrit:'06/06/2025'},
+  {id:12,prenom:'Louis',  nom:'Tenillore',  age:5, parent:'Fam. Tenillore',email:'tenillore@email.com',tel:'06 09 09 09 09',medical:'Eczéma',   urgence:'',              periode:['aprem'],        inscrit:'06/06/2025'},
+  {id:13,prenom:'Jade',   nom:'Lavin',      age:9, parent:'Fam. Lavin',    email:'lavin@email.com',    tel:'06 10 10 10 10',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'07/06/2025'},
+  {id:14,prenom:'Ethan',  nom:'Deras',      age:7, parent:'Fam. Deras',    email:'deras@email.com',    tel:'06 11 11 11 11',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'07/06/2025'},
+  {id:15,prenom:'Sara',   nom:'Benuwa',     age:4, parent:'Fam. Benuwa',   email:'benuwa@email.com',   tel:'06 12 12 12 12',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'08/06/2025'},
+];
+
+var DEMO_FAMS = [
+  {prenom:'Marie', nom:'Bousin',    email:'bousin@email.com',   tel:'06 01 01 01 01',adresse:'12 rue de la Plage, La Baule',  children:[{name:'Emma',age:6},{name:'Lucas',age:8}],   date:'01/06/2025'},
+  {prenom:'Pierre',nom:'Ammanet',   email:'ammanet@email.com',  tel:'06 02 02 02 02',adresse:'8 av. Ocean, La Baule',         children:[{name:'Léa',age:5},{name:'Noah',age:9}],     date:'02/06/2025'},
+  {prenom:'Sophie',nom:'Mouthet',   email:'mouthet@email.com',  tel:'06 03 03 03 03',adresse:'3 bd du Marechal, La Baule',    children:[{name:'Chloé',age:7}],                       date:'03/06/2025'},
+  {prenom:'Jean',  nom:'de Robalis',email:'robalis@email.com',  tel:'06 04 04 04 04',adresse:'Villa Les Pins, La Baule',      children:[{name:'Hugo',age:11}],                       date:'03/06/2025'},
+  {prenom:'Claire',nom:'Lecoeur',   email:'lecoeur@email.com',  tel:'06 05 05 05 05',adresse:'22 rue des Mouettes, La Baule', children:[{name:'Inès',age:4}],                        date:'04/06/2025'},
+  {prenom:'Marc',  nom:'Manach',    email:'manach@email.com',   tel:'06 06 06 06 06',adresse:'Residence Ocean, La Baule',     children:[{name:'Tom',age:10}],                        date:'04/06/2025'},
+  {prenom:'Julie', nom:'Foute',     email:'foute@email.com',    tel:'06 07 07 07 07',adresse:'7 rue des Pins, La Baule',      children:[{name:'Alice',age:6},{name:'Maxime',age:8}], date:'05/06/2025'},
+];
+
+var DEMO_RESAS = [
+  {id:101,nom:'Fam. Bousin',  email:'bousin@email.com', tel:'06 01 01 01 01',slot:{time:'Sem. Matin',   date:'07/07/2026'},children:[{name:'Emma',age:6},{name:'Lucas',age:8}],paid:240,statut:'payé',      saisonLabel:'Été 2026',date:'01/06/2025'},
+  {id:102,nom:'Fam. Ammanet', email:'ammanet@email.com',tel:'06 02 02 02 02',slot:{time:'Sem. Apres-midi',date:'07/07/2026'},children:[{name:'Noah',age:9}],                    paid:120,statut:'payé',      saisonLabel:'Été 2026',date:'02/06/2025'},
+  {id:103,nom:'Fam. Mouthet', email:'mouthet@email.com',tel:'06 03 03 03 03',slot:{time:'Sem. Matin',   date:'14/07/2026'},children:[{name:'Chloé',age:7}],                    paid:0,  statut:'en attente', saisonLabel:'Été 2026',date:'03/06/2025'},
+  {id:104,nom:'Fam. de Robalis',email:'robalis@email.com',tel:'06 04 04 04 04',slot:{time:'Sem. Matin', date:'21/07/2026'},children:[{name:'Hugo',age:11}],                     paid:120,statut:'payé',      saisonLabel:'Été 2026',date:'03/06/2025'},
+];
+
+var DEMO_PAYMENTS = [
+  {nom:'Fam. Bousin',   initiale:'BO',color:'#2196F3',formule:'2 Sem. Matin',  montant:240,statut:'payé',    mode:'Virement',     date:'01/06/2025'},
+  {nom:'Fam. Ammanet',  initiale:'AM',color:'#9C27B0',formule:'1 Sem. Aprem',  montant:120,statut:'payé',    mode:'Chèque',       date:'02/06/2025'},
+  {nom:'Fam. Mouthet',  initiale:'MO',color:'#F97316',formule:'1 Sem. Matin',  montant:120,statut:'attente', mode:'',             date:'03/06/2025'},
+  {nom:'Fam. de Robalis',initiale:'RO',color:'#10B981',formule:'1 Sem. Matin', montant:120,statut:'payé',    mode:'Carte bleue',  date:'03/06/2025'},
+  {nom:'Fam. Lecoeur',  initiale:'LE',color:'#EF4444',formule:'1 Sem. Aprem',  montant:120,statut:'attente', mode:'',             date:'04/06/2025'},
+];
+
+var DEMO_FREQ = {
+  jours:   [{label:'Lun',matin:14,aprem:11},{label:'Mar',matin:18,aprem:16},{label:'Mer',matin:12,aprem:8},{label:'Jeu',matin:20,aprem:15},{label:'Ven',matin:16,aprem:13}],
+  semaines:[{label:'S27',matin:68,aprem:54},{label:'S28',matin:82,aprem:71},{label:'S29',matin:76,aprem:65},{label:'S30',matin:90,aprem:78},{label:'S31',matin:74,aprem:60}],
+  mois:    [{label:'Juin',matin:124,aprem:98},{label:'Juil.',matin:312,aprem:267},{label:'Août',matin:348,aprem:290}],
+  groupes: [{label:'G1',nom:'3-4 ans',val:14,color:'#F97316'},{label:'G2',nom:'5-6 ans',val:11,color:'#8B5CF6'},{label:'G3',nom:'7-8 ans',val:18,color:'#1A6FD4'},{label:'G4',nom:'9-10 ans',val:16,color:'#059669'},{label:'G5',nom:'11-14 ans',val:9,color:'#DC2626'}],
+};
+
+function getGroupe(age, periode) {
+  var a = parseFloat(age);
+  var list = periode === 'aprem' ? GROUPES_APREM : (periode === 'matin' ? GROUPES_MATIN : GROUPES);
+  return list.find(function(g){ return a>=g.min && a<=g.max; }) || null;
+}
+
+function allKids() {
+  var extra = [];
+  ST.members.forEach(function(m, mi) {
+    (m.children||[]).forEach(function(ch, ci) {
+      extra.push({id:10000+mi*100+ci, prenom:ch.name?ch.name.split(' ')[0]:'', nom:ch.name?ch.name.split(' ').slice(1).join(' '):'', age:parseFloat(ch.age)||0, parent:m.prenom+' '+m.nom, email:m.email, tel:m.tel, medical:m.medical||'RAS', urgence:m.urgence||'', periode:[ch.periode||'matin'], inscrit:m.date||''});
+    });
+  });
+  return DEMO_KIDS.concat(extra);
+}
+
+function parseAge(dob) {
+  if (!dob) return 0;
+  var b = new Date(dob), t = new Date();
+  var y = t.getFullYear()-b.getFullYear(), m = t.getMonth()-b.getMonth();
+  if (m<0||(m===0&&t.getDate()<b.getDate())) y--;
+  return y;
+}
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast show' + (type?' '+type:'');
+  setTimeout(function(){ t.className='toast'; }, 3000);
+}
+
+// ═══ INSCRIPTION ═══
+var inscStep = 1;
+var inscDroit = null;
+
+function calcAge() {
+  var dob = document.getElementById('i-dob');
+  var disp = document.getElementById('i-age-display');
+  if (!dob||!disp) return;
+  if (!dob.value) { disp.textContent='— ans'; return; }
+  var b=new Date(dob.value), t=new Date();
+  var y=t.getFullYear()-b.getFullYear(), mo=t.getMonth()-b.getMonth();
+  if (mo<0||(mo===0&&t.getDate()<b.getDate())) y--;
+  var rem = Math.round(((t-new Date(t.getFullYear(),b.getMonth()+(t.getDate()>=b.getDate()?0:-1),b.getDate()))/(1000*60*60*24*30.44)))%12;
+  if (y<0||y>18) { disp.textContent='— ans'; return; }
+  disp.textContent = rem>=6 ? y+' ½ ans' : y+' ans';
+}
+
+function inscGoStep(n) {
+  inscStep = n;
+  [1,2,3].forEach(function(i) {
+    var el=document.getElementById('insc-step-'+i);
+    if(el) el.style.display = i===n?'':'none';
+    var dot=document.getElementById('ist-'+i);
+    if(dot){ dot.classList.remove('active','done'); if(i<n) dot.classList.add('done'); else if(i===n) dot.classList.add('active'); }
+    var line=document.getElementById('isl-'+i);
+    if(line) line.classList.toggle('done',i<n);
+  });
+  var titles=['','Fiche enfant','Autorisations','Recapitulatif'];
+  var th=document.getElementById('insc-header-title');
+  if(th) th.textContent='📋 '+(titles[n]||'');
+  window.scrollTo(0,0);
+}
+
+function inscBack() {
+  if(inscStep>1) inscGoStep(inscStep-1);
+  else navigate('home');
+}
+
+function inscNext(from) {
+  if(from===1) {
+    var ok=true;
+    [['i-nom','err-nom'],['i-prenom','err-prenom'],['i-dob','err-dob'],
+     ['i-adresse-vacances','err-adresse-vacances'],['i-tel','err-tel'],['i-email','err-email'],
+     ['i-resp-prenom','err-resp-prenom'],['i-resp-nom','err-resp-nom']].forEach(function(p){
+      var el=document.getElementById(p[0]); var er=document.getElementById(p[1]);
+      if(el&&!el.value.trim()){if(er)er.textContent='Requis';el.classList.add('err');ok=false;}
+      else{if(er)er.textContent='';if(el)el.classList.remove('err');}
+    });
+    if(!ok) return;
+    inscGoStep(2);
+  } else if(from===2) {
+    // droit image is optional (checkbox), no validation required
+    buildInscRecap(); inscGoStep(3);
+  }
+}
+
+function selectDroit(v) {
+  inscDroit=v;
+  var o=document.getElementById('img-oui'), n=document.getElementById('img-non');
+  if(o){o.style.borderColor=v==='oui'?'#10B981':'#E5E7EB';o.style.background=v==='oui'?'#F0FDF4':'';}
+  if(n){n.style.borderColor=v==='non'?'#EF4444':'#E5E7EB';n.style.background=v==='non'?'#FEF2F2':'';}
+}
+
+function buildInscRecap() {
+  var nom    =(document.getElementById('i-nom')||{value:''}).value;
+  var prenom =(document.getElementById('i-prenom')||{value:''}).value;
+  var dob    =(document.getElementById('i-dob')||{value:''}).value;
+  var ageD   =(document.getElementById('i-age-display')||{textContent:''}).textContent;
+  var medical=(document.getElementById('i-medical')||{value:''}).value||'RAS';
+  var addrV  =(document.getElementById('i-adresse-vacances')||{value:''}).value;
+  var addrF  =(document.getElementById('i-adresse')||{value:''}).value;
+  var tel    =(document.getElementById('i-tel')||{value:''}).value;
+  var email  =(document.getElementById('i-email')||{value:''}).value;
+  var rpre   =(document.getElementById('i-resp-prenom')||{value:''}).value;
+  var rnom   =(document.getElementById('i-resp-nom')||{value:''}).value;
+  var rlien  =(document.getElementById('i-resp-lien')||{value:''}).value;
+  var urg    =(document.getElementById('i-urgence')||{value:''}).value;
+  var grp    = getGroupe(parseAge(dob));
+  var dtxt   = inscDroit==='oui'?'✅ Autorisé':'🚫 Refusé';
+  var html   = '';
+  html+='<div class="recap-section"><div class="recap-section-head"><span>🧒</span><div class="recap-section-title">Enfant</div><span class="recap-edit" onclick="inscGoStep(1)">Modifier</span></div><div class="recap-body">';
+  html+='<div class="recap-row"><span>Nom</span><span>'+nom+'</span></div>';
+  html+='<div class="recap-row"><span>Prenom</span><span>'+prenom+'</span></div>';
+  html+='<div class="recap-row"><span>Naissance</span><span>'+dob+' · '+ageD+'</span></div>';
+  if(grp) html+='<div class="recap-row"><span>Groupe</span><span style="color:'+grp.color+';">'+grp.emoji+' '+grp.name+'</span></div>';
+  html+='<div class="recap-row"><span>Medical</span><span>'+medical+'</span></div>';
+  html+='</div></div>';
+  html+='<div class="recap-section"><div class="recap-section-head"><span>📍</span><div class="recap-section-title">Coordonnées</div><span class="recap-edit" onclick="inscGoStep(1)">Modifier</span></div><div class="recap-body">';
+  html+='<div class="recap-row"><span>Adresse vacances</span><span>'+addrV+'</span></div>';
+  if(addrF) html+='<div class="recap-row"><span>Adresse fixe</span><span>'+addrF+'</span></div>';
+  html+='<div class="recap-row"><span>Tel</span><span>'+tel+'</span></div>';
+  html+='<div class="recap-row"><span>Email</span><span>'+email+'</span></div>';
+  html+='</div></div>';
+  html+='<div class="recap-section"><div class="recap-section-head"><span>👤</span><div class="recap-section-title">Responsable</div><span class="recap-edit" onclick="inscGoStep(1)">Modifier</span></div><div class="recap-body">';
+  html+='<div class="recap-row"><span>Nom</span><span>'+rpre+' '+rnom+'</span></div>';
+  html+='<div class="recap-row"><span>Lien</span><span>'+rlien+'</span></div>';
+  if(urg) html+='<div class="recap-row"><span>Urgence</span><span>'+urg+'</span></div>';
+  html+='</div></div>';
+  html+='<div class="recap-section"><div class="recap-section-head"><span>📸</span><div class="recap-section-title">Droit image</div><span class="recap-edit" onclick="inscGoStep(2)">Modifier</span></div><div class="recap-body">';
+  html+='<div class="recap-row"><span>Decision</span><span>'+dtxt+'</span></div>';
+  html+='</div></div>';
+  var el=document.getElementById('insc-recap-content'); if(el) el.innerHTML=html;
+}
+
+function submitInscription() {
+  var ri=document.getElementById('i-accept-ri'), cgv=document.getElementById('i-accept-cgv'), resp=document.getElementById('i-accept-resp');
+  var ok=true;
+  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
+  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
+  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
+  if(!ok) return;
+  var nom=(document.getElementById('i-nom')||{value:''}).value;
+  var prenom=(document.getElementById('i-prenom')||{value:''}).value;
+  var dob=(document.getElementById('i-dob')||{value:''}).value;
+  ST.members.push({
+    prenom:(document.getElementById('i-resp-prenom')||{value:''}).value, nom:(document.getElementById('i-resp-nom')||{value:''}).value,
+    email:(document.getElementById('i-email')||{value:''}).value, tel:(document.getElementById('i-tel')||{value:''}).value,
+    adresse:(document.getElementById('i-adresse-vacances')||{value:''}).value, medical:(document.getElementById('i-medical')||{value:''}).value,
+    urgence:(document.getElementById('i-urgence')||{value:''}).value, droitImage:inscDroit,
+    children:[{name:nom+' '+prenom, age:parseAge(dob), dob:dob, periode:'matin'}],
+    date:new Date().toLocaleDateString('fr-FR'),
+  });
+  toast('✅ Inscription enregistrée !','ok');
+  inscDroit=null;
+  ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var ad=document.getElementById('i-age-display'); if(ad) ad.textContent='— ans';
+  if(ri)ri.checked=false; if(cgv)cgv.checked=false; if(resp)resp.checked=false;
+  inscGoStep(1);
+  setTimeout(function(){ navigate('home'); }, 1200);
+}
+
+function addInscChild(){}
+function addInscChild2(){}
+function removeInscChild2(){}
+function renderInscChildren(){}
+function renderInscChips(){}
+
+// ═══ RÉSERVATION – SAISONS ═══
+var currentSaison = 'ete';
+var clientPanier  = [];
+var _semData      = [];
+
+var SAISONS = {
+  ete: {
+    label:'Été 2026', icon:'☀️', period:'29 juin → 28 août 2026',
+    horaires:{matin:'9h30–12h30', aprem:'15h00–18h15'},
+    color:'#EF6B4A', bg:'linear-gradient(135deg,#FFF1EC,#FFE4D6)', border:'#FFC4A8',
+    semaines:[
+      {label:'Semaine 1', debut:'Lun 29 juin',    fin:'Ven 3 juillet'},
+      {label:'Semaine 2', debut:'Lun 6 juillet',  fin:'Ven 10 juillet'},
+      {label:'Semaine 3', debut:'Lun 13 juillet', fin:'Ven 17 juillet'},
+      {label:'Semaine 4', debut:'Lun 20 juillet', fin:'Ven 24 juillet'},
+      {label:'Semaine 5', debut:'Lun 27 juillet', fin:'Ven 31 juillet'},
+      {label:'Semaine 6', debut:'Lun 3 août',     fin:'Ven 7 août'},
+      {label:'Semaine 7', debut:'Lun 10 août',    fin:'Ven 14 août'},
+      {label:'Semaine 8', debut:'Lun 17 août',    fin:'Ven 21 août'},
+      {label:'Semaine 9', debut:'Lun 24 août',    fin:'Ven 28 août'},
+    ],
+  },
+  automne: {
+    label:'Automne 2026', icon:'🍂', period:'19 octobre → 30 octobre 2026',
+    horaires:{matin:'10h00–12h30', aprem:'15h00–18h00'},
+    color:'#F59E0B', bg:'linear-gradient(135deg,#FFFBEB,#FEF3C7)', border:'#FDE68A',
+    semaines:[
+      {label:'Semaine 1', debut:'Lun 19 octobre', fin:'Ven 23 octobre'},
+      {label:'Semaine 2', debut:'Lun 26 octobre', fin:'Ven 30 octobre'},
+    ],
+  },
+  printemps: {
+    label:'Printemps 2027', icon:'🌸', period:'5 avril → 30 avril 2027',
+    horaires:{matin:'10h00–12h30', aprem:'15h00–18h00'},
+    color:'#10B981', bg:'linear-gradient(135deg,#F0FDF4,#DCFCE7)', border:'#BBF7D0',
+    semaines:[
+      {label:'Semaine 1', debut:'Lun 5 avril',  fin:'Ven 9 avril'},
+      {label:'Semaine 2', debut:'Lun 12 avril', fin:'Ven 16 avril'},
+      {label:'Semaine 3', debut:'Lun 19 avril', fin:'Ven 23 avril'},
+      {label:'Semaine 4', debut:'Lun 26 avril', fin:'Ven 30 avril'},
+    ],
+  },
+}
+
+function goSaison(saison) {
+  currentSaison = saison;
+  _semData = [];
+  navigate('reservation');
+}
+
+function renderReservation() {
+  // Show season choice page (default view)
+  var choix   = document.getElementById('rv-choix');
+  var semaines = document.getElementById('rv-semaines');
+  if (choix)    choix.style.display = '';
+  if (semaines) semaines.style.display = 'none';
+  var t = document.getElementById('resa-season-title');
+  if (t) t.textContent = '🏖️ Réserver';
+  currentSaison = null;
+  _semData = [];
+  renderClientPanierBar();
+}
+
+function renderSaisonDetail(saison) {
+  currentSaison = saison;
+  var s = SAISONS[saison];
+  if (!s) return;
+  var choix   = document.getElementById('rv-choix');
+  var sem     = document.getElementById('rv-semaines');
+  if (choix) choix.style.display = 'none';
+  if (sem)   sem.style.display = '';
+  var t = document.getElementById('resa-season-title');
+  if (t) t.textContent = s.icon + ' ' + s.label;
+  var b = document.getElementById('resa-saison-banner');
+  if (b) {
+    b.style.cssText = 'background:' + s.bg + ';border:1.5px solid ' + s.border + ';border-radius:16px;padding:14px 16px;margin-bottom:16px;';
+    b.innerHTML = '<div style="font-size:13px;font-weight:700;color:' + s.color + ';margin-bottom:4px;">' + s.icon + ' ' + s.label + '</div>'
+      + '<div style="font-size:13px;color:#374151;">📅 ' + s.period + '</div>'
+      + '<div style="font-size:13px;color:#374151;margin-top:4px;">🌅 ' + s.horaires.matin + ' &nbsp;·&nbsp; 🌞 ' + s.horaires.aprem + '</div>';
+  }
+  _semData = [];
+  var el = document.getElementById('resa-semaines-content');
+  if (!el) return;
+  var html = '';
+  s.semaines.forEach(function(sem) {
+    var mi = _semData.length;
+    _semData.push({saison:saison, sem:sem, periode:'matin', prix:120});
+    var ai = _semData.length;
+    _semData.push({saison:saison, sem:sem, periode:'aprem', prix:120});
+    html += '<div style="background:#fff;border-radius:18px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07);">';
+    html += '<div style="background:' + s.bg + ';padding:12px 16px;border-bottom:1px solid ' + s.border + ';display:flex;align-items:center;gap:10px;">';
+    html += '<div style="background:' + s.color + ';color:#fff;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;">' + sem.label + '</div>';
+    html += '<div style="font-size:13px;font-weight:700;color:#1A1A2E;">' + sem.debut + ' → ' + sem.fin + '</div>';
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;">';
+    html += semCardHTML(mi, '🌅', 'Matin', s.horaires.matin, s.color);
+    html += semCardHTML(ai, '🌞', 'Après-midi', s.horaires.aprem, s.color);
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+  renderClientPanierBar();
+}
+
+function resaBack() {
+  if (currentSaison) {
+    renderReservation(); // back to choice view
+  } else {
+    navigate('home');
+  }
+}
+
+function goSaison(saison) {
+  // Called from home page big-cards
+  currentSaison = saison;
+  _semData = [];
+  navigate('reservation');
+  // After navigate sets the page active, show detail
+  setTimeout(function(){ renderSaisonDetail(saison); }, 0);
+}
+
+function goSaisonDirect(saison) {
+  // Called from reservation choice page
+  renderSaisonDetail(saison);
+}
+
+
+function semCardHTML(idx, icon, title, horaire, color) {
+  var border = title==='Matin' ? 'border-right:1px solid #F3F4F6;' : '';
+  return '<div style="padding:18px 12px;cursor:pointer;text-align:center;'+border+'display:flex;flex-direction:column;align-items:center;gap:6px;" onclick="ajouterAuPanier('+idx+')">'
+    + '<div style="font-size:28px;">'+icon+'</div>'
+    + '<div style="font-size:13px;font-weight:700;color:#1A1A2E;">'+title+'</div>'
+    + '<div style="font-size:11px;color:#6B7280;">'+horaire+'</div>'
+    + '<div style="margin-top:6px;background:'+color+'18;color:'+color+';border:1.5px solid '+color+'44;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;">'
+    + '<span>🛒</span><span>120 € · Ajouter</span></div>'
+    + '</div>';
+}
+
+function ajouterAuPanier(idx) {
+  var data = _semData[idx];
+  if(!data) return;
+  var s = SAISONS[data.saison]||{};
+  var already = clientPanier.some(function(p){ return p.saison===data.saison&&p.sem.label===data.sem.label&&p.periode===data.periode; });
+  if(already){ toast('Déjà dans le panier','ko'); return; }
+  clientPanier.push({saison:data.saison, saisonLabel:s.label||data.saison, sem:data.sem, periode:data.periode, periodeLabel:data.periode==='matin'?'Matin':'Apres-midi', prix:120});
+  toast('✅ Ajouté au panier');
+  renderClientPanierBar();
+}
+
+function renderClientPanierBar() {
+  var bar=document.getElementById('client-panier-bar');
+  var sum=document.getElementById('panier-client-summary');
+  if(!bar) return;
+  if(!clientPanier.length){bar.style.display='none';return;}
+  bar.style.display='';
+  var total=clientPanier.reduce(function(s,p){return s+p.prix;},0);
+  if(sum) sum.textContent=clientPanier.length+' prestation'+(clientPanier.length>1?'s':'')+' · '+total+'€';
+}
+
+function openClientPanier() {
+  var ov=document.getElementById('client-panier-overlay'); if(ov) ov.style.display='flex';
+  renderClientPanierModal();
+}
+function closeClientPanier() {
+  var ov=document.getElementById('client-panier-overlay'); if(ov) ov.style.display='none';
+}
+
+function renderClientPanierModal() {
+  var el=document.getElementById('client-panier-items');
+  var footer=document.getElementById('client-panier-footer');
+  var amt=document.getElementById('client-panier-total-amt');
+  if(!el) return;
+  if(!clientPanier.length){
+    el.innerHTML='<div class="empty" style="padding:32px 0;"><div class="empty-icon">🛒</div><p>Panier vide</p></div>';
+    if(footer) footer.style.display='none'; return;
+  }
+  var total=0;
+  el.innerHTML=clientPanier.map(function(item,i){
+    total+=item.prix;
+    var icon=item.periode==='matin'?'🌅':'🌞';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F3F4F6;">'
+      +'<div style="font-size:24px;">'+icon+'</div>'
+      +'<div style="flex:1;">'
+      +'<div style="font-size:13px;font-weight:700;color:#1A1A2E;">'+item.periodeLabel+' · '+item.sem.debut+'</div>'
+      +'<div style="font-size:12px;color:#9CA3AF;">'+item.saisonLabel+' · '+item.sem.debut+' → '+item.sem.fin+'</div>'
+      +'</div>'
+      +'<div style="font-size:14px;font-weight:700;color:#E9B10D;">'+item.prix+'€</div>'
+      +'<button onclick="retirerDuPanier('+i+')" style="background:#FEE2E2;border:none;border-radius:8px;padding:6px 9px;color:#EF4444;cursor:pointer;font-size:12px;font-weight:700;">✕</button>'
+      +'</div>';
+  }).join('');
+  if(footer) footer.style.display='';
+  if(amt) amt.textContent=total+'€';
+}
+
+function retirerDuPanier(i){ clientPanier.splice(i,1); renderClientPanierModal(); renderClientPanierBar(); }
+
+function envoyerDemandeReservation() {
+  if(!clientPanier.length) return;
+  var lines=['Bonjour,','','Je souhaite reserver les creneaux suivants au Club des Leopards.','','Merci de confirmer la disponibilite et les modalites de paiement.',''];
+  var total=0;
+  clientPanier.forEach(function(item,i){
+    lines.push((i+1)+'. '+item.saisonLabel+' · '+item.sem.debut+' au '+item.sem.fin+' · '+item.periodeLabel+' · 120€');
+    total+=item.prix;
+  });
+  lines.push('','Total : '+total+'€','','Nom et prenom de l enfant : ','Date de naissance : ','','Cordialement,');
+  var subj=encodeURIComponent('Demande de reservation Club des Léopards - '+clientPanier.length+' créneau(x)');
+  var body=encodeURIComponent(lines.join('\n'));
+  window.location.href='mailto:clubdesleopards@free.fr?subject='+subj+'&body='+body;
+  clientPanier.forEach(function(item){
+    ST.reservations.push({id:Date.now()+Math.random(), nom:'Demande en attente', slot:{time:item.periodeLabel, date:item.sem.debut+' au '+item.sem.fin}, saisonLabel:item.saisonLabel, paid:0, statut:'en attente', date:new Date().toLocaleDateString('fr-FR')});
+  });
+  clientPanier=[];
+  renderClientPanierBar(); closeClientPanier();
+  toast('📬 Demande envoyée !','ok');
+}
+
+// ═══ MES RÉSA ═══
+function renderMesResa() {
+  var el=document.getElementById('mes-resa-content'); if(!el) return;
+  var dot=document.getElementById('resa-dot'); if(dot) dot.classList.toggle('show',ST.reservations.length>0);
+  if(!ST.reservations.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune reservation.<br>Reservez une semaine !</p></div>';
+    return;
+  }
+  el.innerHTML=ST.reservations.map(function(r){
+    return '<div class="resa-item"><div class="resa-dot">🏖️</div>'
+      +'<div class="resa-main"><div class="resa-title">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
+      +'<div class="resa-sub">'+(r.saisonLabel||r.nom||'')+'</div></div>'
+      +'<div style="text-align:right;"><div class="resa-amt">'+(r.paid||0)+'€</div>'
+      +'<div class="resa-ok">'+(r.statut==='validé'?'✅ Validé':'⏳ En attente')+'</div></div></div>';
+  }).join('');
+}
+
+function cancelResa(i){ ST.reservations.splice(i,1); renderMesResa(); toast('Réservation annulée'); }
+
+// ═══ ADMIN LOGIN ═══
+var adminUnlocked = false;
+
+function openAdminLogin() {
+  var ov=document.getElementById('admin-login-overlay'); if(ov) ov.classList.add('open');
+  var inp=document.getElementById('al-code'); if(inp){inp.value='';inp.type='password';}
+  updateAlDots('');
+  var err=document.getElementById('al-err'); if(err) err.textContent='';
+}
+function closeAdminLogin() {
+  var ov=document.getElementById('admin-login-overlay'); if(ov) ov.classList.remove('open');
+}
+function onAdminCodeInput(el) {
+  el.value=el.value.replace(/[^0-9]/g,''); updateAlDots(el.value);
+  if(el.value.length===4) setTimeout(checkAdminCode,180);
+}
+function updateAlDots(val) {
+  for(var i=1;i<=4;i++){var d=document.getElementById('al-d'+i);if(d) d.className='al-dot'+(i<=val.length?' filled':'');}
+}
+function toggleAdminEye() {
+  var inp=document.getElementById('al-code'); var btn=document.getElementById('al-eye-btn');
+  if(!inp) return; inp.type=inp.type==='password'?'text':'password';
+  if(btn) btn.textContent=inp.type==='password'?'👁':'🙈';
+}
+function checkAdminCode() {
+  var inp=document.getElementById('al-code'); var err=document.getElementById('al-err');
+  if(!inp) return;
+  if(inp.value.trim()==='2026'){
+    adminUnlocked=true; closeAdminLogin(); _navigateTo('admin'); toast('Bienvenue Admin','ok');
+  } else {
+    if(inp) inp.classList.add('error');
+    if(err) err.textContent='Code incorrect.';
+    setTimeout(function(){if(inp){inp.classList.remove('error');inp.value='';}updateAlDots('');},900);
+  }
+}
+
+// ═══ ADMIN DASHBOARD ═══
+function renderAdmin() {
+  var el=document.getElementById('admin-stats'); if(!el) return;
+  var kids=allKids(), fams=[].concat(DEMO_FAMS,ST.members), resas=[].concat(DEMO_RESAS,ST.reservations);
+  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
+  var pl=0; GROUPES.forEach(function(g){var cnt=kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id;}).length;pl+=Math.max(0,MAX_G-cnt);});
+  el.innerHTML='<div class="stat-card" style="background:linear-gradient(135deg,#6366F1,#4F46E5);"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
+    +'<div class="stat-card" style="background:linear-gradient(135deg,#F97316,#EA580C);"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
+    +'<div class="stat-card" style="background:linear-gradient(135deg,#10B981,#059669);"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>'
+    +'<div class="stat-card" style="background:linear-gradient(135deg,#E9B10D,#F57F17);"><div class="stat-icon">✅</div><div class="stat-val">'+pl+'</div><div class="stat-lbl">Places libres</div></div>';
+  if(ST.adminTab==='dashboard')        renderDashboard();
+  else if(ST.adminTab==='membres')     renderMembres();
+  else if(ST.adminTab==='groupes')     renderAdminGroupes();
+  else if(ST.adminTab==='reservations') renderAdminResas();
+  else if(ST.adminTab==='paiements')   renderPaiements();
+  else if(ST.adminTab==='frequentation') renderFrequentation();
+  else if(ST.adminTab==='comptabilite') renderComptabilite();
+  else if(ST.adminTab==='facture')     renderFactureTab();
+  else if(ST.adminTab==='avoirs')      renderAvoirs();
+  else if(ST.adminTab==='recherche')   globalSearch();
+}
+
+function setAdminTab(t) {
+  ST.adminTab = t;
+  ['dashboard', 'membres', 'groupes', 'reservations', 'paiements', 'frequentation', 'comptabilite', 'facture', 'recherche'].forEach(function(tab) {
+    var atEl = document.getElementById('at-' + tab);
+    var anEl = document.getElementById('an-' + tab);
+    if (atEl) atEl.style.display = tab === t ? '' : 'none';
+    if (anEl) anEl.classList.toggle('active', tab === t);
+  });
+  renderAdmin();
+}
+
+function renderAdminGroupes() {
+  var el=document.getElementById('groupes-grid'); if(!el) return;
+  var awl=document.getElementById('admin-week-lbl'); if(awl) awl.textContent='Saison Été 2026';
+  var kids=allKids();
+  var activeGroups = ST.gPeriod==='aprem' ? GROUPES_APREM : GROUPES_MATIN;
+  el.innerHTML=activeGroups.map(function(g){
+    var enf=kids.filter(function(c){var gr=getGroupe(c.age,ST.gPeriod);return gr&&gr.id===g.id&&(c.periode||[]).includes(ST.gPeriod);});
+    var cnt=enf.length, pct=Math.round(cnt/MAX_G*100);
+    var badgeStyle=pct>=100?'background:#FEE2E2;color:#991B1B;':pct>=75?'background:#FEF3C7;color:#92400E;':'background:#D1FAE5;color:#065F46;';
+    var badgeTxt=pct>=100?'COMPLET':(MAX_G-cnt)+' libre'+(MAX_G-cnt>1?'s':'');
+    var rows=enf.length===0?'<div class="kid-row"><span style="color:#D1D5DB;font-size:12px;">Aucun enfant</span></div>':enf.map(function(child){
+      var hasMed=child.medical&&child.medical!=='RAS';
+      var med=hasMed?'<span style="background:#FEE2E2;color:#991B1B;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:6px;">⚠️ Médical</span>':'';
+      return '<div class="kid-row"><div class="kid-ava" style="background:'+g.color+';">'+child.prenom.charAt(0)+'</div><div style="flex:1;"><div class="kid-name">'+child.nom+' '+child.prenom+med+'</div><div class="kid-detail">'+child.parent+' · '+child.age+' ans</div></div></div>';
+    }).join('');
+    return '<div class="g-card"><div class="g-head" onclick="toggleG('+g.id+')">'
+      +'<div class="g-emoji" style="background:'+g.color+'18;">'+g.emoji+'</div>'
+      +'<div><div class="g-name">'+g.name+' · '+g.ages+'</div><div class="g-ages">'+(ST.gPeriod==='matin'?'🌅 9h30–12h30':'🌞 15h00–18h15')+'</div></div>'
+      +'<div class="g-meta"><div class="g-bar"><div class="g-bar-fill" style="width:'+pct+'%;background:'+g.color+';"></div></div>'
+      +'<span class="g-count" style="color:'+g.color+';">'+cnt+'/'+MAX_G+'</span>'
+      +'<span class="g-badge" style="'+badgeStyle+'font-size:10px;padding:3px 9px;border-radius:20px;">'+badgeTxt+'</span></div><span class="g-chev">▾</span></div>'
+      +'<div class="g-body open" id="gb-'+g.id+'"><div class="g-body-top"><span class="g-body-lbl">'+cnt+' enfant'+(cnt>1?'s':'')+'</span></div>'+rows+'</div></div>';
+  }).join('');
+}
+
+function toggleG(id) {
+  var b=document.getElementById('gb-'+id); if(b) b.classList.toggle('open');
+}
+
+function setGPeriod(p) {
+  ST.gPeriod=p;
+  var psm=document.getElementById('ps-matin'); var psa=document.getElementById('ps-aprem');
+  var activeStyle='background:linear-gradient(135deg,#1E1B4B,#4C1D95);color:#fff;'; var ghostStyle='';
+  if(psm) psm.setAttribute('style',p==='matin'?activeStyle:ghostStyle);
+  if(psa) psa.setAttribute('style',p==='aprem'?activeStyle:ghostStyle);
+  renderAdminGroupes();
+}
+
+function adminPrevWeek(){}
+function adminNextWeek(){}
+
+function renderFiches() {
+  var el=document.getElementById('fiches-list'); if(!el) return;
+  var kids=allKids();
+  var fq=document.getElementById('fiche-q'); var fg=document.getElementById('fiche-grp');
+  var q=fq?fq.value.toLowerCase():''; var gf=fg?fg.value:'';
+  var filtered=kids.filter(function(c){
+    var grp=getGroupe(c.age);
+    if(q&&!(c.nom.toLowerCase().includes(q)||c.prenom.toLowerCase().includes(q))) return false;
+    if(gf&&(!grp||grp.id!=gf)) return false;
+    return true;
+  });
+  el.innerHTML=filtered.map(function(c){
+    var g=getGroupe(c.age);
+    var hasMed=c.medical&&c.medical!=='RAS';
+    return '<div class="fiche-card"><div class="fc-head">'
+      +'<div class="fc-ava" style="background:'+(g?g.color:'#9CA3AF')+';">'+(g?g.emoji:'?')+'</div>'
+      +'<div><div class="fc-name">'+c.nom+' '+c.prenom+'</div>'
+      +'<div class="fc-grp" style="color:'+(g?g.color:'#9CA3AF')+'">'+(g?g.name+' · ':'')+c.age+' ans</div></div>'
+      +(hasMed?'<span style="background:#FEE2E2;color:#991B1B;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;">⚠️</span>':'')
+      +'</div>'
+      +'<div class="fc-row"><span>Parent</span><span>'+c.parent+'</span></div>'
+      +'<div class="fc-row"><span>Tel</span><span>'+c.tel+'</span></div>'
+      +'<div class="fc-row"><span>Email</span><span>'+c.email+'</span></div>'
+      +(hasMed?'<div class="fc-row" style="background:#FEF2F2;border-radius:8px;padding:6px 10px;margin-top:6px;"><span>⚠️ Medical</span><span>'+c.medical+'</span></div>':'')
+      +'<div class="fc-row"><span>Inscrit le</span><span>'+c.inscrit+'</span></div>'
+      +'</div>';
+  }).join('') || '<div class="empty"><div class="empty-icon">📋</div><p>Aucun résultat</p></div>';
+}
+
+// ═══ PAIEMENTS ═══
+var paiPeriod='jour';
+function setPaiPeriod(p){
+  paiPeriod=p;
+  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('pp-'+x);if(btn)btn.classList.toggle('active',x===p);});
+  renderPaiements();
+}
+
+function renderPaiements() {
+  var el=document.getElementById('paiements-content'); if(!el) return;
+  var total=DEMO_PAYMENTS.reduce(function(s,p){return s+p.montant;},0);
+  var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).reduce(function(s,p){return s+p.montant;},0);
+  var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='payé';}).reduce(function(s,p){return s+p.montant;},0);
+  var rows=DEMO_PAYMENTS.map(function(p){
+    var ok=p.statut==='payé';
+    return '<div class="pai-row"><div class="pai-ava" style="background:'+p.color+';">'+p.initiale+'</div>'
+      +'<div style="flex:1;"><div class="pai-name">'+p.nom+'</div><div class="pai-sub">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
+      +'<div style="text-align:right;"><div class="pai-amt" style="color:'+(ok?'#10B981':'#F97316')+';">'+p.montant+'€</div>'
+      +'<div style="font-size:11px;color:'+(ok?'#10B981':'#F97316')+';font-weight:700;">'+(ok?'✅ Payé':'⏳ Attente')+'</div>'
+      +'</div></div>';
+  }).join('');
+  el.innerHTML='<div class="wcard" style="margin-bottom:12px;"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">'
+    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#10B981;">'+enc+'€</div><div style="font-size:11px;color:#9CA3AF;">Encaissé</div></div>'
+    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#F97316;">'+att+'€</div><div style="font-size:11px;color:#9CA3AF;">En attente</div></div>'
+    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#1A6FD4;">'+total+'€</div><div style="font-size:11px;color:#9CA3AF;">Total</div></div>'
+    +'</div><div class="wcard-title"><span>💳</span> Détail</div>'+rows+'</div>';
+}
+
+// ═══ FRÉQUENTATION ═══
+var freqPeriod='semaine';
+function setFreqPeriod(p){
+  freqPeriod=p;
+  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('fp-'+x);if(btn)btn.classList.toggle('active',x===p);});
+  renderFrequentation();
+}
+
+function renderFrequentation() {
+  var el=document.getElementById('frequentation-content'); if(!el) return;
+  var data=freqPeriod==='jour'?DEMO_FREQ.jours:freqPeriod==='mois'?DEMO_FREQ.mois:DEMO_FREQ.semaines;
+  var maxVal=Math.max.apply(null,data.map(function(d){return Math.max(d.matin,d.aprem);}));
+  var bars=data.map(function(d){
+    var pm=Math.round(d.matin/maxVal*80),pa=Math.round(d.aprem/maxVal*80);
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">'
+      +'<div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:80px;">'
+      +'<div style="flex:1;background:#1A6FD4;border-radius:4px 4px 0 0;height:'+pm+'px;"></div>'
+      +'<div style="flex:1;background:#E9B10D;border-radius:4px 4px 0 0;height:'+pa+'px;"></div>'
+      +'</div>'
+      +'<div style="font-size:10px;color:#9CA3AF;">'+d.label+'</div>'
+      +'</div>';
+  }).join('');
+  el.innerHTML='<div class="wcard"><div class="wcard-title"><span>📊</span> Fréquentation</div>'
+    +'<div style="display:flex;gap:4px;align-items:flex-end;margin-bottom:8px;">'+bars+'</div>'
+    +'<div style="display:flex;gap:16px;font-size:12px;color:#6B7280;">'
+    +'<span><span style="display:inline-block;width:10px;height:10px;background:#1A6FD4;border-radius:2px;margin-right:4px;"></span>Matin</span>'
+    +'<span><span style="display:inline-block;width:10px;height:10px;background:#E9B10D;border-radius:2px;margin-right:4px;"></span>Apres-midi</span>'
+    +'</div></div>';
+}
+
+// ═══ RÉSERVATIONS ADMIN ═══
+var resaFilter='all';
+function setResaFilter(f){
+  resaFilter=f;
+  ['all','paye','attente'].forEach(function(x){
+    var btn=document.getElementById('rf-'+x);
+    if(!btn) return;
+    if(x===f){btn.style.background='linear-gradient(135deg,#1A6FD4,#0D4FA0)';btn.style.color='#fff';btn.classList.remove('btn-ghost');}
+    else{btn.style.background='';btn.style.color='';btn.classList.add('btn-ghost');}
+  });
+  renderAdminResas();
+}
+
+var _adminResas=[];
+function renderAdminResas() {
+  var el=document.getElementById('admin-resa-content'); if(!el) return;
+  var all=[].concat(DEMO_RESAS,ST.reservations);
+  if(resaFilter==='paye')    all=all.filter(function(r){return r.paid&&r.paid>0;});
+  if(resaFilter==='attente') all=all.filter(function(r){return !r.paid||r.paid===0;});
+  _adminResas=all;
+  var html='';
+  all.forEach(function(r,i){
+    var statut=r.statut||(r.paid&&r.paid>0?'payé':'en attente');
+    var sColor=statut==='validé'?'#1A6FD4':statut==='payé'?'#10B981':'#F97316';
+    var sLabel=statut==='validé'?'✅ Validé':statut==='payé'?'✅ Payé':'⏳ En attente';
+    var kids=(r.children||[]).map(function(ch){var g=getGroupe(ch.age||8);return '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#9CA3AF')+'">'+(g?g.emoji+' ':'')+ch.name+'</span>';}).join('');
+    var btn=statut!=='validé'
+      ?'<button onclick="ouvrirValidationResa('+i+')" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;width:100%;">✅ Valider la réservation</button>'
+      :'<div style="background:#D1FAE5;color:#065F46;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;text-align:center;margin-top:8px;">'+(r.modePaiement?'✅ Validé · '+r.modePaiement:'✅ Validé')+'</div>';
+    html+='<div class="r-row"><div class="r-dot"></div><div style="flex:1;">'
+      +'<div style="font-size:13px;font-weight:700;">'+r.nom+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+r.email+'</div>'
+      +'<div style="font-size:12px;color:#374151;font-weight:700;margin-top:2px;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
+      +(kids?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">'+kids+'</div>':'')
+      +'<div style="font-size:12px;margin-top:4px;color:'+sColor+';font-weight:700;">'+sLabel+(r.paid&&r.paid>0?' · '+r.paid+'€':'')+'</div>'
+      +(r.saisonLabel?'<div style="font-size:11px;color:#9CA3AF;">'+r.saisonLabel+'</div>':'')
+      +btn+'</div></div>';
+  });
+  el.innerHTML=html||'<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation</p></div>';
+}
+
+function ouvrirValidationResa(idx) {
+  window._validatingResaIdx=idx;
+  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='flex';
+  var r=_adminResas[idx];
+  var info=document.getElementById('validation-resa-info');
+  if(info&&r) info.innerHTML='<strong>'+r.nom+'</strong><br>'+(r.slot?r.slot.time+' · '+r.slot.date:'');
+  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el)el.checked=false;});
+  var err=document.getElementById('err-mode-paiement'); if(err) err.textContent='';
+}
+function fermerValidationResa() {
+  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='none';
+}
+function confirmerValidationResa() {
+  var checked=null;
+  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el&&el.checked) checked=el.value;});
+  if(!checked){var e=document.getElementById('err-mode-paiement');if(e) e.textContent='Veuillez choisir un mode de paiement';return;}
+  var r=_adminResas[window._validatingResaIdx];
+  if(r){r.statut='validé';r.modePaiement=checked;r.paid=r.paid||120;}
+  fermerValidationResa();
+  toast('✅ Réservation validée · '+checked,'ok');
+  renderAdminResas(); renderAdmin();
+}
+
+// ═══ FAMILLES ═══
+function renderAdminFams() {
+  var el=document.getElementById('admin-fam-content'); if(!el) return;
+  var all=[].concat(DEMO_FAMS,ST.members);
+  if(!all.length){el.innerHTML='<div class="empty"><div class="empty-icon">👨‍👩‍👧</div><p>Aucune famille</p></div>';return;}
+  el.innerHTML=all.map(function(m){
+    var chips=(m.children||[]).map(function(ch){var g=getGroupe(parseFloat(ch.age)||0);return '<span class="u-chip" style="background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#9CA3AF')+'">'+(g?g.emoji+' ':'')+ch.name+(ch.age?' ('+ch.age+'a)':'')+'</span>';}).join('');
+    return '<div class="u-row"><div class="u-ava">'+m.prenom.charAt(0)+'</div>'
+      +'<div style="flex:1;"><div class="u-name">'+m.prenom+' '+m.nom+'</div>'
+      +'<div class="u-det">'+m.email+' · '+m.tel+'</div>'
+      +'<div class="u-chips">'+chips+'</div></div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+m.date+'</div></div>';
+  }).join('');
+}
+
+// ═══ PANIER ADMIN ═══
+var panier=[];
+function renderPanier(){
+  var el=document.getElementById('panier-items'); var tot=document.getElementById('panier-total'); var amt=document.getElementById('panier-total-amt');
+  if(!el) return;
+  if(!panier.length){el.innerHTML='<div class="empty"><div class="empty-icon">🛒</div><p>Panier vide</p></div>';if(tot)tot.style.display='none';return;}
+  var total=0;
+  el.innerHTML=panier.map(function(item,i){total+=item.prix||0;return '<div class="panier-item"><div class="pi-title">'+item.label+'</div><div class="pi-sub">'+item.sub+'</div><div class="pi-price">'+(item.prix||0)+'€</div><button class="pi-del" onclick="removePanierItem('+i+')">✕</button></div>';}).join('');
+  if(tot)tot.style.display='';if(amt)amt.textContent=total+'€';
+  updatePanierBadge();
+}
+function updatePanierBadge(){var b=document.getElementById('panier-badge');if(b){b.textContent=panier.length;b.style.display=panier.length?'inline':'none';}}
+function removePanierItem(i){panier.splice(i,1);renderPanier();}
+function clearPanier(){panier=[];renderPanier();}
+function validerPanier(){
+  if(!panier.length) return toast('Panier vide','ko');
+  panier.forEach(function(item){if(item.type==='inscription')ST.members.push(item.data);else ST.reservations.push(item.data);});
+  toast('✅ '+panier.length+' element(s) enregistre(s)','ok');
+  panier=[];renderPanier();updatePanierBadge();renderAdmin();
+}
+function addToPanier(type){}
+
+// ═══ SAISIE ═══
+function setSaisieTab(tab){
+  var te=document.getElementById('ss-tab-enfant'); var tr=document.getElementById('ss-tab-resa');
+  var be=document.getElementById('ss-enfant'); var br=document.getElementById('ss-resa');
+  if(te)te.style.display=tab==='enfant'?'':'none'; if(tr)tr.style.display=tab==='resa'?'':'none';
+  if(be)be.classList.toggle('active',tab==='enfant'); if(br)br.classList.toggle('active',tab==='resa');
+}
+function saveSaisieEnfant(){toast('✅ Enregistré','ok');renderAdmin();}
+function saveSaisieResa(){toast('✅ Enregistré','ok');renderAdmin();}
+function clearSaisieEnfant(){}
+function clearSaisieResa(){}
+
+// ═══ INFOS ═══
+function showInfos(){var p=document.getElementById('infos-panel');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+
+// ═══ NAVIGATION ═══
+function navigate(name){
+  if(name==='admin'&&!adminUnlocked){openAdminLogin();return;}
+  _navigateTo(name);
+}
+function _navigateTo(name){
+  document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
+  document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
+  var pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active');
+  var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
+  if(name==='reservation') renderReservation();
+  if(name==='mes-resa') renderMesResa();
+  if(name==='admin') renderAdmin();
+  window.scrollTo(0,0);
+}
+
+// ═══ STUBS MODAL PAIEMENT ═══
+function mGoStep(){}
+function processPayment(){}
+function buildRecap(){}
+function updatePriceBox(){}
+function closeModal(){var ov=document.getElementById('overlay');if(ov)ov.classList.remove('open');}
+function openModal(){}
+function addModalChild(){}
+function removeMChild(){}
+function selPayMethod(){}
+function fmtCard(){}
+function fmtExp(){}
+
+
+function toggleDroit() {
+  var box = document.getElementById('droit-checkbox');
+  var label = document.getElementById('droit-label');
+  if (!box) return;
+  if (inscDroit === 'oui') {
+    inscDroit = null;
+    box.textContent = '';
+    box.style.background = '#fff';
+    if (label) { label.style.borderColor='#BBF7D0'; label.style.background='linear-gradient(135deg,#F0FDF4,#DCFCE7)'; }
+  } else {
+    inscDroit = 'oui';
+    box.textContent = '✓';
+    box.style.background = '#10B981';
+    box.style.color = '#fff';
+    if (label) { label.style.borderColor='#10B981'; label.style.background='linear-gradient(135deg,#D1FAE5,#A7F3D0)'; }
+  }
+  var err = document.getElementById('err-droit'); if (err) err.textContent = '';
+}
+
+
+var DOC_RI = [
+  {icon:'⏰', titre:'Horaires', texte:"Les parents s'engagent à déposer et récupérer leur enfant aux horaires indiqués. Tout retard répété pourra entraîner l'exclusion temporaire du club."},
+  {icon:'☀️', titre:'Équipement', texte:"Les enfants doivent se présenter avec la crème solaire appliquée, une serviette, de l'eau et un chapeau. Le club ne fournit pas ces équipements."},
+  {icon:'⚕️', titre:'Santé', texte:"En cas de problème de santé, les parents s'engagent à avoir rempli la fiche médicale complète. Tout traitement doit être signalé aux moniteurs."},
+  {icon:'📸', titre:'Responsabilité', texte:"Les enfants sont sous la responsabilité des moniteurs pendant les séances uniquement. Le club décline toute responsabilité en cas de perte ou vol d'objets personnels."},
+  {icon:'🚫', titre:'Discipline', texte:"Tout comportement irrespectueux envers les autres enfants ou les moniteurs pourra entraîner l'exclusion sans remboursement."},
+];
+
+var DOC_CGV = [
+  {icon:'💳', titre:'Réservation & paiement', texte:"La réservation est ferme à réception du paiement. Aucune place n'est garantie sans paiement confirmé."},
+  {icon:'❌', titre:'Annulation', texte:"Aucun remboursement en cas d'absence, sauf motif médical justifié par certificat médical présenté dans les 48h."},
+  {icon:'⛅', titre:'Force majeure', texte:"En cas d'annulation par le club (météo extrême, force majeure), un avoir sera proposé pour une prochaine session."},
+  {icon:'👫', titre:'Tarif fratrie', texte:"Le tarif dégressif s'applique uniquement aux frères et sœurs du même foyer inscrits simultanément."},
+  {icon:'🔒', titre:'Inscriptions', texte:"Les inscriptions sont nominatives et non transférables. Toute réservation implique l'acceptation des présentes CGV."},
+];
+
+var _openDoc = null;
+
+function ouvrirDocModal(type) {
+  _openDoc = type;
+  var ov = document.getElementById('doc-modal-overlay');
+  var title = document.getElementById('doc-modal-title');
+  var content = document.getElementById('doc-modal-content');
+  if (!ov) return;
+  ov.style.display = 'flex';
+  var items = type === 'ri' ? DOC_RI : DOC_CGV;
+  var titleTxt = type === 'ri' ? '📋 Règlement intérieur' : '📄 Conditions générales';
+  if (title) title.innerHTML = titleTxt;
+  if (content) {
+    content.innerHTML = items.map(function(item, i) {
+      return '<div class="doc-item" id="doc-item-'+i+'">'
+        + '<div class="doc-item-head" onclick="toggleDocItem('+i+')">'
+        + '<div style="display:flex;align-items:center;gap:10px;">'
+        + '<span style="font-size:20px;">'+item.icon+'</span>'
+        + '<span style="font-size:14px;font-weight:700;color:#1A1A2E;">'+item.titre+'</span>'
+        + '</div>'
+        + '<span class="doc-chev" id="doc-chev-'+i+'">▾</span>'
+        + '</div>'
+        + '<div class="doc-item-body" id="doc-body-'+i+'" style="display:none;">'
+        + '<p style="font-size:13px;color:#374151;line-height:1.7;margin:0;">'+item.texte+'</p>'
+        + '</div></div>';
+    }).join('');
+  }
+}
+
+function toggleDocItem(i) {
+  var body = document.getElementById('doc-body-' + i);
+  var chev = document.getElementById('doc-chev-' + i);
+  var head = document.getElementById('doc-item-' + i);
+  if (!body) return;
+  var open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (chev) chev.textContent = open ? '▾' : '▴';
+  if (head) head.style.background = open ? '' : '#F9FAFB';
+}
+
+function fermerDocModal() {
+  var ov = document.getElementById('doc-modal-overlay'); if (ov) ov.style.display = 'none';
+}
+
+
+// ═══ DASHBOARD ═══
+function renderDashboard() {
+  var el = document.getElementById('admin-dashboard-content');
+  if (!el) return;
+  var kids = allKids();
+  var allResas = [].concat(DEMO_RESAS, ST.reservations);
+  var enc = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
+  var att = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut!=='payé'?p.montant:0);},0);
+  var validees = allResas.filter(function(r){return r.statut==='validé';}).length;
+  var attente  = allResas.filter(function(r){return r.statut==='en attente';}).length;
+
+  // Activity feed
+  var feed = [].concat(
+    DEMO_RESAS.slice(0,2).map(function(r){return {icon:'📅',txt:r.nom+' – '+r.slot.time,sub:r.date,color:'#1A6FD4'};}),
+    DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).slice(0,2).map(function(p){return {icon:'💳',txt:p.nom+' '+p.montant+'€',sub:p.date+' · '+p.mode,color:'#10B981'};})
+  );
+
+  el.innerHTML = ''
+    // Quick actions
+    + '<div class="wcard" style="margin-bottom:12px;">'
+    + '<div class="wcard-title"><span>⚡</span> Actions rapides</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    + '<button data-tab="membres" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">👨‍👩‍👧<br>Membres<br><span style="font-size:20px;font-weight:800;">'+kids.length+'</span></button>'
+    + '<button data-tab="reservations" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">📅<br>Réservations<br><span style="font-size:20px;font-weight:800;">'+allResas.length+'</span></button>'
+    + '<button data-tab="paiements" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">💰<br>Encaissé<br><span style="font-size:20px;font-weight:800;">'+enc+'€</span></button>'
+    + '<button data-tab="groupes" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#E9B10D,#F57F17);color:#1A1A2E;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">🏖️<br>Groupes<br><span style="font-size:20px;font-weight:800;">'+GROUPES.length+'</span></button>'
+    + '</div></div>'
+
+    // Réservations recap
+    + '<div class="wcard" style="margin-bottom:12px;">'
+    + '<div class="wcard-title"><span>📅</span> Réservations</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+    + '<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#065F46;">'+validees+'</div><div style="font-size:11px;color:#6EE7B7;font-weight:700;">Validées</div></div>'
+    + '<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#92400E;">'+attente+'</div><div style="font-size:11px;color:#FCD34D;font-weight:700;">En attente</div></div>'
+    + '</div>'
+    + (attente>0 ? '<button data-tab="reservations" onclick="window.setAdminTab(this.dataset.tab)" class="btn btn-full" style="background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;padding:11px;">Voir les '+attente+' demande'+(attente>1?'s':'')+' en attente →</button>' : '')
+    + '</div>'
+
+    // Paiements
+    + '<div class="wcard" style="margin-bottom:12px;">'
+    + '<div class="wcard-title"><span>💳</span> Trésorerie</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    + '<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#065F46;">'+enc+'€</div><div style="font-size:11px;color:#6EE7B7;font-weight:700;">Encaissé</div></div>'
+    + '<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#92400E;">'+att+'€</div><div style="font-size:11px;color:#FCD34D;font-weight:700;">En attente</div></div>'
+    + '</div></div>'
+
+    // Activity feed
+    + '<div class="wcard">'
+    + '<div class="wcard-title"><span>🕐</span> Activité récente</div>'
+    + feed.map(function(item){
+        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F9FAFB;">'
+          +'<div style="width:36px;height:36px;border-radius:10px;background:'+item.color+'18;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+item.icon+'</div>'
+          +'<div><div style="font-size:13px;font-weight:600;color:#1A1A2E;">'+item.txt+'</div>'
+          +'<div style="font-size:11px;color:#9CA3AF;">'+item.sub+'</div></div>'
+          +'</div>';
+      }).join('')
+    + '</div>';
+}
+
+// ═══ MEMBRES ═══
+function renderMembres() {
+  var el = document.getElementById('admin-membres-content');
+  if (!el) return;
+  var q = (document.getElementById('membre-search')||{value:''}).value.toLowerCase();
+  var all = [].concat(DEMO_FAMS, ST.members);
+  if (q) all = all.filter(function(m){
+    return (m.nom||'').toLowerCase().includes(q)
+      || (m.prenom||'').toLowerCase().includes(q)
+      || (m.email||'').toLowerCase().includes(q)
+      || (m.children||[]).some(function(ch){return (ch.name||'').toLowerCase().includes(q);});
+  });
+  if (!all.length) {
+    el.innerHTML='<div class="empty"><div class="empty-icon">👨‍👩‍👧</div><p>Aucun résultat</p></div>';
+    return;
+  }
+  el.innerHTML = all.map(function(m, i) {
+    var initiale = ((m.prenom||'?').charAt(0) + (m.nom||'').charAt(0)).toUpperCase();
+    var chips = (m.children||[]).map(function(ch){
+      var g = getGroupe(parseFloat(ch.age)||0);
+      return '<span style="background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#6B7280')+';font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;">'
+        +(g?g.emoji+' ':'')+ch.name+(ch.age?' · '+ch.age+'a':'')+'</span>';
+    }).join('');
+    return '<div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
+      +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:chips?8px:0;">'
+      +'<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#1A6FD4,#7C3AED);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;">'+initiale+'</div>'
+      +'<div style="flex:1;">'
+      +'<div style="font-size:15px;font-weight:700;color:#1A1A2E;">'+m.prenom+' '+m.nom+'</div>'
+      +'<div style="font-size:12px;color:#9CA3AF;">'+m.email+'</div>'
+      +'</div>'
+      +'<a href="tel:'+m.tel+'" style="background:#EFF6FF;color:#1A6FD4;border:none;border-radius:10px;padding:8px 12px;font-size:20px;text-decoration:none;">📞</a>'
+      +'</div>'
+      +(chips?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">'+chips+'</div>':'')
+      +(m.adresse?'<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">📍 '+m.adresse+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+// ═══ RÉSERVATIONS PAR SAISON ═══
+var resaAdminSaison = 'ete';
+
+function setResaAdminSaison(s) {
+  resaAdminSaison = s;
+  ['ete','printemps','automne'].forEach(function(x){
+    var btn = document.getElementById('rs-admin-'+x);
+    if(btn){ btn.classList.toggle('active',x===s); btn.classList.toggle('btn-ghost',x!==s); }
+  });
+  renderAdminResas();
+}
+
+// Override renderAdminResas to filter by saison
+var _origRenderAdminResas = null;
+
+function renderAdminResas() {
+  var el = document.getElementById('admin-resa-content'); if (!el) return;
+  var all = [].concat(DEMO_RESAS, ST.reservations);
+  // Filter by saison
+  if (resaAdminSaison) {
+    var sLabel = SAISONS[resaAdminSaison] ? SAISONS[resaAdminSaison].label : '';
+    all = all.filter(function(r){ return !r.saisonLabel || r.saisonLabel.indexOf(resaAdminSaison==='ete'?'Été':resaAdminSaison==='printemps'?'Printemps':'Automne') >= 0; });
+  }
+  if (resaFilter === 'attente') all = all.filter(function(r){return !r.paid||r.paid===0;});
+  if (resaFilter === 'valide')  all = all.filter(function(r){return r.statut==='validé';});
+  _adminResas = all;
+  if (!all.length) {
+    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation</p></div>';
+    return;
+  }
+  el.innerHTML = all.map(function(r, i) {
+    var statut = r.statut || (r.paid&&r.paid>0?'payé':'en attente');
+    var sColor = statut==='validé'?'#1A6FD4':statut==='payé'?'#10B981':'#F97316';
+    var sLabel = statut==='validé'?'✅ Validé':statut==='payé'?'✅ Payé':'⏳ En attente';
+    var kids = (r.children||[]).map(function(ch){
+      var g=getGroupe(ch.age||8);
+      return '<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#9CA3AF')+'">'+(g?g.emoji+' ':'')+ch.name+'</span>';
+    }).join('');
+    var btn = statut!=='validé'
+      ? '<button onclick="ouvrirValidationResa('+i+')" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;width:100%;margin-top:8px;font-family:inherit;">✅ Valider la réservation</button>'
+      : '<div style="background:#D1FAE5;color:#065F46;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;text-align:center;margin-top:8px;">'+(r.modePaiement?'✅ Validé · '+r.modePaiement:'✅ Validé')+'</div>';
+    return '<div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">'
+      +'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+r.nom+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+r.email+'</div></div>'
+      +'<div style="font-size:12px;font-weight:700;color:'+sColor+';">'+sLabel+'</div>'
+      +'</div>'
+      +'<div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;">'+((r.slot?r.slot.time+' · '+r.slot.date:''))+'</div>'
+      +(kids?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">'+kids+'</div>':'')
+      +(r.saisonLabel?'<div style="font-size:11px;color:#9CA3AF;margin-bottom:2px;">'+r.saisonLabel+'</div>':'')
+      +(r.paid&&r.paid>0?'<div style="font-size:13px;font-weight:700;color:#E9B10D;">'+r.paid+'€</div>':'')
+      +btn+'</div>';
+  }).join('');
+}
+
+// ═══ COMPTABILITÉ ═══
+function renderComptabilite() {
+  var el = document.getElementById('comptabilite-content'); if (!el) return;
+  var enc = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
+  var att = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut!=='payé'?p.montant:0);},0);
+  var total = enc + att;
+  var byMode = {};
+  DEMO_PAYMENTS.filter(function(p){return p.statut==='payé'&&p.mode;}).forEach(function(p){
+    byMode[p.mode] = (byMode[p.mode]||0) + p.montant;
+  });
+  var modeRows = Object.keys(byMode).map(function(mode){
+    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F9FAFB;font-size:13px;">'
+      +'<span>'+mode+'</span><span style="font-weight:700;">'+byMode[mode]+'€</span></div>';
+  }).join('');
+
+  el.innerHTML = '<div class="wcard" style="margin-bottom:12px;">'
+    +'<div class="wcard-title"><span>💰</span> Bilan financier</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
+    +'<div style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border-radius:14px;padding:16px;text-align:center;">'
+    +'<div style="font-size:11px;font-weight:700;color:#065F46;text-transform:uppercase;margin-bottom:4px;">Encaissé</div>'
+    +'<div style="font-size:28px;font-weight:800;color:#065F46;">'+enc+'€</div>'
+    +'</div>'
+    +'<div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:14px;padding:16px;text-align:center;">'
+    +'<div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:4px;">En attente</div>'
+    +'<div style="font-size:28px;font-weight:800;color:#92400E;">'+att+'€</div>'
+    +'</div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;padding:12px 14px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:12px;">'
+    +'<span style="font-weight:700;color:#1565C0;">Total attendu</span>'
+    +'<span style="font-size:18px;font-weight:800;color:#1565C0;">'+total+'€</span>'
+    +'</div></div>'
+
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div class="wcard-title"><span>📊</span> Par mode de paiement</div>'
+    +modeRows
+    +'</div>'
+
+    +'<div class="wcard">'
+    +'<div class="wcard-title"><span>👤</span> Par famille</div>'
+    +DEMO_PAYMENTS.map(function(p){
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F9FAFB;">'
+        +'<div style="width:36px;height:36px;border-radius:10px;background:'+p.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">'+p.initiale+'</div>'
+        +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;">'+p.nom+'</div>'
+        +'<div style="font-size:11px;color:#9CA3AF;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
+        +'<div style="text-align:right;">'
+        +'<div style="font-size:14px;font-weight:700;color:'+(p.statut==='payé'?'#10B981':'#F97316')+';">'+p.montant+'€</div>'
+        +'<div style="font-size:10px;font-weight:700;color:'+(p.statut==='payé'?'#10B981':'#F97316')+'">'+(p.statut==='payé'?'✅ Payé':'⏳ Attente')+'</div>'
+        +'</div></div>';
+    }).join('')
+    +'</div>';
+}
+
+// ═══ FACTURE ═══
+function renderFactureTab() {
+  // Set today's date
+  var d = document.getElementById('fac-date');
+  if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+}
+
+function genererFacture() {
+  var famille   = (document.getElementById('fac-famille')||{value:''}).value.trim();
+  var email     = (document.getElementById('fac-email')||{value:''}).value.trim();
+  var enfant    = (document.getElementById('fac-enfant')||{value:''}).value.trim();
+  var prestation= (document.getElementById('fac-prestation')||{value:''}).value;
+  var dates     = (document.getElementById('fac-dates')||{value:''}).value.trim();
+  var montant   = (document.getElementById('fac-montant')||{value:'120'}).value;
+  var mode      = (document.getElementById('fac-mode')||{value:''}).value;
+  var date      = (document.getElementById('fac-date')||{value:''}).value;
+
+  if (!famille) { toast('Nom de famille requis','ko'); return; }
+
+  var ref = 'FAC-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*9000+1000);
+  var dateF = date ? new Date(date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR');
+
+  var el = document.getElementById('facture-preview');
+  if (!el) return;
+  el.innerHTML = '<div style="background:#fff;border:2px solid #E5E7EB;border-radius:20px;padding:24px;margin-top:12px;font-family:inherit;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">'
+    +'<div><div style="font-size:22px;font-weight:800;color:#1E1B4B;">🐆 Club des Léopards</div>'
+    +'<div style="font-size:12px;color:#9CA3AF;margin-top:2px;">clubdesleopards@free.fr</div></div>'
+    +'<div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#1A6FD4;">FACTURE</div>'
+    +'<div style="font-size:12px;color:#9CA3AF;">'+ref+'</div>'
+    +'<div style="font-size:12px;color:#9CA3AF;">'+dateF+'</div></div>'
+    +'</div>'
+    +'<div style="background:#F9FAFB;border-radius:14px;padding:16px;margin-bottom:16px;">'
+    +'<div style="font-size:11px;text-transform:uppercase;font-weight:700;color:#9CA3AF;margin-bottom:8px;">Facturé à</div>'
+    +'<div style="font-size:16px;font-weight:700;color:#1A1A2E;">Famille '+famille+'</div>'
+    +(enfant?'<div style="font-size:13px;color:#374151;">Enfant : '+enfant+'</div>':'')
+    +(email?'<div style="font-size:13px;color:#6B7280;">'+email+'</div>':'')
+    +'</div>'
+    +'<div style="border:1.5px solid #E5E7EB;border-radius:14px;overflow:hidden;margin-bottom:16px;">'
+    +'<div style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;padding:10px 16px;display:grid;grid-template-columns:1fr auto;font-size:12px;font-weight:700;text-transform:uppercase;">'
+    +'<span>Prestation</span><span>Montant</span></div>'
+    +'<div style="padding:14px 16px;display:grid;grid-template-columns:1fr auto;align-items:start;">'
+    +'<div><div style="font-size:14px;font-weight:600;color:#1A1A2E;">'+prestation+'</div>'
+    +(dates?'<div style="font-size:12px;color:#9CA3AF;">'+dates+'</div>':'')
+    +'</div>'
+    +'<div style="font-size:16px;font-weight:800;color:#1A1A2E;">'+montant+'€</div>'
+    +'</div>'
+    +'<div style="border-top:1.5px solid #E5E7EB;padding:12px 16px;display:grid;grid-template-columns:1fr auto;background:#F9FAFB;">'
+    +'<span style="font-weight:700;font-size:14px;">Total TTC</span>'
+    +'<span style="font-size:18px;font-weight:800;color:#1A6FD4;">'+montant+'€</span>'
+    +'</div></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#9CA3AF;margin-bottom:16px;">'
+    +'<span>Mode de paiement : <strong style="color:#374151;">'+mode+'</strong></span>'
+    +'<span>SIRET : 50237123000025</span>'
+    +'</div>'
+    +'<button onclick="window.print()" style="width:100%;padding:13px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">🖨️ Imprimer / Sauvegarder en PDF</button>'
+    +'</div>';
+  if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth'});
+}
+
+// ═══ RECHERCHE GLOBALE ═══
+function globalSearch() {
+  var el = document.getElementById('search-results'); if (!el) return;
+  var q = (document.getElementById('global-search')||{value:''}).value.trim().toLowerCase();
+  if (!q || q.length < 2) { el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px 0;font-size:14px;">Saisissez au moins 2 caractères</div>'; return; }
+  var results = [];
+
+  // Search kids
+  allKids().forEach(function(k){
+    if ((k.prenom+' '+k.nom+' '+k.email+' '+k.tel+' '+k.parent).toLowerCase().includes(q)) {
+      results.push({type:'enfant',icon:'🧒',title:k.nom+' '+k.prenom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#6366F1'});
+    }
+  });
+
+  // Search members/families
+  [].concat(DEMO_FAMS, ST.members).forEach(function(m){
+    if ((m.prenom+' '+m.nom+' '+m.email+' '+m.tel).toLowerCase().includes(q)) {
+      results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:m.email+' · '+m.tel,color:'#F97316'});
+    }
+  });
+
+  // Search reservations
+  [].concat(DEMO_RESAS, ST.reservations).forEach(function(r){
+    if ((r.nom+' '+r.email+' '+(r.saisonLabel||'')).toLowerCase().includes(q)) {
+      results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?' · '+r.saisonLabel:''),color:'#10B981'});
+    }
+  });
+
+  if (!results.length) { el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px 0;font-size:14px;">Aucun résultat pour "'+q+'"</div>'; return; }
+
+  el.innerHTML = '<div style="font-size:12px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+'</div>'
+    + results.map(function(r){
+      return '<div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;">'
+        +'<div style="width:40px;height:40px;border-radius:12px;background:'+r.color+'18;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">'+r.icon+'</div>'
+        +'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+r.title+'</div>'
+        +'<div style="font-size:11px;color:#9CA3AF;">'+r.sub+'</div>'
+        +'<div style="font-size:10px;font-weight:700;color:'+r.color+';text-transform:uppercase;margin-top:2px;">'+r.type+'</div></div>'
+        +'</div>';
+    }).join('');
+}
+
+// ═══ IMPRESSION GROUPES ═══
+function imprimerGroupes() {
+  var kids = allKids();
+  var s = SAISONS.ete;
+  var win = window.open('','_blank','width=800,height=600');
+  if (!win) { toast('Autoriser les popups pour imprimer','ko'); return; }
+  var html = '<html><head><title>Fiche groupe - '+ST.gPeriod+'</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:20px;} h1{color:#1E1B4B;} table{width:100%;border-collapse:collapse;margin-top:12px;} th{background:#1E1B4B;color:#fff;padding:10px;text-align:left;} td{padding:9px;border-bottom:1px solid #E5E7EB;} tr:nth-child(even){background:#F9FAFB;} @media print{button{display:none;}}</style>'
+    +'</head><body>'
+    +'<h1>🐆 Club des Léopards – '+( ST.gPeriod==='matin'?'Matin':'Après-midi')+'</h1>'
+    +'<p style="color:#9CA3AF;">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'</p>';
+  GROUPES.forEach(function(g){
+    var enf = kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id&&(c.periode||[]).includes(ST.gPeriod);});
+    if (!enf.length) return;
+    html += '<h2 style="color:'+g.color+';">'+g.emoji+' '+g.name+' – '+g.ages+'</h2>'
+      +'<table><tr><th>Prénom</th><th>Nom</th><th>Âge</th><th>Allergies / Médical</th></tr>'
+      +enf.map(function(c){return '<tr><td>'+c.prenom+'</td><td>'+c.nom+'</td><td>'+c.age+' ans</td><td>'+(c.medical&&c.medical!=='RAS'?'<strong style="color:red;">'+c.medical+'</strong>':'RAS')+'</td></tr>';}).join('')
+      +'</table>';
+  });
+  html += '<br><button onclick="window.print()" style="padding:10px 20px;background:#1E1B4B;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">🖨️ Imprimer</button></body></html>';
+  win.document.write(html);
+  win.document.close();
+}
+
+
+// ═══ AVOIRS ═══
+var AVOIRS = {
+  nMoins1: [
+    {id:1, membre:'Fam. Mouthet',  somme:120, motif:'Annulation météo – Été 2025', solde:false, dateSolde:''},
+    {id:2, membre:'Fam. Lecoeur',  somme:60,  motif:'Absence médicale – Printemps 2025', solde:true, dateSolde:'15/09/2025'},
+  ],
+  n: [
+    {id:3, membre:'',  somme:0, motif:'', solde:false, dateSolde:''},
+  ],
+};
+
+function renderAvoirs() {
+  var el = document.getElementById('admin-avoirs-content'); if(!el) return;
+
+  function renderTable(items, year, nIdx) {
+    var addBtn = '<button onclick="ajouterAvoir('+nIdx+')" style="margin-top:10px;padding:9px 16px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un avoir</button>';
+    if (!items.length || (items.length===1&&!items[0].membre)) {
+      return '<div style="text-align:center;color:#9CA3AF;padding:20px 0;font-size:13px;">Aucun avoir</div>' + addBtn;
+    }
+    var rows = items.filter(function(a){return a.membre;}).map(function(a,i){
+      return '<tr style="border-bottom:1px solid #F3F4F6;">'
+        +'<td style="padding:10px 8px;font-size:13px;font-weight:600;">'+a.membre+'</td>'
+        +'<td style="padding:10px 8px;font-size:13px;text-align:right;font-weight:700;color:#1A6FD4;">'+a.somme+'€</td>'
+        +'<td style="padding:10px 8px;font-size:12px;color:#374151;">'+a.motif+'</td>'
+        +'<td style="padding:10px 8px;text-align:center;">'
+        +(a.solde
+          ? '<span style="background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;">✅ Soldé<br><span style="font-weight:400;">'+a.dateSolde+'</span></span>'
+          : '<button onclick="solderAvoir('+nIdx+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')
+        +'</td></tr>';
+    }).join('');
+    return '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="background:#F9FAFB;"><th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:left;">Membre</th>'
+      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:right;">Somme</th>'
+      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;">Motif</th>'
+      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:center;">Soldé</th>'
+      +'</tr></thead><tbody>'+rows+'</tbody></table></div>' + addBtn;
+  }
+
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N−1 (2025)</div>'
+    + renderTable(AVOIRS.nMoins1, 'N-1', 0)
+    + '</div>'
+    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'
+    + renderTable(AVOIRS.n, 'N', 1)
+    + '</div></div>';
+}
+
+function solderAvoir(tableIdx, rowIdx) {
+  var table = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
+  var real = table.filter(function(a){return a.membre;})[rowIdx];
+  if (!real) return;
+  real.solde = true;
+  real.dateSolde = new Date().toLocaleDateString('fr-FR');
+  toast('✅ Avoir soldé','ok');
+  renderAvoirs();
+}
+
+function ajouterAvoir(tableIdx) {
+  var membre = prompt('Nom de la famille :');
+  if (!membre) return;
+  var somme  = parseInt(prompt('Montant (€) :') || '0');
+  var motif  = prompt('Motif :') || '';
+  var table  = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
+  table.push({id:Date.now(), membre:membre, somme:somme, motif:motif, solde:false, dateSolde:''});
+  toast('Avoir ajouté ✅','ok');
+  renderAvoirs();
+}
+
+// ═══ SUIVI QUOTIDIEN ═══
+var SUIVI_QUOTIDIEN = [
+  {date:'01/06/2025', ref:'Fam. Bousin',    cb:240,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'02/06/2025', ref:'Fam. Ammanet',   cb:0,    vir:120, chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'03/06/2025', ref:'Fam. Mouthet',   cb:0,    vir:0,   chq:120,chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'03/06/2025', ref:'Fam. de Robalis',cb:120,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'04/06/2025', ref:'Fam. Lecoeur',   cb:0,    vir:0,   chq:0,  chqvac:120,esp:0, avoir24:0,  remb25:0},
+];
+
+function renderSuiviQuotidien() {
+  var el = document.getElementById('suivi-quotidien-content'); if(!el) return;
+  var cols = ['CB/CD','Virement','Chèque','Chq Vac.','Espèces','Avoir 2024','Remb. 2025'];
+  var keys = ['cb','vir','chq','chqvac','esp','avoir24','remb25'];
+  var totals = {}; keys.forEach(function(k){totals[k]=0;});
+  SUIVI_QUOTIDIEN.forEach(function(r){keys.forEach(function(k){totals[k]+=(r[k]||0);});});
+  var grandTotal = keys.reduce(function(s,k){return s+totals[k];},0);
+
+  el.innerHTML = '<div style="overflow-x:auto;">'
+    +'<table style="width:100%;border-collapse:collapse;min-width:600px;font-size:12px;">'
+    +'<thead><tr style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;">'
+    +'<th style="padding:10px 8px;text-align:left;">Date</th>'
+    +'<th style="padding:10px 8px;text-align:left;">Ref.</th>'
+    +cols.map(function(col){return '<th style="padding:10px 6px;text-align:right;">'+col+'</th>';}).join('')
+    +'</tr></thead>'
+    +'<tbody>'
+    +SUIVI_QUOTIDIEN.map(function(r,i){
+      var bg = i%2===0 ? '#fff' : '#F9FAFB';
+      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'
+        +'<td style="padding:9px 8px;white-space:nowrap;color:#9CA3AF;">'+r.date+'</td>'
+        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;">'+r.ref+'</td>'
+        +keys.map(function(k){
+          return '<td style="padding:9px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(r[k]?'#1A6FD4':'#D1D5DB')+';">'+(r[k]?r[k]+'€':'-')+'</td>';
+        }).join('')
+        +'</tr>';
+    }).join('')
+    +'<tr style="background:linear-gradient(135deg,#1E1B4B18,#1A6FD418);font-weight:700;border-top:2px solid #1A6FD4;">'
+    +'<td style="padding:10px 8px;" colspan="2">TOTAL</td>'
+    +keys.map(function(k){return '<td style="padding:10px 6px;text-align:right;color:#1A6FD4;">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')
+    +'</tr>'
+    +'</tbody></table></div>'
+    +'<div style="text-align:right;margin-top:12px;font-size:16px;font-weight:800;color:#1E1B4B;">Total général : '+grandTotal+'€</div>';
+}
+
+
+function setComptaTab(tab) {
+  var bilan = document.getElementById('compta-bilan-content');
+  var suivi = document.getElementById('compta-suivi-content');
+  var btnB  = document.getElementById('ct-bilan');
+  var btnS  = document.getElementById('ct-suivi');
+  if (bilan) bilan.style.display = tab === 'bilan' ? 'block' : 'none';
+  if (suivi) suivi.style.display = tab === 'suivi' ? 'block' : 'none';
+  if (btnB) { btnB.classList.toggle('active', tab==='bilan'); btnB.classList.toggle('btn-ghost', tab!=='bilan'); }
+  if (btnS) { btnS.classList.toggle('active', tab==='suivi'); btnS.classList.toggle('btn-ghost', tab!=='suivi'); }
+  if (tab === 'suivi') renderSuiviQuotidien();
+  else renderComptabilite();
+}
+
+// ═══ BINDINGS WINDOW ═══
+var _fns=['navigate','_navigateTo','openAdminLogin','closeAdminLogin','checkAdminCode',
+  'onAdminCodeInput','toggleAdminEye','updateAlDots','setAdminTab','setGPeriod',
+  'adminPrevWeek','adminNextWeek','toggleG','renderFiches','renderAdmin','renderAdminGroupes',
+  'renderAdminResas','renderAdminFams','setPaiPeriod','setFreqPeriod','setResaFilter',
+  'setSaisieTab','saveSaisieEnfant','saveSaisieResa','addToPanier','clearPanier',
+  'validerPanier','removePanierItem','clearSaisieEnfant','clearSaisieResa',
+  'renderPanier','updatePanierBadge','goSaison','renderReservation',
+  'ajouterAuPanier','renderClientPanierBar','openClientPanier','closeClientPanier',
+  'renderClientPanierModal','retirerDuPanier','envoyerDemandeReservation',
+  'ouvrirValidationResa','fermerValidationResa','confirmerValidationResa',
+  'inscBack','inscNext','inscGoStep','calcAge','selectDroit','buildInscRecap',
+  'submitInscription','renderMesResa','cancelResa','showInfos',
+  'mGoStep','processPayment','closeModal','openModal','toast',
+  'renderSaisonDetail','resaBack','goSaisonDirect','toggleDroit','ouvrirDocModal','fermerDocModal',
+  'renderDashboard','renderMembres','renderComptabilite','renderFactureTab','genererFacture','globalSearch','imprimerGroupes','setResaAdminSaison',
+  'renderAvoirs','solderAvoir','ajouterAvoir','renderSuiviQuotidien','toggleDocItem','setComptaTab'];
+try{window.renderSaisonDetail=renderSaisonDetail;}catch(e){}
+try{window.resaBack=resaBack;}catch(e){}
+try{window.goSaisonDirect=goSaisonDirect;}catch(e){}
+try{window.toggleDroit=toggleDroit;}catch(e){}
+try{window.ouvrirDocModal=ouvrirDocModal;}catch(e){}
+try{window.fermerDocModal=fermerDocModal;}catch(e){}
+_fns.forEach(function(fn){try{if(typeof eval(fn)!=='undefined')window[fn]=eval(fn);}catch(e){}});      
+
+renderReservation();
+
+
+
+
+</script>
+</body>
+</html>
