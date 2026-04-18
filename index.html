@@ -1958,6 +1958,8 @@ textarea{resize:vertical;}
 <script>
 
 
+
+
 // SUPABASE CONFIG
 var SB_URL='https://kpizggqrpdrykoifvily.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -3210,41 +3212,6 @@ var AVOIRS = {
   ],
 };
 
-function renderAvoirs() {
-  var el = document.getElementById('admin-avoirs-content'); if(!el) return;
-
-  function renderTable(items, year, nIdx) {
-    var addBtn = '<button onclick="ajouterAvoir('+nIdx+')" style="margin-top:10px;padding:9px 16px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un avoir</button>';
-    if (!items.length || (items.length===1&&!items[0].membre)) {
-      return '<div style="text-align:center;color:#9CA3AF;padding:20px 0;font-size:13px;">Aucun avoir</div>' + addBtn;
-    }
-    var rows = items.filter(function(a){return a.membre;}).map(function(a,i){
-      return '<tr style="border-bottom:1px solid #F3F4F6;">'
-        +'<td style="padding:10px 8px;font-size:13px;font-weight:600;">'+a.membre+'</td>'
-        +'<td style="padding:10px 8px;font-size:13px;text-align:right;font-weight:700;color:#1A6FD4;">'+a.somme+'€</td>'
-        +'<td style="padding:10px 8px;font-size:12px;color:#374151;">'+a.motif+'</td>'
-        +'<td style="padding:10px 8px;text-align:center;">'
-        +(a.solde
-          ? '<span style="background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;">✅ Soldé<br><span style="font-weight:400;">'+a.dateSolde+'</span></span>'
-          : '<button onclick="solderAvoir('+nIdx+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')
-        +'</td></tr>';
-    }).join('');
-    return '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
-      +'<thead><tr style="background:#F9FAFB;"><th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:left;">Membre</th>'
-      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:right;">Somme</th>'
-      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;">Motif</th>'
-      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:center;">Soldé</th>'
-      +'</tr></thead><tbody>'+rows+'</tbody></table></div>' + addBtn;
-  }
-
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
-    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N−1 (2025)</div>'
-    + renderTable(AVOIRS.nMoins1, 'N-1', 0)
-    + '</div>'
-    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'
-    + renderTable(AVOIRS.n, 'N', 1)
-    + '</div></div>';
-}
 
 function solderAvoir(tableIdx, rowIdx) {
   var table = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
@@ -3310,18 +3277,6 @@ function renderSuiviQuotidien() {
 }
 
 
-function setComptaTab(tab) {
-  var bilan = document.getElementById('compta-bilan-content');
-  var suivi = document.getElementById('compta-suivi-content');
-  var btnB  = document.getElementById('ct-bilan');
-  var btnS  = document.getElementById('ct-suivi');
-  if (bilan) bilan.style.display = tab === 'bilan' ? 'block' : 'none';
-  if (suivi) suivi.style.display = tab === 'suivi' ? 'block' : 'none';
-  if (btnB) { btnB.classList.toggle('active', tab==='bilan'); btnB.classList.toggle('btn-ghost', tab!=='bilan'); }
-  if (btnS) { btnS.classList.toggle('active', tab==='suivi'); btnS.classList.toggle('btn-ghost', tab!=='suivi'); }
-  if (tab === 'suivi') renderSuiviQuotidien();
-  else renderComptabilite();
-}
 
 function setGPeriod(p) {
   ST.gPeriod=p;
@@ -3367,74 +3322,7 @@ function renderFiches() {
 
 // ═══ PAIEMENTS ═══
 var paiPeriod='jour';
-function setPaiPeriod(p){
-  paiPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('pp-'+x);if(btn)btn.classList.toggle('active',x===p);});
-  renderPaiements();
-}
 
-function renderPaiements() {
-  var el=document.getElementById('paiements-content'); if(!el) return;
-  var total=DEMO_PAYMENTS.reduce(function(s,p){return s+p.montant;},0);
-  var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).reduce(function(s,p){return s+p.montant;},0);
-  var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='payé';}).reduce(function(s,p){return s+p.montant;},0);
-  var rows=DEMO_PAYMENTS.map(function(p){
-    var ok=p.statut==='payé';
-    return '<div class="pai-row"><div class="pai-ava" style="background:'+p.color+';">'+p.initiale+'</div>'
-      +'<div style="flex:1;"><div class="pai-name">'+p.nom+'</div><div class="pai-sub">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
-      +'<div style="text-align:right;"><div class="pai-amt" style="color:'+(ok?'#10B981':'#F97316')+';">'+p.montant+'€</div>'
-      +'<div style="font-size:11px;color:'+(ok?'#10B981':'#F97316')+';font-weight:700;">'+(ok?'✅ Payé':'⏳ Attente')+'</div>'
-      +'</div></div>';
-  }).join('');
-  el.innerHTML='<div class="wcard" style="margin-bottom:12px;"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#10B981;">'+enc+'€</div><div style="font-size:11px;color:#9CA3AF;">Encaissé</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#F97316;">'+att+'€</div><div style="font-size:11px;color:#9CA3AF;">En attente</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#1A6FD4;">'+total+'€</div><div style="font-size:11px;color:#9CA3AF;">Total</div></div>'
-    +'</div><div class="wcard-title"><span>💳</span> Détail</div>'+rows+'</div>';
-}
-
-// ═══ FRÉQUENTATION ═══
-var freqPeriod='semaine';
-function setFreqPeriod(p){
-  freqPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('fp-'+x);if(btn)btn.classList.toggle('active',x===p);});
-  renderFrequentation();
-}
-
-function renderFrequentation() {
-  var el=document.getElementById('frequentation-content'); if(!el) return;
-  var data=freqPeriod==='jour'?DEMO_FREQ.jours:freqPeriod==='mois'?DEMO_FREQ.mois:DEMO_FREQ.semaines;
-  var maxVal=Math.max.apply(null,data.map(function(d){return Math.max(d.matin,d.aprem);}));
-  var bars=data.map(function(d){
-    var pm=Math.round(d.matin/maxVal*80),pa=Math.round(d.aprem/maxVal*80);
-    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">'
-      +'<div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:80px;">'
-      +'<div style="flex:1;background:#1A6FD4;border-radius:4px 4px 0 0;height:'+pm+'px;"></div>'
-      +'<div style="flex:1;background:#E9B10D;border-radius:4px 4px 0 0;height:'+pa+'px;"></div>'
-      +'</div>'
-      +'<div style="font-size:10px;color:#9CA3AF;">'+d.label+'</div>'
-      +'</div>';
-  }).join('');
-  el.innerHTML='<div class="wcard"><div class="wcard-title"><span>📊</span> Fréquentation</div>'
-    +'<div style="display:flex;gap:4px;align-items:flex-end;margin-bottom:8px;">'+bars+'</div>'
-    +'<div style="display:flex;gap:16px;font-size:12px;color:#6B7280;">'
-    +'<span><span style="display:inline-block;width:10px;height:10px;background:#1A6FD4;border-radius:2px;margin-right:4px;"></span>Matin</span>'
-    +'<span><span style="display:inline-block;width:10px;height:10px;background:#E9B10D;border-radius:2px;margin-right:4px;"></span>Apres-midi</span>'
-    +'</div></div>';
-}
-
-// ═══ RÉSERVATIONS ADMIN ═══
-var resaFilter='all';
-function setResaFilter(f){
-  resaFilter=f;
-  ['all','paye','attente'].forEach(function(x){
-    var btn=document.getElementById('rf-'+x);
-    if(!btn) return;
-    if(x===f){btn.style.background='linear-gradient(135deg,#1A6FD4,#0D4FA0)';btn.style.color='#fff';btn.classList.remove('btn-ghost');}
-    else{btn.style.background='';btn.style.color='';btn.classList.add('btn-ghost');}
-  });
-  renderAdminResas();
-}
 
 function adminNextWeek(){}
 
@@ -3469,74 +3357,7 @@ function renderFiches() {
 
 // ═══ PAIEMENTS ═══
 var paiPeriod='jour';
-function setPaiPeriod(p){
-  paiPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('pp-'+x);if(btn)btn.classList.toggle('active',x===p);});
-  renderPaiements();
-}
 
-function renderPaiements() {
-  var el=document.getElementById('paiements-content'); if(!el) return;
-  var total=DEMO_PAYMENTS.reduce(function(s,p){return s+p.montant;},0);
-  var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).reduce(function(s,p){return s+p.montant;},0);
-  var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='payé';}).reduce(function(s,p){return s+p.montant;},0);
-  var rows=DEMO_PAYMENTS.map(function(p){
-    var ok=p.statut==='payé';
-    return '<div class="pai-row"><div class="pai-ava" style="background:'+p.color+';">'+p.initiale+'</div>'
-      +'<div style="flex:1;"><div class="pai-name">'+p.nom+'</div><div class="pai-sub">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
-      +'<div style="text-align:right;"><div class="pai-amt" style="color:'+(ok?'#10B981':'#F97316')+';">'+p.montant+'€</div>'
-      +'<div style="font-size:11px;color:'+(ok?'#10B981':'#F97316')+';font-weight:700;">'+(ok?'✅ Payé':'⏳ Attente')+'</div>'
-      +'</div></div>';
-  }).join('');
-  el.innerHTML='<div class="wcard" style="margin-bottom:12px;"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#10B981;">'+enc+'€</div><div style="font-size:11px;color:#9CA3AF;">Encaissé</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#F97316;">'+att+'€</div><div style="font-size:11px;color:#9CA3AF;">En attente</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#1A6FD4;">'+total+'€</div><div style="font-size:11px;color:#9CA3AF;">Total</div></div>'
-    +'</div><div class="wcard-title"><span>💳</span> Détail</div>'+rows+'</div>';
-}
-
-// ═══ FRÉQUENTATION ═══
-var freqPeriod='semaine';
-function setFreqPeriod(p){
-  freqPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('fp-'+x);if(btn)btn.classList.toggle('active',x===p);});
-  renderFrequentation();
-}
-
-function renderFrequentation() {
-  var el=document.getElementById('frequentation-content'); if(!el) return;
-  var data=freqPeriod==='jour'?DEMO_FREQ.jours:freqPeriod==='mois'?DEMO_FREQ.mois:DEMO_FREQ.semaines;
-  var maxVal=Math.max.apply(null,data.map(function(d){return Math.max(d.matin,d.aprem);}));
-  var bars=data.map(function(d){
-    var pm=Math.round(d.matin/maxVal*80),pa=Math.round(d.aprem/maxVal*80);
-    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">'
-      +'<div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:80px;">'
-      +'<div style="flex:1;background:#1A6FD4;border-radius:4px 4px 0 0;height:'+pm+'px;"></div>'
-      +'<div style="flex:1;background:#E9B10D;border-radius:4px 4px 0 0;height:'+pa+'px;"></div>'
-      +'</div>'
-      +'<div style="font-size:10px;color:#9CA3AF;">'+d.label+'</div>'
-      +'</div>';
-  }).join('');
-  el.innerHTML='<div class="wcard"><div class="wcard-title"><span>📊</span> Fréquentation</div>'
-    +'<div style="display:flex;gap:4px;align-items:flex-end;margin-bottom:8px;">'+bars+'</div>'
-    +'<div style="display:flex;gap:16px;font-size:12px;color:#6B7280;">'
-    +'<span><span style="display:inline-block;width:10px;height:10px;background:#1A6FD4;border-radius:2px;margin-right:4px;"></span>Matin</span>'
-    +'<span><span style="display:inline-block;width:10px;height:10px;background:#E9B10D;border-radius:2px;margin-right:4px;"></span>Apres-midi</span>'
-    +'</div></div>';
-}
-
-// ═══ RÉSERVATIONS ADMIN ═══
-var resaFilter='all';
-function setResaFilter(f){
-  resaFilter=f;
-  ['all','paye','attente'].forEach(function(x){
-    var btn=document.getElementById('rf-'+x);
-    if(!btn) return;
-    if(x===f){btn.style.background='linear-gradient(135deg,#1A6FD4,#0D4FA0)';btn.style.color='#fff';btn.classList.remove('btn-ghost');}
-    else{btn.style.background='';btn.style.color='';btn.classList.add('btn-ghost');}
-  });
-  renderAdminResas();
-}
 
 function renderAdminGroupes() {
   var el=document.getElementById('groupes-grid'); if(!el) return;
@@ -3610,102 +3431,7 @@ function renderFiches() {
 
 // ═══ PAIEMENTS ═══
 var paiPeriod='jour';
-function setPaiPeriod(p){
-  paiPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('pp-'+x);if(btn)btn.classList.toggle('active',x===p);});
-  renderPaiements();
-}
 
-function renderPaiements() {
-  var el=document.getElementById('paiements-content'); if(!el) return;
-  var total=DEMO_PAYMENTS.reduce(function(s,p){return s+p.montant;},0);
-  var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).reduce(function(s,p){return s+p.montant;},0);
-  var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='payé';}).reduce(function(s,p){return s+p.montant;},0);
-  var rows=DEMO_PAYMENTS.map(function(p){
-    var ok=p.statut==='payé';
-    return '<div class="pai-row"><div class="pai-ava" style="background:'+p.color+';">'+p.initiale+'</div>'
-      +'<div style="flex:1;"><div class="pai-name">'+p.nom+'</div><div class="pai-sub">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
-      +'<div style="text-align:right;"><div class="pai-amt" style="color:'+(ok?'#10B981':'#F97316')+';">'+p.montant+'€</div>'
-      +'<div style="font-size:11px;color:'+(ok?'#10B981':'#F97316')+';font-weight:700;">'+(ok?'✅ Payé':'⏳ Attente')+'</div>'
-      +'</div></div>';
-  }).join('');
-  el.innerHTML='<div class="wcard" style="margin-bottom:12px;"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#10B981;">'+enc+'€</div><div style="font-size:11px;color:#9CA3AF;">Encaissé</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#F97316;">'+att+'€</div><div style="font-size:11px;color:#9CA3AF;">En attente</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#1A6FD4;">'+total+'€</div><div style="font-size:11px;color:#9CA3AF;">Total</div></div>'
-    +'</div><div class="wcard-title"><span>💳</span> Détail</div>'+rows+'</div>';
-}
-
-// ═══ FRÉQUENTATION ═══
-var freqPeriod='semaine';
-function setFreqPeriod(p){
-  freqPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('fp-'+x);if(btn)btn.classList.toggle('active',x===p);});
-  renderFrequentation();
-}
-
-function renderFrequentation() {
-  var el=document.getElementById('frequentation-content'); if(!el) return;
-  var data=freqPeriod==='jour'?DEMO_FREQ.jours:freqPeriod==='mois'?DEMO_FREQ.mois:DEMO_FREQ.semaines;
-  var maxVal=Math.max.apply(null,data.map(function(d){return Math.max(d.matin,d.aprem);}));
-  var bars=data.map(function(d){
-    var pm=Math.round(d.matin/maxVal*80),pa=Math.round(d.aprem/maxVal*80);
-    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">'
-      +'<div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:80px;">'
-      +'<div style="flex:1;background:#1A6FD4;border-radius:4px 4px 0 0;height:'+pm+'px;"></div>'
-      +'<div style="flex:1;background:#E9B10D;border-radius:4px 4px 0 0;height:'+pa+'px;"></div>'
-      +'</div>'
-      +'<div style="font-size:10px;color:#9CA3AF;">'+d.label+'</div>'
-      +'</div>';
-  }).join('');
-  el.innerHTML='<div class="wcard"><div class="wcard-title"><span>📊</span> Fréquentation</div>'
-    +'<div style="display:flex;gap:4px;align-items:flex-end;margin-bottom:8px;">'+bars+'</div>'
-    +'<div style="display:flex;gap:16px;font-size:12px;color:#6B7280;">'
-    +'<span><span style="display:inline-block;width:10px;height:10px;background:#1A6FD4;border-radius:2px;margin-right:4px;"></span>Matin</span>'
-    +'<span><span style="display:inline-block;width:10px;height:10px;background:#E9B10D;border-radius:2px;margin-right:4px;"></span>Apres-midi</span>'
-    +'</div></div>';
-}
-
-// ═══ RÉSERVATIONS ADMIN ═══
-var resaFilter='all';
-function setResaFilter(f){
-  resaFilter=f;
-  ['all','paye','attente'].forEach(function(x){
-    var btn=document.getElementById('rf-'+x);
-    if(!btn) return;
-    if(x===f){btn.style.background='linear-gradient(135deg,#1A6FD4,#0D4FA0)';btn.style.color='#fff';btn.classList.remove('btn-ghost');}
-    else{btn.style.background='';btn.style.color='';btn.classList.add('btn-ghost');}
-  });
-  renderAdminResas();
-}
-
-var _adminResas=[];
-function renderAdminResas() {
-  var el=document.getElementById('admin-resa-content'); if(!el) return;
-  var all=[].concat(DEMO_RESAS,ST.reservations);
-  if(resaFilter==='paye')    all=all.filter(function(r){return r.paid&&r.paid>0;});
-  if(resaFilter==='attente') all=all.filter(function(r){return !r.paid||r.paid===0;});
-  _adminResas=all;
-  var html='';
-  all.forEach(function(r,i){
-    var statut=r.statut||(r.paid&&r.paid>0?'payé':'en attente');
-    var sColor=statut==='validé'?'#1A6FD4':statut==='payé'?'#10B981':'#F97316';
-    var sLabel=statut==='validé'?'✅ Validé':statut==='payé'?'✅ Payé':'⏳ En attente';
-    var kids=(r.children||[]).map(function(ch){var g=getGroupe(ch.age||8);return '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#9CA3AF')+'">'+(g?g.emoji+' ':'')+ch.name+'</span>';}).join('');
-    var btn=statut!=='validé'
-      ?'<button onclick="ouvrirValidationResa('+i+')" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;width:100%;">✅ Valider la réservation</button>'
-      :'<div style="background:#D1FAE5;color:#065F46;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;text-align:center;margin-top:8px;">'+(r.modePaiement?'✅ Validé · '+r.modePaiement:'✅ Validé')+'</div>';
-    html+='<div class="r-row"><div class="r-dot"></div><div style="flex:1;">'
-      +'<div style="font-size:13px;font-weight:700;">'+r.nom+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+r.email+'</div>'
-      +'<div style="font-size:12px;color:#374151;font-weight:700;margin-top:2px;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
-      +(kids?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">'+kids+'</div>':'')
-      +'<div style="font-size:12px;margin-top:4px;color:'+sColor+';font-weight:700;">'+sLabel+(r.paid&&r.paid>0?' · '+r.paid+'€':'')+'</div>'
-      +(r.saisonLabel?'<div style="font-size:11px;color:#9CA3AF;">'+r.saisonLabel+'</div>':'')
-      +btn+'</div></div>';
-  });
-  el.innerHTML=html||'<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation</p></div>';
-}
 
 function ouvrirValidationResa(idx) {
   window._validatingResaIdx=idx;
@@ -3894,210 +3620,9 @@ function fermerDocModal() {
 
 
 // ═══ DASHBOARD ═══
-function renderDashboard() {
-  var el = document.getElementById('admin-dashboard-content');
-  if (!el) return;
-  var kids = allKids();
-  var allResas = [].concat(DEMO_RESAS, ST.reservations);
-  var enc = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  var att = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut!=='payé'?p.montant:0);},0);
-  var validees = allResas.filter(function(r){return r.statut==='validé';}).length;
-  var attente  = allResas.filter(function(r){return r.statut==='en attente';}).length;
 
-  // Activity feed
-  var feed = [].concat(
-    DEMO_RESAS.slice(0,2).map(function(r){return {icon:'📅',txt:r.nom+' – '+r.slot.time,sub:r.date,color:'#1A6FD4'};}),
-    DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).slice(0,2).map(function(p){return {icon:'💳',txt:p.nom+' '+p.montant+'€',sub:p.date+' · '+p.mode,color:'#10B981'};})
-  );
 
-  el.innerHTML = ''
-    // Quick actions
-    + '<div class="wcard" style="margin-bottom:12px;">'
-    + '<div class="wcard-title"><span>⚡</span> Actions rapides</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    + '<button data-tab="membres" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">👨‍👩‍👧<br>Membres<br><span style="font-size:20px;font-weight:800;">'+kids.length+'</span></button>'
-    + '<button data-tab="reservations" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">📅<br>Réservations<br><span style="font-size:20px;font-weight:800;">'+allResas.length+'</span></button>'
-    + '<button data-tab="paiements" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">💰<br>Encaissé<br><span style="font-size:20px;font-weight:800;">'+enc+'€</span></button>'
-    + '<button data-tab="groupes" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#E9B10D,#F57F17);color:#1A1A2E;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">🏖️<br>Groupes<br><span style="font-size:20px;font-weight:800;">'+GROUPES.length+'</span></button>'
-    + '</div></div>'
 
-    // Réservations recap
-    + '<div class="wcard" style="margin-bottom:12px;">'
-    + '<div class="wcard-title"><span>📅</span> Réservations</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-    + '<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#065F46;">'+validees+'</div><div style="font-size:11px;color:#6EE7B7;font-weight:700;">Validées</div></div>'
-    + '<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#92400E;">'+attente+'</div><div style="font-size:11px;color:#FCD34D;font-weight:700;">En attente</div></div>'
-    + '</div>'
-    + (attente>0 ? '<button data-tab="reservations" onclick="window.setAdminTab(this.dataset.tab)" class="btn btn-full" style="background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;padding:11px;">Voir les '+attente+' demande'+(attente>1?'s':'')+' en attente →</button>' : '')
-    + '</div>'
-
-    // Paiements
-    + '<div class="wcard" style="margin-bottom:12px;">'
-    + '<div class="wcard-title"><span>💳</span> Trésorerie</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    + '<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#065F46;">'+enc+'€</div><div style="font-size:11px;color:#6EE7B7;font-weight:700;">Encaissé</div></div>'
-    + '<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#92400E;">'+att+'€</div><div style="font-size:11px;color:#FCD34D;font-weight:700;">En attente</div></div>'
-    + '</div></div>'
-
-    // Activity feed
-    + '<div class="wcard">'
-    + '<div class="wcard-title"><span>🕐</span> Activité récente</div>'
-    + feed.map(function(item){
-        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F9FAFB;">'
-          +'<div style="width:36px;height:36px;border-radius:10px;background:'+item.color+'18;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+item.icon+'</div>'
-          +'<div><div style="font-size:13px;font-weight:600;color:#1A1A2E;">'+item.txt+'</div>'
-          +'<div style="font-size:11px;color:#9CA3AF;">'+item.sub+'</div></div>'
-          +'</div>';
-      }).join('')
-    + '</div>';
-}
-
-// ═══ MEMBRES ═══
-function renderMembres() {
-  var el = document.getElementById('admin-membres-content');
-  if (!el) return;
-  var q = (document.getElementById('membre-search')||{value:''}).value.toLowerCase();
-  var all = [].concat(DEMO_FAMS, ST.members);
-  if (q) all = all.filter(function(m){
-    return (m.nom||'').toLowerCase().includes(q)
-      || (m.prenom||'').toLowerCase().includes(q)
-      || (m.email||'').toLowerCase().includes(q)
-      || (m.children||[]).some(function(ch){return (ch.name||'').toLowerCase().includes(q);});
-  });
-  if (!all.length) {
-    el.innerHTML='<div class="empty"><div class="empty-icon">👨‍👩‍👧</div><p>Aucun résultat</p></div>';
-    return;
-  }
-  el.innerHTML = all.map(function(m, i) {
-    var initiale = ((m.prenom||'?').charAt(0) + (m.nom||'').charAt(0)).toUpperCase();
-    var chips = (m.children||[]).map(function(ch){
-      var g = getGroupe(parseFloat(ch.age)||0);
-      return '<span style="background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#6B7280')+';font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;">'
-        +(g?g.emoji+' ':'')+ch.name+(ch.age?' · '+ch.age+'a':'')+'</span>';
-    }).join('');
-    return '<div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
-      +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:chips?8px:0;">'
-      +'<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#1A6FD4,#7C3AED);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;">'+initiale+'</div>'
-      +'<div style="flex:1;">'
-      +'<div style="font-size:15px;font-weight:700;color:#1A1A2E;">'+m.prenom+' '+m.nom+'</div>'
-      +'<div style="font-size:12px;color:#9CA3AF;">'+m.email+'</div>'
-      +'</div>'
-      +'<a href="tel:'+m.tel+'" style="background:#EFF6FF;color:#1A6FD4;border:none;border-radius:10px;padding:8px 12px;font-size:20px;text-decoration:none;">📞</a>'
-      +'</div>'
-      +(chips?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">'+chips+'</div>':'')
-      +(m.adresse?'<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">📍 '+m.adresse+'</div>':'')
-      +'</div>';
-  }).join('');
-}
-
-// ═══ RÉSERVATIONS PAR SAISON ═══
-var resaAdminSaison = 'ete';
-
-function setResaAdminSaison(s) {
-  resaAdminSaison = s;
-  ['ete','printemps','automne'].forEach(function(x){
-    var btn = document.getElementById('rs-admin-'+x);
-    if(btn){ btn.classList.toggle('active',x===s); btn.classList.toggle('btn-ghost',x!==s); }
-  });
-  renderAdminResas();
-}
-
-// Override renderAdminResas to filter by saison
-var _origRenderAdminResas = null;
-
-function renderAdminResas() {
-  var el = document.getElementById('admin-resa-content'); if (!el) return;
-  var all = [].concat(DEMO_RESAS, ST.reservations);
-  // Filter by saison
-  if (resaAdminSaison) {
-    var sLabel = SAISONS[resaAdminSaison] ? SAISONS[resaAdminSaison].label : '';
-    all = all.filter(function(r){ return !r.saisonLabel || r.saisonLabel.indexOf(resaAdminSaison==='ete'?'Été':resaAdminSaison==='printemps'?'Printemps':'Automne') >= 0; });
-  }
-  if (resaFilter === 'attente') all = all.filter(function(r){return !r.paid||r.paid===0;});
-  if (resaFilter === 'valide')  all = all.filter(function(r){return r.statut==='validé';});
-  _adminResas = all;
-  if (!all.length) {
-    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation</p></div>';
-    return;
-  }
-  el.innerHTML = all.map(function(r, i) {
-    var statut = r.statut || (r.paid&&r.paid>0?'payé':'en attente');
-    var sColor = statut==='validé'?'#1A6FD4':statut==='payé'?'#10B981':'#F97316';
-    var sLabel = statut==='validé'?'✅ Validé':statut==='payé'?'✅ Payé':'⏳ En attente';
-    var kids = (r.children||[]).map(function(ch){
-      var g=getGroupe(ch.age||8);
-      return '<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+(g?g.color+'18':'#F3F4F6')+';color:'+(g?g.color:'#9CA3AF')+'">'+(g?g.emoji+' ':'')+ch.name+'</span>';
-    }).join('');
-    var btn = statut!=='validé'
-      ? '<button onclick="ouvrirValidationResa('+i+')" style="background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;width:100%;margin-top:8px;font-family:inherit;">✅ Valider la réservation</button>'
-      : '<div style="background:#D1FAE5;color:#065F46;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;text-align:center;margin-top:8px;">'+(r.modePaiement?'✅ Validé · '+r.modePaiement:'✅ Validé')+'</div>';
-    return '<div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
-      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">'
-      +'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+r.nom+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+r.email+'</div></div>'
-      +'<div style="font-size:12px;font-weight:700;color:'+sColor+';">'+sLabel+'</div>'
-      +'</div>'
-      +'<div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;">'+((r.slot?r.slot.time+' · '+r.slot.date:''))+'</div>'
-      +(kids?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">'+kids+'</div>':'')
-      +(r.saisonLabel?'<div style="font-size:11px;color:#9CA3AF;margin-bottom:2px;">'+r.saisonLabel+'</div>':'')
-      +(r.paid&&r.paid>0?'<div style="font-size:13px;font-weight:700;color:#E9B10D;">'+r.paid+'€</div>':'')
-      +btn+'</div>';
-  }).join('');
-}
-
-// ═══ COMPTABILITÉ ═══
-function renderComptabilite() {
-  var el = document.getElementById('comptabilite-content'); if (!el) return;
-  var enc = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  var att = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut!=='payé'?p.montant:0);},0);
-  var total = enc + att;
-  var byMode = {};
-  DEMO_PAYMENTS.filter(function(p){return p.statut==='payé'&&p.mode;}).forEach(function(p){
-    byMode[p.mode] = (byMode[p.mode]||0) + p.montant;
-  });
-  var modeRows = Object.keys(byMode).map(function(mode){
-    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F9FAFB;font-size:13px;">'
-      +'<span>'+mode+'</span><span style="font-weight:700;">'+byMode[mode]+'€</span></div>';
-  }).join('');
-
-  el.innerHTML = '<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>💰</span> Bilan financier</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
-    +'<div style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border-radius:14px;padding:16px;text-align:center;">'
-    +'<div style="font-size:11px;font-weight:700;color:#065F46;text-transform:uppercase;margin-bottom:4px;">Encaissé</div>'
-    +'<div style="font-size:28px;font-weight:800;color:#065F46;">'+enc+'€</div>'
-    +'</div>'
-    +'<div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:14px;padding:16px;text-align:center;">'
-    +'<div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:4px;">En attente</div>'
-    +'<div style="font-size:28px;font-weight:800;color:#92400E;">'+att+'€</div>'
-    +'</div>'
-    +'</div>'
-    +'<div style="display:flex;justify-content:space-between;padding:12px 14px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:12px;">'
-    +'<span style="font-weight:700;color:#1565C0;">Total attendu</span>'
-    +'<span style="font-size:18px;font-weight:800;color:#1565C0;">'+total+'€</span>'
-    +'</div></div>'
-
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📊</span> Par mode de paiement</div>'
-    +modeRows
-    +'</div>'
-
-    +'<div class="wcard">'
-    +'<div class="wcard-title"><span>👤</span> Par famille</div>'
-    +DEMO_PAYMENTS.map(function(p){
-      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F9FAFB;">'
-        +'<div style="width:36px;height:36px;border-radius:10px;background:'+p.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">'+p.initiale+'</div>'
-        +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;">'+p.nom+'</div>'
-        +'<div style="font-size:11px;color:#9CA3AF;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
-        +'<div style="text-align:right;">'
-        +'<div style="font-size:14px;font-weight:700;color:'+(p.statut==='payé'?'#10B981':'#F97316')+';">'+p.montant+'€</div>'
-        +'<div style="font-size:10px;font-weight:700;color:'+(p.statut==='payé'?'#10B981':'#F97316')+'">'+(p.statut==='payé'?'✅ Payé':'⏳ Attente')+'</div>'
-        +'</div></div>';
-    }).join('')
-    +'</div>';
-}
-
-// ═══ FACTURE ═══
 function renderFactureTab() {
   // Set today's date
   var d = document.getElementById('fac-date');
@@ -4158,47 +3683,6 @@ function genererFacture() {
 }
 
 // ═══ RECHERCHE GLOBALE ═══
-function globalSearch() {
-  var el = document.getElementById('search-results'); if (!el) return;
-  var q = (document.getElementById('global-search')||{value:''}).value.trim().toLowerCase();
-  if (!q || q.length < 2) { el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px 0;font-size:14px;">Saisissez au moins 2 caractères</div>'; return; }
-  var results = [];
-
-  // Search kids
-  allKids().forEach(function(k){
-    if ((k.prenom+' '+k.nom+' '+k.email+' '+k.tel+' '+k.parent).toLowerCase().includes(q)) {
-      results.push({type:'enfant',icon:'🧒',title:k.nom+' '+k.prenom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#6366F1'});
-    }
-  });
-
-  // Search members/families
-  [].concat(DEMO_FAMS, ST.members).forEach(function(m){
-    if ((m.prenom+' '+m.nom+' '+m.email+' '+m.tel).toLowerCase().includes(q)) {
-      results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:m.email+' · '+m.tel,color:'#F97316'});
-    }
-  });
-
-  // Search reservations
-  [].concat(DEMO_RESAS, ST.reservations).forEach(function(r){
-    if ((r.nom+' '+r.email+' '+(r.saisonLabel||'')).toLowerCase().includes(q)) {
-      results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?' · '+r.saisonLabel:''),color:'#10B981'});
-    }
-  });
-
-  if (!results.length) { el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px 0;font-size:14px;">Aucun résultat pour "'+q+'"</div>'; return; }
-
-  el.innerHTML = '<div style="font-size:12px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+'</div>'
-    + results.map(function(r){
-      return '<div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;">'
-        +'<div style="width:40px;height:40px;border-radius:12px;background:'+r.color+'18;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">'+r.icon+'</div>'
-        +'<div><div style="font-size:14px;font-weight:700;color:#1A1A2E;">'+r.title+'</div>'
-        +'<div style="font-size:11px;color:#9CA3AF;">'+r.sub+'</div>'
-        +'<div style="font-size:10px;font-weight:700;color:'+r.color+';text-transform:uppercase;margin-top:2px;">'+r.type+'</div></div>'
-        +'</div>';
-    }).join('');
-}
-
-// ═══ IMPRESSION GROUPES ═══
 
 function imprimerGroupes() {
   var kids = allKids();
@@ -4291,5 +3775,3 @@ renderReservation();
 </script>
 </body>
 </html>
- 
- 
