@@ -2237,6 +2237,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 // SUPABASE
 var SB_URL='https://kpizggqrpdrykoifvily.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -3606,6 +3609,63 @@ function confirmerAjouterAvoir(){
   renderAvoirs();
 }
 
+// ═══ NAVIGATION ═══
+function navigate(name){
+  if(name==='admin'&&!adminUnlocked){openAdminLogin();return;}
+  _navigateTo(name);
+}
+function _navigateTo(name){
+  document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
+  document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
+  var pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active');
+  var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
+  if(name==='reservation') renderReservation();
+  if(name==='mes-resa') renderMesResa();
+  if(name==='admin') renderAdmin();
+  window.scrollTo(0,0);
+}
+
+
+
+// ═══ WINDOW BINDINGS ═══
+(function(){
+  var fns = ['navigate','_navigateTo','openAdminLogin','closeAdminLogin','checkAdminCode',
+    'onAdminCodeInput','toggleAdminEye','setAdminTab','setGPeriod','adminPrevWeek','adminNextWeek',
+    'renderAdmin','renderDashboard','renderMembres','renderAdminGroupes','renderAdminResas',
+    'renderPaiements','renderFrequentation','renderComptabilite','renderSuiviQuotidien',
+    'renderFactureTab','genererFacture','renderAvoirs','solderAvoir','ajouterAvoir',
+    'renderEquipe','globalSearch','imprimerGroupes','imprimerGroupe',
+    'setAdminTab','setGPeriod','setFreqPeriod','setPaiPeriod','setResaAdminSaison',
+    'setResaFilter','setComptaTab','setDashFreq','buildDashFreq',
+    'ouvrirValidationResa','fermerValidationResa','confirmerValidationResa',
+    'nouvelleResaManuelle','fermerNouvelleResa','confirmerNouvelleResa',
+    'modResa','delResa','relanceResa',
+    'ouvrirMembreEdit','fermerMembreEdit','sauvegarderMembreEdit',
+    'supprimerEnfantEdit','ajouterEnfantEdit',
+    'ajouterMembre','supprimerMembre','ajouterEnfantMembre','supprimerEnfantMembre',
+    'filterMembreAlpha','editMembre','voirMembreDetail',
+    'ouvrirSaisieQuotidienne','fermerSaisieQuotidienne','confirmerSaisieQuotidienne',
+    'genererFactureFromResa','ouvrirFactureDepuisPaiement','envoyerFactureMail',
+    'chargerDepuisPaiement','toutSelectionnerFac','toutDeselectionnerFac',
+    'ajouterAvoir','fermerAjouterAvoir','confirmerAjouterAvoir','genererDocAvoir',
+    'ouvrirFicheEnfant','fermerFicheEnfant','ouvrirFicheEnfantGroupe',
+    'ajouterAnimateur','editEquipe','delEquipe',
+    'goSaison','goSaisonDirect','resaBack','renderReservation','renderSaisonDetail',
+    'ajouterAuPanier','openClientPanier','closeClientPanier','retirerDuPanier',
+    'envoyerDemandeReservation','renderMesResa','cancelResa',
+    'inscGoStep','inscBack','inscNext','calcAge','selectDroit','toggleDroit',
+    'submitInscription','buildInscRecap',
+    'ouvrirDocModal','fermerDocModal','toggleDocItem','toggleIA',
+    'showInfos','toast','navigate',
+    'setPaiFilter','setPaiMode',
+    'chargerDonnees','sauvegarderInscription','validerResaSB','ajouterAvoirSB','solderAvoirSB'
+  ];
+  fns.forEach(function(name){
+    try{
+      if(typeof eval(name)==='function') window[name]=eval(name);
+    }catch(e){}
+  });
+})();
 </script>
 </body>
 </html>
