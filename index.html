@@ -1820,15 +1820,15 @@ textarea{resize:vertical;}
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
       <div class="admin-tabs" style="display:flex;gap:5px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.08);justify-content:center;">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
-        <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
+        <button class="admin-tab"        id="an-equipe"        onclick="setAdminTab('equipe')">👥 Équipe</button>
+        <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨‍👩‍👧 Membres</button>
         <button class="admin-tab"        id="an-groupes"       onclick="setAdminTab('groupes')">🏖️ Groupes</button>
-        <button class="admin-tab"        id="an-reservations"  onclick="setAdminTab('reservations')">📅 Résa</button>
+        <button class="admin-tab"        id="an-reservations"  onclick="setAdminTab('reservations')">📅 Réservations</button>
         <button class="admin-tab"        id="an-paiements"     onclick="setAdminTab('paiements')">💳 Paiements</button>
         <button class="admin-tab"        id="an-frequentation" onclick="setAdminTab('frequentation')">📊 Fréquentation</button>
         <button class="admin-tab"        id="an-comptabilite"  onclick="setAdminTab('comptabilite')">🧾 Compta</button>
         <button class="admin-tab"        id="an-facture"       onclick="setAdminTab('facture')">📄 Facture</button>
         <button class="admin-tab"        id="an-avoirs"        onclick="setAdminTab('avoirs')">🎫 Avoirs</button>
-        <button class="admin-tab"        id="an-equipe"        onclick="setAdminTab('equipe')">👥 Équipe</button>
         <button class="admin-tab"        id="an-recherche"     onclick="setAdminTab('recherche')">🔍 Recherche</button>
       </div>
     </div>
@@ -1953,6 +1953,97 @@ textarea{resize:vertical;}
       <!-- EQUIPE -->
       <div id="at-equipe" style="display:none;">
         <div id="at-equipe-content"></div>
+      </div>
+
+      <!-- MODAL NOUVELLE RÉSERVATION -->
+      <div id="nouvelle-resa-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;max-height:85vh;overflow-y:auto;">
+          <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;">
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">📅 Nouvelle réservation</div>
+            <button onclick="fermerNouvelleResa()" style="background:#F3F4F6;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+            <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Nom de famille *</label>
+            <input id="nr-nom" placeholder="DUPONT" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Email</label>
+              <input id="nr-email" type="email" placeholder="jean@email.com" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Téléphone</label>
+              <input id="nr-tel" type="tel" placeholder="06 00 00 00 00" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            </div>
+            <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Enfant (prénom nom)</label>
+            <input id="nr-enfant" placeholder="Emma DUPONT" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Période</label>
+              <select id="nr-periode" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="matin">Matin</option><option value="aprem">Après-midi</option>
+              </select></div>
+              <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Saison</label>
+              <select id="nr-saison" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="ete">Été 2026</option><option value="automne">Automne 2026</option><option value="printemps">Printemps 2027</option>
+              </select></div>
+            </div>
+            <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Semaine</label>
+            <input id="nr-semaine" placeholder="Semaine 1 — 6 au 10 juillet" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Montant (€)</label>
+            <input id="nr-montant" type="number" value="120" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>
+            <button onclick="confirmerNouvelleResa()" style="padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">✅ Créer la réservation</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAISIE QUOTIDIENNE OVERLAY -->
+      <div id="saisie-quotidienne-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:18px;max-width:420px;width:92%;max-height:85vh;overflow-y:auto;">
+          <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">📝 Saisie quotidienne</div>
+            <button onclick="fermerSaisieQuotidienne()" style="background:#F3F4F6;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date *</label>
+              <input id="sq-date" type="date" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Référence *</label>
+              <input id="sq-ref" placeholder="Fam. DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div><label style="font-size:10px;font-weight:700;color:#0099E6;text-transform:uppercase;display:block;margin-bottom:3px;">CB/CD (€)</label>
+              <input id="sq-cb" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #BFDBFE;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#10B981;text-transform:uppercase;display:block;margin-bottom:3px;">Virement (€)</label>
+              <input id="sq-vir" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #A7F3D0;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#8B5CF6;text-transform:uppercase;display:block;margin-bottom:3px;">Chèque (€)</label>
+              <input id="sq-chq" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #DDD6FE;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#F97316;text-transform:uppercase;display:block;margin-bottom:3px;">Chq Vacances (€)</label>
+              <input id="sq-chqvac" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #FED7AA;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#E9B10D;text-transform:uppercase;display:block;margin-bottom:3px;">Espèces (€)</label>
+              <input id="sq-esp" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #FDE68A;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#EC4899;text-transform:uppercase;display:block;margin-bottom:3px;">Avoir 2025 (€)</label>
+              <input id="sq-avoir24" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #FBCFE8;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;display:block;margin-bottom:3px;">Remboursement (€)</label>
+              <input id="sq-remb25" type="number" value="0" min="0" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            </div>
+            <button onclick="confirmerSaisieQuotidienne()" style="padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-top:4px;">✅ Enregistrer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AJOUTER AVOIR OVERLAY -->
+      <div id="ajouter-avoir-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:18px;max-width:400px;width:92%;">
+          <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">🎫 Ajouter un avoir</div>
+            <button onclick="fermerAjouterAvoir()" style="background:#F3F4F6;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom de la famille *</label>
+            <input id="aa-membre" placeholder="DUPONT" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Montant de l'avoir (€) *</label>
+            <input id="aa-somme" type="number" value="120" min="0" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Motif *</label>
+            <textarea id="aa-motif" placeholder="Annulation météo — Été 2025" rows="3" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;resize:none;"></textarea></div>
+            <button onclick="confirmerAjouterAvoir()" style="padding:13px;background:linear-gradient(135deg,#FF6B35,#FF8C00);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">✅ Créer l'avoir</button>
+          </div>
+        </div>
       </div>
 
       <!-- MODAL MODIFIER MEMBRE -->
@@ -2141,6 +2232,7 @@ textarea{resize:vertical;}
 
 
 <script>
+
 
 
 
@@ -3042,38 +3134,78 @@ function adminNextWeek(){var s=SAISONS.ete;var max=(s?s.semaines.length:9)-1;if(
 function renderAdminGroupes(){
   var el=document.getElementById('groupes-grid');if(!el)return;
   var wi=Math.max(0,Math.min(8,ST.adminWeekOffset||0));
-  var wk=SAISONS.ete.semaines[wi];
-  var awl=document.getElementById('admin-week-lbl');if(awl)awl.textContent=wk.label+' · '+wk.debut+' → '+wk.fin;
+  var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
+  var awl=document.getElementById('admin-week-lbl');
+  if(awl)awl.textContent=wk.label+' · '+wk.debut+' → '+wk.fin;
   var kids=allKids();
   var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
-  el.innerHTML=active.map(function(g){
-    var enf=kids.filter(function(k){
-      var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
-      return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
-    });
-    var pct=Math.round(enf.length/MAX_G*100);
-    var isFull=enf.length>=MAX_G;
-    return '<div style="background:#fff;border-radius:18px;padding:16px;margin-bottom:10px;box-shadow:0 2px 16px rgba(0,0,0,.06);border-left:4px solid '+g.color+';transition:box-shadow .2s;" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 16px rgba(0,0,0,.06)\'">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-      +'<div style="display:flex;align-items:center;gap:8px;">'
-      +'<span style="font-size:22px;">'+g.emoji+'</span>'
-      +'<div><div style="font-size:14px;font-weight:700;color:#0A0F2C;">'+g.name+'</div>'
-      +'<div style="font-size:11px;color:'+g.color+';font-weight:600;">'+g.ages+'</div></div></div>'
-      +'<div style="text-align:right;">'
-      +'<div style="font-size:18px;font-weight:800;color:'+(isFull?'#EF4444':g.color)+';">'+enf.length+'<span style="font-size:11px;color:#9CA3AF;">/'+MAX_G+'</span></div>'
-      +(isFull?'<div style="font-size:10px;color:#EF4444;font-weight:700;">Complet !</div>':'')
-      +'</div></div>'
-      +'<div style="background:#F3F4F6;border-radius:5px;height:5px;overflow:hidden;margin-bottom:10px;">'
-      +'<div style="background:'+(isFull?'#EF4444':g.color)+';height:100%;width:'+pct+'%;transition:width .4s;"></div></div>'
-      +(enf.length?'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
-        +enf.map(function(k){
-          var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
-          var hasMed=k.medical&&k.medical!=='RAS';
-          return '<span onclick="ouvrirFicheEnfantGroupe(\''+k.prenom+' '+k.nom+'\')" title="'+ageLabel(age)+(hasMed?' - ⚠️ '+k.medical:'')+'" style="background:'+g.color+'12;color:'+g.color+';font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background=\''+g.color+'25\'" onmouseout="this.style.background=\''+g.color+'12\'">'+k.prenom+(hasMed?' ⚠️':'')+'</span>';
-        }).join('')+'</div>'
-      :'<div style="font-size:11px;color:#D1D5DB;font-style:italic;text-align:center;padding:6px 0;">Aucun enfant inscrit</div>')
-      +'</div>';
-  }).join('');
+
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">'
+    +active.map(function(g){
+      var enf=kids.filter(function(k){
+        var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+        return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
+      });
+      var pct=Math.round(enf.length/MAX_G*100);
+      var isFull=enf.length>=MAX_G;
+      return '<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid '+g.color+';">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+        +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<span style="font-size:22px;">'+g.emoji+'</span>'
+        +'<div><div style="font-size:14px;font-weight:700;color:#0A0F1E;font-family:\'Syne\',sans-serif;">'+g.name+'</div>'
+        +'<div style="font-size:11px;color:'+g.color+';font-weight:600;">'+g.ages+'</div></div></div>'
+        +'<div style="display:flex;align-items:center;gap:6px;">'
+        +(isFull?'<span style="background:#FEF2F2;color:#EF4444;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">COMPLET</span>':'')
+        +'<button onclick="imprimerGroupe(\''+g.id+'\')" title="Imprimer ce groupe" style="background:#F3F4F6;border:none;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:14px;">🖨️</button>'
+        +'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+        +'<div style="flex:1;background:#F3F4F6;border-radius:5px;height:6px;overflow:hidden;">'
+        +'<div style="background:'+g.color+';height:100%;width:'+pct+'%;transition:width .3s;"></div></div>'
+        +'<div style="font-size:12px;font-weight:700;color:'+g.color+';white-space:nowrap;">'+enf.length+'/'+MAX_G+'</div>'
+        +'</div>'
+        +(enf.length
+          ?'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
+            +enf.map(function(k){
+              var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+              var hasMed=k.medical&&k.medical!=='RAS';
+              return '<span onclick="ouvrirFicheEnfantGroupe(\''+k.prenom+' '+k.nom+'\')" style="background:'+g.color+'12;color:'+g.color+';font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:3px;" title="'+ageLabel(age)+(hasMed?' ⚠️ '+k.medical:'')+'">'+(hasMed?'⚠️ ':'')+'<span>'+k.prenom+'</span><span style="font-size:9px;opacity:.7;">'+ageLabel(age)+'</span></span>';
+            }).join('')+'</div>'
+          :'<div style="text-align:center;color:#D1D5DB;font-size:12px;padding:10px 0;font-style:italic;">Aucun enfant inscrit</div>')
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+function imprimerGroupe(gid){
+  var wi=Math.max(0,Math.min(8,ST.adminWeekOffset||0));
+  var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
+  var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
+  var g=active.find(function(x){return String(x.id)===String(gid);});
+  if(!g)return;
+  var kids=allKids();
+  var enf=kids.filter(function(k){
+    var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+    return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
+  });
+  var win=window.open('','_blank','width=800,height=600');
+  if(!win){toast('Autoriser les popups','ko');return;}
+  var rows=enf.length
+    ?enf.map(function(k){
+        var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+        var med=k.medical&&k.medical!=='RAS'?'<strong style="color:#DC2626;">'+k.medical+'</strong>':'<span style="color:#9CA3AF;">RAS</span>';
+        return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td>'+ageLabel(age)+'</td><td>'+med+'</td></tr>';
+      }).join('')
+    :'<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:16px;font-style:italic;">Aucun enfant</td></tr>';
+  win.document.write('<html><head><title>'+g.name+' - '+wk.label+'</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:28px;}h1{color:'+g.color+';font-size:20px;margin-bottom:4px;}h2{color:#6B7280;font-size:13px;font-weight:400;margin-bottom:16px;}table{width:100%;border-collapse:collapse;}th{background:'+g.color+';color:#fff;padding:9px 12px;text-align:left;font-size:12px;}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;font-size:13px;}tr:nth-child(even){background:#F9FAFB;}.badge{display:inline-block;background:'+g.color+'20;color:'+g.color+';padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;}@media print{button{display:none!important;}}</style>'
+    +'</head><body>'
+    +'<h1>'+g.emoji+' '+g.name+' — '+g.ages+'</h1>'
+    +'<h2>'+(ST.gPeriod==='matin'?'Matin':'Après-midi')+' · '+wk.label+' · '+wk.debut+' → '+wk.fin+'</h2>'
+    +'<div class="badge">'+enf.length+' / '+MAX_G+' enfants</div>'
+    +'<table><thead><tr><th>Prénom</th><th>Nom</th><th>Âge au 1er jour</th><th>Médical</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<p style="margin-top:20px;font-size:11px;color:#9CA3AF;">Imprimé le '+new Date().toLocaleDateString('fr-FR')+' — Club des Léopards</p>'
+    +'<button onclick="window.print()" style="margin-top:12px;padding:10px 20px;background:'+g.color+';color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">🖨️ Imprimer</button>'
+    +'</body></html>');
+  win.document.close();
 }
 
 function ouvrirFicheEnfantGroupe(nom){
@@ -3278,11 +3410,37 @@ function renderAdminResas(){
 function modResa(i){var r=_adminResas[i];if(!r)return;var nom=prompt('Nom:',r.nom);if(!nom)return;r.nom=nom;toast('Modifiée','ok');renderAdminResas();}
 function delResa(i){if(!confirm('Supprimer ?'))return;var r=_adminResas[i];DEMO_RESAS=DEMO_RESAS.filter(function(x){return x!==r;});ST.reservations=ST.reservations.filter(function(x){return x!==r;});toast('Supprimée','ok');renderAdminResas();}
 function relanceResa(nom,email,slot){var subj=encodeURIComponent('Relance - Club des Léopards');var body=encodeURIComponent('Bonjour '+nom+',\n\nNous n\'avons pas reçu votre paiement pour : '+slot+'.\n\nCordialement,\nClub des Léopards');window.location.href='mailto:'+email+'?subject='+subj+'&body='+body;}
-function nouvelleResaManuelle(){var nom=prompt('Nom famille :');if(!nom)return;var email=prompt('Email :');var periode=prompt('Matin ou aprem :','matin');var semaine=prompt('Semaine :','Semaine 1');ST.reservations.push({id:Date.now(),nom:nom,email:email||'',tel:'',slot:{time:periode==='matin'?'Matin':'Après-midi',date:semaine},saisonLabel:'Été 2026',children:[],paid:0,statut:'en attente',date:new Date().toLocaleDateString('fr-FR')});toast('Créée','ok');renderAdminResas();}
-
-// ═══════════════════════════════════════════════════════════
-// COMPTABILITÉ
-// ═══════════════════════════════════════════════════════════
+function nouvelleResaManuelle(){
+  var ov=document.getElementById('nouvelle-resa-overlay');
+  if(ov)ov.style.display='flex';
+}
+function fermerNouvelleResa(){
+  var ov=document.getElementById('nouvelle-resa-overlay');
+  if(ov)ov.style.display='none';
+}
+function confirmerNouvelleResa(){
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var nom=f('nr-nom');if(!nom){toast('Nom requis','ko');return;}
+  var email=f('nr-email');
+  var tel=f('nr-tel');
+  var enfant=f('nr-enfant');
+  var periode=f('nr-periode');
+  var semaine=f('nr-semaine');
+  var saison=f('nr-saison');
+  var montant=parseInt(f('nr-montant')||'120');
+  var sLabel=saison==='ete'?'Été 2026':saison==='automne'?'Automne 2026':'Printemps 2027';
+  ST.reservations.push({
+    id:Date.now(),nom:'Fam. '+nom,email:email,tel:tel,
+    slot:{time:periode==='matin'?'Matin':'Après-midi',date:semaine},
+    saisonLabel:sLabel,
+    children:enfant?[{name:enfant,age:0}]:[],
+    paid:montant,statut:'en attente',
+    date:new Date().toLocaleDateString('fr-FR')
+  });
+  fermerNouvelleResa();
+  toast('Réservation créée ✅','ok');
+  renderAdminResas();
+}
 function setComptaTab(t){var b=document.getElementById('compta-bilan-content');var s=document.getElementById('compta-suivi-content');var bB=document.getElementById('ct-bilan');var bS=document.getElementById('ct-suivi');if(b)b.style.display=t==='bilan'?'block':'none';if(s)s.style.display=t==='suivi'?'block':'none';if(bB){bB.classList.toggle('active',t==='bilan');bB.classList.toggle('btn-ghost',t!=='bilan');}if(bS){bS.classList.toggle('active',t==='suivi');bS.classList.toggle('btn-ghost',t!=='suivi');}if(t==='suivi')renderSuiviQuotidien();else renderComptabilite();}
 function renderComptabilite(){
   var el=document.getElementById('comptabilite-content');if(!el)return;
@@ -3314,352 +3472,139 @@ function renderSuiviQuotidien(){
 // ═══════════════════════════════════════════════════════════
 // FACTURE
 // ═══════════════════════════════════════════════════════════
-function renderFactureTab(){var d=document.getElementById('fac-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);}
-function ouvrirFactureDepuisPaiement(nom,montant,mode){setAdminTab('facture');setTimeout(function(){var f=function(id,v){var el=document.getElementById(id);if(el)el.value=v;};f('fac-famille',nom.replace('Fam. ',''));f('fac-montant',montant);f('fac-mode',mode);f('fac-date',new Date().toISOString().slice(0,10));},150);}
-function genererFacture(){
-  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var famille=f('fac-famille'),email=f('fac-email'),enfant=f('fac-enfant'),prest=f('fac-prestation'),dates=f('fac-dates'),montant=f('fac-montant')||'120',mode=f('fac-mode'),date=f('fac-date');
-  if(!famille){toast('Nom famille requis','ko');return;}
-  var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
-  var dateF=date?new Date(date).toLocaleDateString('fr-FR'):new Date().toLocaleDateString('fr-FR');
-  var el=document.getElementById('facture-preview');if(!el)return;
-  el.innerHTML='<div style="background:#fff;border:2px solid #E5E7EB;border-radius:18px;padding:22px;margin-top:12px;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">'
-    +'<div><div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;color:#0A0F2C;">🐆 Club des Léopards</div>'
+function renderFactureTab(){
+  var d=document.getElementById('fac-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
+  var facContent=document.getElementById('fac-content');if(!facContent)return;
+
+  // Réservations validées
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  // Paiements encaissés
+  var payees=DEMO_PAYMENTS.filter(function(p){return p.statut==='paye'||p.statut==='payé';});
+  var q='';var facEl=document.getElementById('fac-search');if(facEl)q=facEl.value.toLowerCase();
+  if(q){
+    resasVal=resasVal.filter(function(r){return r.nom.toLowerCase().includes(q);});
+    payees=payees.filter(function(p){return p.nom.toLowerCase().includes(q);});
+  }
+
+  var resaCards=resasVal.map(function(r,i){
+    var ref='FAC-2026-'+(2000+i);
+    var ch=(r.children||[]).map(function(c){return '<span style="background:#EFF6FF;color:#0099E6;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">'+c.name+'</span>';}).join('');
+    return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:3px solid #10B981;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
+      +'<div><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+r.nom+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?' · '+r.saisonLabel:'')+'</div></div>'
+      +'<div style="font-size:16px;font-weight:800;color:#10B981;">'+(r.paid||120)+'€</div></div>'
+      +(ch?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">'+ch+'</div>':'')
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="genererFactureFromResa('+i+')" style="flex:1;padding:8px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">🧾 Générer facture</button>'
+      +(r.email?'<button onclick="envoyerFactureMail(\''+r.email+'\',\''+ref+'\',\''+r.nom.replace('Fam. ','').replace(/'/g,"\\'")+'\',\''+(r.slot?r.slot.time+' '+r.slot.date:'')+'\',\''+(r.paid||120)+'\')" style="flex:1;padding:8px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">📧 Envoyer</button>':'')
+      +'</div></div>';
+  }).join('');
+
+  var paiCards=payees.map(function(p,i){
+    var ref='FAC-2026-'+(1000+i);
+    return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:3px solid #8B5CF6;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
+      +'<div><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+p.nom+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
+      +'<div style="font-size:16px;font-weight:800;color:#8B5CF6;">'+p.montant+'€</div></div>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="ouvrirFactureDepuisPaiement(\''+p.nom.replace(/'/g,"\\'")+'\','+p.montant+',\''+p.mode+'\')" style="flex:1;padding:8px;background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">🧾 Facture paiement</button>'
+      +'</div></div>';
+  }).join('');
+
+  facContent.innerHTML=
+    '<div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;margin-bottom:4px;">📋 Génération de factures</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;margin-bottom:12px;">Numérotation FAC-2026-XXX automatique</div>'
+    +'<input id="fac-search" placeholder="🔍 Rechercher..." oninput="renderFactureTab()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:14px;">'
+
+    // Réservations validées
+    +(resasVal.length?'<div style="font-size:12px;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">✅ Depuis réservations validées</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px;">'+resaCards+'</div>':'')
+
+    // Paiements encaissés
+    +(payees.length?'<div style="font-size:12px;font-weight:700;color:#8B5CF6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">💳 Depuis paiements encaissés</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px;">'+paiCards+'</div>':'')
+
+    // Formulaire manuel
+    +'<div style="font-size:12px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📝 Facture manuelle</div>'
+    +'<div class="wcard">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Famille *</label><input id="fac-famille" placeholder="DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label><input id="fac-email" type="email" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Enfant</label><input id="fac-enfant" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prestation</label><input id="fac-prestation" placeholder="1 semaine matin" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Montant (€)</label><input id="fac-montant" type="number" value="120" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Mode paiement</label><input id="fac-mode" placeholder="Virement" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Dates prestation</label><input id="fac-dates" placeholder="6 au 10 juillet" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date facture</label><input id="fac-date" type="date" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'</div>'
+    +'<button onclick="genererFacture()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0A0F1E,#0D1B3E);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">🧾 Générer la facture</button>'
+    +'</div>'
+    +'<div id="facture-preview"></div>';
+}
+
+function genererFactureFromResa(i){
+  var resas=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  var r=resas[i];if(!r)return;
+  var ch=(r.children||[])[0]||{};
+  var ref='FAC-2026-'+(2000+i);
+  var dateF=new Date().toLocaleDateString('fr-FR');
+  var montant=r.paid||120;
+  var famille=r.nom.replace('Fam. ','');
+  var el=document.getElementById('facture-preview');
+  if(!el)return;
+  el.innerHTML='<div style="margin-top:16px;background:#fff;border:2px solid #E5E7EB;border-radius:14px;padding:24px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">'
+    +'<div><div style="font-size:18px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;">🐆 Club des Léopards</div>'
     +'<div style="font-size:11px;color:#9CA3AF;">clubdesleopards@free.fr · SIRET 50237123000025</div></div>'
-    +'<div style="text-align:right;"><div style="font-family:Syne,sans-serif;font-size:15px;font-weight:800;color:#0099E6;">FACTURE</div>'
-    +'<div style="font-size:11px;color:#9CA3AF;">'+ref+'</div><div style="font-size:11px;color:#9CA3AF;">'+dateF+'</div></div></div>'
+    +'<div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#0099E6;">FACTURE</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">'+ref+'</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">'+dateF+'</div></div></div>'
     +'<div style="background:#F9FAFB;border-radius:10px;padding:12px;margin-bottom:14px;">'
     +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#9CA3AF;margin-bottom:5px;">Facturé à</div>'
-    +'<div style="font-size:14px;font-weight:700;color:#0A0F2C;">Famille '+famille+'</div>'
-    +(enfant?'<div style="font-size:12px;">Enfant : '+enfant+'</div>':'')
-    +(email?'<div style="font-size:12px;color:#6B7280;">'+email+'</div>':'')
-    +'</div>'
-    +'<table style="margin-bottom:12px;"><thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;"><th style="border-radius:8px 0 0 0;font-size:11px;">Prestation</th><th style="text-align:right;border-radius:0 8px 0 0;font-size:11px;">Montant</th></tr></thead>'
-    +'<tbody><tr><td style="font-size:13px;font-weight:600;">'+prest+(dates?'<br><span style="font-size:10px;color:#9CA3AF;">'+dates+'</span>':'')+'</td><td style="text-align:right;font-size:15px;font-weight:800;">'+montant+'€</td></tr>'
-    +'<tr style="background:#F9FAFB;"><td style="font-weight:700;">Total TTC</td><td style="text-align:right;font-size:16px;font-weight:800;color:#0099E6;">'+montant+'€</td></tr></tbody></table>'
-    +'<div style="font-size:12px;color:#6B7280;margin-bottom:12px;">Mode : '+mode+'</div>'
+    +'<div style="font-size:14px;font-weight:700;">Famille '+famille+'</div>'
+    +(ch.name?'<div style="font-size:12px;color:#374151;">Enfant : '+ch.name+'</div>':'')
+    +(r.email?'<div style="font-size:12px;color:#6B7280;">'+r.email+'</div>':'')+'</div>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:12px;">'
+    +'<tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;"><th style="padding:9px 12px;text-align:left;font-size:11px;">Prestation</th><th style="padding:9px 12px;text-align:right;font-size:11px;">Montant</th></tr>'
+    +'<tr><td style="padding:12px;font-size:13px;font-weight:600;">'+(r.slot?r.slot.time+' · '+r.slot.date:'Séance club')+(r.saisonLabel?'<br><span style="font-size:11px;color:#9CA3AF;">'+r.saisonLabel+'</span>':'')+'</td>'
+    +'<td style="padding:12px;text-align:right;font-size:15px;font-weight:800;">'+montant+'€</td></tr>'
+    +'<tr style="background:#F9FAFB;border-top:2px solid #E5E7EB;"><td style="padding:9px 12px;font-weight:700;">Total TTC</td>'
+    +'<td style="padding:9px 12px;text-align:right;font-size:15px;font-weight:800;color:#0099E6;">'+montant+'€</td></tr></table>'
     +'<div style="display:flex;gap:8px;">'
-    +'<button onclick="window.print()" style="flex:1;padding:10px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🖨️ Imprimer</button>'
-    +(email?'<button onclick="envoyerFactureMail(\''+email+'\',\''+ref+'\',\''+famille+'\',\''+prest+'\',\''+montant+'\')" style="flex:1;padding:10px;background:linear-gradient(135deg,#00C48C,#00A86B);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">📧 Envoyer</button>':'')
+    +'<button onclick="window.print()" style="flex:1;padding:10px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">🖨️ Imprimer</button>'
+    +(r.email?'<button onclick="envoyerFactureMail(\''+r.email+'\',\''+ref+'\',\''+famille+'\',\''+( r.slot?r.slot.time+' '+r.slot.date:'')+'\',\''+montant+'\')" style="flex:1;padding:10px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">📧 Envoyer</button>':'')
     +'</div></div>';
   el.scrollIntoView({behavior:'smooth'});
 }
-function envoyerFactureMail(email,ref,famille,prest,montant){var subj=encodeURIComponent('Facture '+ref+' - Club des Léopards');var body=encodeURIComponent('Bonjour Famille '+famille+',\n\nFacture '+ref+'\nPrestation : '+prest+'\nMontant : '+montant+'€\n\nCordialement,\nClub des Léopards');window.location.href='mailto:'+email+'?subject='+subj+'&body='+body;}
-
-// ═══════════════════════════════════════════════════════════
-// AVOIRS
-// ═══════════════════════════════════════════════════════════
-function renderAvoirs(){
-  var el=document.getElementById('admin-avoirs-content');if(!el)return;
-  function makeTable(items,ni){
-    var real=items.filter(function(a){return a.membre;});
-    var restant=real.filter(function(a){return !a.solde;}).reduce(function(s,a){return s+a.somme;},0);
-    var rows=real.length?real.map(function(a,i){return '<tr><td style="font-weight:600;">'+a.membre+'</td><td style="text-align:right;font-weight:700;color:#0099E6;">'+a.somme+'€</td><td>'+a.motif+'</td>'
-      +'<td style="text-align:center;">'+(a.solde?'<span class="badge badge-green">'+a.dateSolde+'</span>':'<button onclick="solderAvoir('+ni+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')+'</td>'
-      +'<td style="text-align:center;"><button onclick="genererDocAvoir(\''+a.membre.replace(/'/g,"\\'")+'\','+a.somme+',\''+a.motif.replace(/'/g,"\\'")+'\','+ni+')" style="background:#F0F4FF;color:#0099E6;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Doc</button></td></tr>';}).join('')
-    :'<tr><td colspan="5" style="text-align:center;color:#9CA3AF;padding:16px;font-style:italic;">Aucun avoir</td></tr>';
-    return '<div style="overflow-x:auto;margin-bottom:10px;">'
-      +'<table style="min-width:380px;"><thead><tr><th>Membre</th><th style="text-align:right;">Somme</th><th>Motif</th><th style="text-align:center;">Soldé</th><th style="text-align:center;">Doc</th></tr></thead>'
-      +'<tbody>'+rows+'</tbody>'
-      +(restant>0?'<tfoot><tr style="background:#F0F4FF;"><td colspan="2" style="font-weight:700;color:#0099E6;">Restant : '+restant+'€</td><td colspan="3"></td></tr></tfoot>':'')
-      +'</table></div>'
-      +'<button onclick="ajouterAvoir('+ni+')" style="padding:8px 14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Ajouter avoir</button>';
+function ajouterAvoir(ti){
+  window._avoirTableIdx=ti;
+  var ov=document.getElementById('ajouter-avoir-overlay');
+  if(ov){
+    // Reset form
+    ['aa-membre','aa-motif'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    var som=document.getElementById('aa-somme');if(som)som.value='120';
+    ov.style.display='flex';
   }
-  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">'
-    +'<div class="wcard"><div class="wcard-title"><span>📂</span> N-1 (2025)</div>'+makeTable(AVOIRS.nMoins1,0)+'</div>'
-    +'<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'+makeTable(AVOIRS.n,1)+'</div>'
-    +'</div>';
 }
-function solderAvoir(ti,ri){var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;var real=tab.filter(function(a){return a.membre;})[ri];if(!real)return;real.solde=true;real.dateSolde=new Date().toLocaleDateString('fr-FR');if(typeof solderAvoirSB==='function'&&real._id)solderAvoirSB(real._id).catch(function(){});toast('Soldé','ok');renderAvoirs();}
-function ajouterAvoir(ti){var m=prompt('Nom famille :');if(!m)return;var s=parseInt(prompt('Montant :','120')||'0');var mo=prompt('Motif :')||'';var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;tab.push({id:Date.now(),membre:m,somme:s,motif:mo,solde:false,dateSolde:''});if(typeof ajouterAvoirSB==='function')ajouterAvoirSB(m,s,mo).catch(function(){});toast('Ajouté','ok');renderAvoirs();}
-function genererDocAvoir(membre,somme,motif,ni){
-  var partiel=confirm('Total ('+somme+'€) ? Annuler = montant partiel');
-  var montantAvoir=partiel?somme:parseInt(prompt('Montant partiel :',somme)||somme);
-  var ref='AV-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
-  var win=window.open('','_blank','width=700,height=500');if(!win)return;
-  win.document.write('<html><head><title>Avoir '+ref+'</title><style>body{font-family:system-ui,sans-serif;padding:32px;}table{width:100%;border-collapse:collapse;}th{padding:9px;text-align:left;background:#FF6B35;color:#fff;}td{padding:9px;border-bottom:1px solid #E5E7EB;}.btn{padding:10px 20px;background:#0099E6;color:#fff;border:none;border-radius:8px;cursor:pointer;}@media print{.btn{display:none;}}</style></head><body>'
-    +'<div style="display:flex;justify-content:space-between;margin-bottom:24px;"><div><div style="font-size:20px;font-weight:800;color:#0A0F2C;">Club des Léopards</div><div style="font-size:11px;color:#9CA3AF;">SIRET 50237123000025</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#FF6B35;">AVOIR</div><div style="font-size:11px;color:#9CA3AF;">'+ref+'</div><div style="font-size:11px;color:#9CA3AF;">'+new Date().toLocaleDateString('fr-FR')+'</div></div></div>'
-    +'<div style="background:#FFF4F0;border:1px solid #FED7AA;border-radius:8px;padding:14px;margin-bottom:16px;"><div style="font-size:9px;text-transform:uppercase;color:#FF6B35;font-weight:700;margin-bottom:4px;">Bénéficiaire</div><div style="font-size:15px;font-weight:700;">'+membre+'</div></div>'
-    +'<table><tr><th>Motif</th><th style="text-align:right;">Montant</th></tr><tr><td>'+motif+'</td><td style="text-align:right;font-size:16px;font-weight:800;">'+montantAvoir+'€</td></tr><tr style="background:#FFF4F0;"><td style="font-weight:700;">Total avoir</td><td style="text-align:right;font-size:16px;font-weight:800;color:#FF6B35;">'+montantAvoir+'€</td></tr></table>'
-    +'<p style="font-size:12px;color:#9CA3AF;margin-top:16px;">Cet avoir est valable pour toute réservation au Club des Léopards.</p>'
-    +'<button onclick="window.print()" class="btn">🖨️ Imprimer</button></body></html>');
-  win.document.close();
+function fermerAjouterAvoir(){
+  var ov=document.getElementById('ajouter-avoir-overlay');
+  if(ov)ov.style.display='none';
 }
-
-// ═══════════════════════════════════════════════════════════
-// RECHERCHE
-// ═══════════════════════════════════════════════════════════
-var _searchResults=[];
-function globalSearch(){
-  var el=document.getElementById('search-results');if(!el)return;
-  var q=(document.getElementById('global-search')||{value:''}).value.trim().toLowerCase();
-  if(!q||q.length<2){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px;font-size:14px;">Saisissez au moins 2 caractères</div>';return;}
-  var results=[];
-  allKids().forEach(function(k){if((k.prenom+' '+k.nom+' '+k.parent).toLowerCase().indexOf(q)>=0)results.push({type:'enfant',icon:'🧒',title:k.prenom+' '+k.nom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#7C3AED',kid:k});});
-  [].concat(DEMO_FAMS,ST.members).forEach(function(m){if((m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')).toLowerCase().indexOf(q)>=0)results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:(m.email||'')+' · '+(m.tel||''),color:'#FF6B35'});});
-  [].concat(DEMO_RESAS,ST.reservations).forEach(function(r){if((r.nom+' '+(r.email||'')).toLowerCase().indexOf(q)>=0)results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+' · '+(r.saisonLabel||''),color:'#00C48C'});});
-  _searchResults=results;
-  if(!results.length){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px;">Aucun résultat pour "'+q+'"</div>';return;}
-  el.innerHTML='<div style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+'</div>'
-    +results.map(function(r,i){
-      var click=r.type==='enfant'?'onclick="ouvrirFicheEnfant('+i+')" style="cursor:pointer;"':'';
-      return '<div '+click+' style="background:#fff;border-radius:14px;padding:13px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;transition:box-shadow .15s;border-left:3px solid '+r.color+';" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 10px rgba(0,0,0,.06)\'">'
-        +'<div style="width:38px;height:38px;border-radius:10px;background:'+r.color+'15;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+r.icon+'</div>'
-        +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+r.title+'</div><div style="font-size:11px;color:#9CA3AF;">'+r.sub+'</div>'
-        +(r.type==='enfant'?'<div style="font-size:10px;font-weight:700;color:'+r.color+';margin-top:2px;">Cliquer pour voir la fiche</div>':'')+'</div></div>';
-    }).join('');
-}
-function ouvrirFicheEnfant(i){
-  var r=_searchResults[i];if(!r||!r.kid)return;
-  var k=r.kid;var g=getGroupe(parseFloat(k.age)||0);
-  var ov=document.getElementById('fiche-enfant-overlay');
-  var body=document.getElementById('fiche-enfant-body');if(!ov||!body)return;
-  var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
-  body.innerHTML='<div style="padding:20px;">'
-    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'
-    +'<div style="width:48px;height:48px;border-radius:14px;background:'+(g?g.color:'#0099E6')+'18;color:'+(g?g.color:'#0099E6')+';display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">'+(k.prenom||'?').charAt(0)+'</div>'
-    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F2C;">'+k.prenom+' '+k.nom+'</div>'
-    +(g?'<div style="font-size:12px;color:'+g.color+';font-weight:700;">'+g.emoji+' '+g.name+' · '+g.ages+'</div>':'')+'</div></div>'
-    +'<div>'+[['Âge (1er jour club)',ageLabel(age)],['Famille',k.parent],['Email',k.email||'-'],['Tél',k.tel||'-'],['Médical',k.medical||'RAS'],['Inscrit le',k.inscrit||'-']].map(function(row){return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#9CA3AF;">'+row[0]+'</span><span style="font-weight:600;color:'+(row[0]==='Médical'&&row[1]!=='RAS'?'#EF4444':'#0A0F2C')+';">'+row[1]+'</span></div>';}).join('')+'</div></div>';
-  ov.style.display='flex';
-}
-function fermerFicheEnfant(){var ov=document.getElementById('fiche-enfant-overlay');if(ov)ov.style.display='none';}
-
-// ═══════════════════════════════════════════════════════════
-// INSCRIPTION — Supabase
-// ═══════════════════════════════════════════════════════════
-function submitInscription(){
-  var ri=document.getElementById('i-accept-ri'),cgv=document.getElementById('i-accept-cgv'),resp=document.getElementById('i-accept-resp');
-  var ok=true;
-  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
-  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
-  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
-  if(!ok)return;
+function confirmerAjouterAvoir(){
   var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var prenomEnfant=f('i-prenom'),nomEnfant=f('i-nom'),dob=f('i-dob');
-  var membreData={prenom:f('i-resp-prenom'),nom:f('i-resp-nom'),email:f('i-email'),tel:f('i-tel'),adresse_vacances:f('i-adresse-vacances'),adresse_fixe:f('i-adresse'),urgence_nom:f('i-urgence').split('·')[0].trim(),urgence_tel:f('i-urgence').split('·')[1]?f('i-urgence').split('·')[1].trim():'',droit_image:inscDroit==='oui'};
-  var enfantData={prenom:prenomEnfant,nom:membreData.nom,date_naissance:dob,age:parseAge(dob),medical:f('i-medical')||'RAS'};
-  function reset(){inscDroit=null;['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});var ad=document.getElementById('i-age-display');if(ad)ad.textContent='— ans';if(ri)ri.checked=false;if(cgv)cgv.checked=false;if(resp)resp.checked=false;inscGoStep(1);}
-  if(typeof SB!=='undefined'&&SB_ON){
-    toast('Enregistrement...');
-    sauvegarderInscription(membreData,enfantData).then(function(){toast('✅ Inscription enregistrée !','ok');reset();setTimeout(function(){navigate('home');},1200);}).catch(function(err){console.error(err);ST.members.push({prenom:membreData.prenom,nom:membreData.nom,email:membreData.email,tel:membreData.tel,adresse:membreData.adresse_vacances,droit_image:membreData.droit_image,children:[{name:prenomEnfant+' '+membreData.nom,age:parseAge(dob),dob:dob,medical:enfantData.medical}],date:new Date().toLocaleDateString('fr-FR')});toast('Inscription enregistrée (local)','ok');reset();setTimeout(function(){navigate('home');},1200);});
-  } else {
-    ST.members.push({prenom:membreData.prenom,nom:membreData.nom,email:membreData.email,tel:membreData.tel,adresse:membreData.adresse_vacances,droit_image:membreData.droit_image,children:[{name:prenomEnfant+' '+membreData.nom,age:parseAge(dob),dob:dob,medical:enfantData.medical}],date:new Date().toLocaleDateString('fr-FR')});
-    toast('Inscription enregistrée','ok');reset();setTimeout(function(){navigate('home');},1200);
-  }
-}
-
-var AVOIRS = {
-  nMoins1: [
-    {id:1, membre:'Fam. Mouthet',  somme:120, motif:'Annulation météo – Été 2025', solde:false, dateSolde:''},
-    {id:2, membre:'Fam. Lecoeur',  somme:60,  motif:'Absence médicale – Printemps 2025', solde:true, dateSolde:'15/09/2025'},
-  ],
-  n: [
-    {id:3, membre:'',  somme:0, motif:'', solde:false, dateSolde:''},
-  ],
-};
-
-function renderAvoirs() {
-  var el = document.getElementById('admin-avoirs-content'); if(!el) return;
-
-  function renderTable(items, year, nIdx) {
-    var addBtn = '<button onclick="ajouterAvoir('+nIdx+')" style="margin-top:10px;padding:9px 16px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un avoir</button>';
-    if (!items.length || (items.length===1&&!items[0].membre)) {
-      return '<div style="text-align:center;color:#9CA3AF;padding:20px 0;font-size:13px;">Aucun avoir</div>' + addBtn;
-    }
-    var rows = items.filter(function(a){return a.membre;}).map(function(a,i){
-      return '<tr style="border-bottom:1px solid #F3F4F6;">'
-        +'<td style="padding:10px 8px;font-size:13px;font-weight:600;">'+a.membre+'</td>'
-        +'<td style="padding:10px 8px;font-size:13px;text-align:right;font-weight:700;color:#1A6FD4;">'+a.somme+'€</td>'
-        +'<td style="padding:10px 8px;font-size:12px;color:#374151;">'+a.motif+'</td>'
-        +'<td style="padding:10px 8px;text-align:center;">'
-        +(a.solde
-          ? '<span style="background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;">✅ Soldé<br><span style="font-weight:400;">'+a.dateSolde+'</span></span>'
-          : '<button onclick="solderAvoir('+nIdx+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')
-        +'</td></tr>';
-    }).join('');
-    return '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
-      +'<thead><tr style="background:#F9FAFB;"><th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:left;">Membre</th>'
-      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:right;">Somme</th>'
-      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;">Motif</th>'
-      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:center;">Soldé</th>'
-      +'</tr></thead><tbody>'+rows+'</tbody></table></div>' + addBtn;
-  }
-
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
-    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N−1 (2025)</div>'
-    + renderTable(AVOIRS.nMoins1, 'N-1', 0)
-    + '</div>'
-    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'
-    + renderTable(AVOIRS.n, 'N', 1)
-    + '</div></div>';
-}
-
-function solderAvoir(tableIdx, rowIdx) {
-  var table = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
-  var real = table.filter(function(a){return a.membre;})[rowIdx];
-  if (!real) return;
-  real.solde = true;
-  real.dateSolde = new Date().toLocaleDateString('fr-FR');
-  toast('✅ Avoir soldé','ok');
-  renderAvoirs();
-}
-
-function ajouterAvoir(tableIdx) {
-  var membre = prompt('Nom de la famille :');
-  if (!membre) return;
-  var somme  = parseInt(prompt('Montant (€) :') || '0');
-  var motif  = prompt('Motif :') || '';
-  var table  = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
-  table.push({id:Date.now(), membre:membre, somme:somme, motif:motif, solde:false, dateSolde:''});
+  var membre=f('aa-membre');if(!membre){toast('Nom requis','ko');return;}
+  var somme=parseInt(f('aa-somme')||'0');
+  var motif=f('aa-motif');if(!motif){toast('Motif requis','ko');return;}
+  var ti=window._avoirTableIdx||0;
+  var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;
+  tab.push({id:Date.now(),membre:membre,somme:somme,motif:motif,solde:false,dateSolde:''});
+  if(typeof ajouterAvoirSB==='function')ajouterAvoirSB(membre,somme,motif).catch(function(){});
+  fermerAjouterAvoir();
   toast('Avoir ajouté ✅','ok');
   renderAvoirs();
 }
-
-var SUIVI_QUOTIDIEN = [
-  {date:'01/06/2025', ref:'Fam. Bousin',    cb:240,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'02/06/2025', ref:'Fam. Ammanet',   cb:0,    vir:120, chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'03/06/2025', ref:'Fam. Mouthet',   cb:0,    vir:0,   chq:120,chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'03/06/2025', ref:'Fam. de Robalis',cb:120,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'04/06/2025', ref:'Fam. Lecoeur',   cb:0,    vir:0,   chq:0,  chqvac:120,esp:0, avoir24:0,  remb25:0},
-];
-
-function renderSuiviQuotidien() {
-  var el = document.getElementById('suivi-quotidien-content'); if(!el) return;
-  var cols = ['CB/CD','Virement','Chèque','Chq Vac.','Espèces','Avoir 2024','Remb. 2025'];
-  var keys = ['cb','vir','chq','chqvac','esp','avoir24','remb25'];
-  var totals = {}; keys.forEach(function(k){totals[k]=0;});
-  SUIVI_QUOTIDIEN.forEach(function(r){keys.forEach(function(k){totals[k]+=(r[k]||0);});});
-  var grandTotal = keys.reduce(function(s,k){return s+totals[k];},0);
-
-  el.innerHTML = '<div style="overflow-x:auto;">'
-    +'<table style="width:100%;border-collapse:collapse;min-width:600px;font-size:12px;">'
-    +'<thead><tr style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;">'
-    +'<th style="padding:10px 8px;text-align:left;">Date</th>'
-    +'<th style="padding:10px 8px;text-align:left;">Ref.</th>'
-    +cols.map(function(col){return '<th style="padding:10px 6px;text-align:right;">'+col+'</th>';}).join('')
-    +'</tr></thead>'
-    +'<tbody>'
-    +SUIVI_QUOTIDIEN.map(function(r,i){
-      var bg = i%2===0 ? '#fff' : '#F9FAFB';
-      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'
-        +'<td style="padding:9px 8px;white-space:nowrap;color:#9CA3AF;">'+r.date+'</td>'
-        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;">'+r.ref+'</td>'
-        +keys.map(function(k){
-          return '<td style="padding:9px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(r[k]?'#1A6FD4':'#D1D5DB')+';">'+(r[k]?r[k]+'€':'-')+'</td>';
-        }).join('')
-        +'</tr>';
-    }).join('')
-    +'<tr style="background:linear-gradient(135deg,#1E1B4B18,#1A6FD418);font-weight:700;border-top:2px solid #1A6FD4;">'
-    +'<td style="padding:10px 8px;" colspan="2">TOTAL</td>'
-    +keys.map(function(k){return '<td style="padding:10px 6px;text-align:right;color:#1A6FD4;">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')
-    +'</tr>'
-    +'</tbody></table></div>'
-    +'<div style="text-align:right;margin-top:12px;font-size:16px;font-weight:800;color:#1E1B4B;">Total général : '+grandTotal+'€</div>';
-}
-
-
-function setComptaTab(tab) {
-  var bilan = document.getElementById('compta-bilan-content');
-  var suivi = document.getElementById('compta-suivi-content');
-  var btnB  = document.getElementById('ct-bilan');
-  var btnS  = document.getElementById('ct-suivi');
-  if (bilan) bilan.style.display = tab === 'bilan' ? 'block' : 'none';
-  if (suivi) suivi.style.display = tab === 'suivi' ? 'block' : 'none';
-  if (btnB) { btnB.classList.toggle('active', tab==='bilan'); btnB.classList.toggle('btn-ghost', tab!=='bilan'); }
-  if (btnS) { btnS.classList.toggle('active', tab==='suivi'); btnS.classList.toggle('btn-ghost', tab!=='suivi'); }
-  if (tab === 'suivi') renderSuiviQuotidien();
-  else renderComptabilite();
-}
-
-function ouvrirValidationResa(idx) {
-  window._validatingResaIdx=idx;
-  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='flex';
-  var r=_adminResas[idx];
-  var info=document.getElementById('validation-resa-info');
-  if(info&&r) info.innerHTML='<strong>'+r.nom+'</strong><br>'+(r.slot?r.slot.time+' · '+r.slot.date:'');
-  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el)el.checked=false;});
-  var err=document.getElementById('err-mode-paiement'); if(err) err.textContent='';
-}
-
-function fermerValidationResa() {
-  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='none';
-}
-
-function confirmerValidationResa() {
-  var checked=null;
-  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el&&el.checked) checked=el.value;});
-  if(!checked){var e=document.getElementById('err-mode-paiement');if(e) e.textContent='Veuillez choisir un mode de paiement';return;}
-  var r=_adminResas[window._validatingResaIdx];
-  if(r){r.statut='validé';r.modePaiement=checked;r.paid=r.paid||120;if(r._id&&typeof validerResaSB==='function')validerResaSB(r._id,checked,r.paid).catch(function(){});}
-  fermerValidationResa();
-  toast('✅ Réservation validée · '+checked,'ok');
-  renderAdminResas(); renderAdmin();
-}
-
-
-// ═══ NAVIGATION ═══
-function navigate(name){
-  if(name==='admin'&&!adminUnlocked){openAdminLogin();return;}
-  _navigateTo(name);
-}
-function _navigateTo(name){
-  document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
-  document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
-  var pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active');
-  var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
-  if(name==='reservation') renderReservation();
-  if(name==='mes-resa') renderMesResa();
-  if(name==='admin') renderAdmin();
-  window.scrollTo(0,0);
-}
-
-var _fns=[
-  'ouvrirValidationResa','fermerValidationResa','confirmerValidationResa',
-
-  'setAdminTab','renderAdmin','renderDashboard','buildDashFreq','setDashFreq',
-  'renderMembres','filterMembreAlpha','ouvrirMembreEdit','fermerMembreEdit','sauvegarderMembreEdit',
-  'supprimerEnfantEdit','ajouterEnfantEdit','ajouterMembreModal','supprimerMembre','ajouterEnfantMembre','supprimerEnfantMembre',
-  'setGPeriod','adminPrevWeek','adminNextWeek','renderAdminGroupes','ouvrirFicheEnfantGroupe','fermerFicheEnfant','imprimerGroupes',
-  'renderEquipe','ajouterAnimateur','editEquipe','delEquipe',
-  'renderFrequentation','setFreqPeriod',
-  'renderPaiements','setPaiPeriod','ouvrirFactureDepuisPaiement',
-  'setResaAdminSaison','setResaFilter','renderAdminResas','modResa','delResa','relanceResa','nouvelleResaManuelle',
-  'renderComptabilite','setComptaTab','renderSuiviQuotidien',
-  'renderFactureTab','genererFacture','envoyerFactureMail',
-  'renderAvoirs','solderAvoir','ajouterAvoir','genererDocAvoir',
-  'globalSearch','ouvrirFicheEnfant',
-  'submitInscription','ageAuClub','ageLabel',
-  'navigate','_navigateTo','openAdminLogin','closeAdminLogin','checkAdminCode',
-  'onAdminCodeInput','toggleAdminEye','updateAlDots','setAdminTab','setGPeriod',
-  'adminPrevWeek','adminNextWeek','toggleG','renderFiches','renderAdmin','renderAdminGroupes',
-  'renderAdminResas','renderAdminFams','setPaiPeriod','setFreqPeriod','setResaFilter',
-  'setSaisieTab','saveSaisieEnfant','saveSaisieResa','addToPanier','clearPanier',
-  'validerPanier','removePanierItem','clearSaisieEnfant','clearSaisieResa',
-  'renderPanier','updatePanierBadge','goSaison','renderReservation',
-  'ajouterAuPanier','renderClientPanierBar','openClientPanier','closeClientPanier',
-  'renderClientPanierModal','retirerDuPanier','envoyerDemandeReservation',
-  'ouvrirValidationResa','fermerValidationResa','confirmerValidationResa',
-  'inscBack','inscNext','inscGoStep','calcAge','selectDroit','buildInscRecap',
-  'submitInscription','renderMesResa','cancelResa','showInfos',
-  'mGoStep','processPayment','closeModal','openModal','toast',
-  'renderSaisonDetail','resaBack','goSaisonDirect','toggleDroit','ouvrirDocModal','fermerDocModal',
-  'renderDashboard','renderMembres','renderComptabilite','renderFactureTab','genererFacture','globalSearch','imprimerGroupes','setResaAdminSaison',
-  'renderAvoirs','solderAvoir','ajouterAvoir','renderSuiviQuotidien','toggleDocItem','setComptaTab'];
-try{window.renderSaisonDetail=renderSaisonDetail;}catch(e){}
-try{window.resaBack=resaBack;}catch(e){}
-try{window.goSaisonDirect=goSaisonDirect;}catch(e){}
-try{window.toggleDroit=toggleDroit;}catch(e){}
-try{window.ouvrirDocModal=ouvrirDocModal;}catch(e){}
-try{window.fermerDocModal=fermerDocModal;}catch(e){}
-_fns.forEach(function(fn){try{if(typeof eval(fn)!=='undefined')window[fn]=eval(fn);}catch(e){}});      
-
-renderReservation();
-
-
-
 
 </script>
 </body>
