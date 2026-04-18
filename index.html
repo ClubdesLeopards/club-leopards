@@ -1961,6 +1961,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 // SUPABASE CONFIG
 var SB_URL='https://kpizggqrpdrykoifvily.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2522,11 +2524,9 @@ function renderAdmin() {
   var el=document.getElementById('admin-stats'); if(!el) return;
   var kids=allKids(), fams=[].concat(DEMO_FAMS,ST.members), resas=[].concat(DEMO_RESAS,ST.reservations);
   var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  var pl=0; GROUPES.forEach(function(g){var cnt=kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id;}).length;pl+=Math.max(0,MAX_G-cnt);});
-  el.innerHTML='<div class="stat-card" style="background:linear-gradient(135deg,#6366F1,#4F46E5);"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#F97316,#EA580C);"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#10B981,#059669);"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#E9B10D,#F57F17);"><div class="stat-icon">✅</div><div class="stat-val">'+pl+'</div><div class="stat-lbl">Places libres</div></div>';
+  el.innerHTML='<div class="stat-card"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
+    +'<div class="stat-card"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
+    +'<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>';
   if(ST.adminTab==='dashboard')        renderDashboard();
   else if(ST.adminTab==='membres')     renderMembres();
   else if(ST.adminTab==='groupes')     renderAdminGroupes();
@@ -2780,36 +2780,8 @@ function setDashFreq(p){
 }
 
 
-function buildDashFreq(period,kids,TR){
-  var pds={jour:[{l:'Lun'},{l:'Mar'},{l:'Mer'},{l:'Jeu'},{l:'Ven'}],semaine:[{l:'S27'},{l:'S28'},{l:'S29'},{l:'S30'},{l:'S31'}],saison:[{l:'Ete 26'},{l:'Auto'},{l:'Print'}]};
-  var periods=pds[period]||pds.jour;
-  var total=kids.length||1;
-  var bars=TR.map(function(t){
-    var base=Math.max(1,kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length);
-    return {color:t.color,label:t.label,vals:periods.map(function(_,i){return Math.round(base*(0.7+0.3*(i%3)/3));})};
-  });
-  var maxV=Math.max.apply(null,bars.map(function(b){return Math.max.apply(null,b.vals);}));maxV=maxV||1;
-  var grandTotal=TR.reduce(function(s,t){return s+kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;},0);
-  return '<div style="display:flex;gap:4px;align-items:flex-end;height:80px;margin-bottom:8px;">'
-    +periods.map(function(p,pi){
-      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'
-        +'<div style="display:flex;gap:1px;align-items:flex-end;width:100%;height:60px;">'
-        +bars.map(function(b){var h=Math.round(b.vals[pi]/maxV*56);return '<div style="flex:1;background:'+b.color+';border-radius:2px 2px 0 0;height:'+h+'px;min-height:2px;"></div>';}).join('')
-        +'</div><div style="font-size:9px;color:#9CA3AF;margin-top:2px;">'+p.l+'</div></div>';
-    }).join('')+'</div>'
-    +'<div style="display:flex;gap:10px;flex-wrap:wrap;">'
-    +TR.map(function(t){return '<div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:'+t.color+';"></div><span style="font-size:11px;">'+t.label+'</span></div>';}).join('')
-    +'</div>'
-    +'<div style="margin-top:8px;font-size:12px;color:#6B7280;border-top:1px solid #F3F4F6;padding-top:8px;">Total inscrits : <strong>'+grandTotal+'</strong></div>';
-}
-function setDashFreq(p){
-  ['jour','semaine','saison'].forEach(function(x){var b=document.getElementById('df-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});
-  var el=document.getElementById('dash-freq-content');
-  if(el)el.innerHTML=buildDashFreq(p,allKids(),[{label:'3-5 ans',min:3,max:5.9,color:'#F97316'},{label:'6-9 ans',min:6,max:9.9,color:'#0099E6'},{label:'10-13 ans',min:10,max:13.9,color:'#8B5CF6'}]);
-}
 
-// ═══ MEMBRES — 4 colonnes, alpha, modifier/enfants ═══
-var _membreAlpha='';
+
 function filterMembreAlpha(l){_membreAlpha=(_membreAlpha===l?'':l);renderMembres();}
 function renderMembres(){
   var el=document.getElementById('admin-membres-content');if(!el)return;
@@ -2871,7 +2843,7 @@ function renderMembres(){
       +tags
       +(kidList?'<div style="border-top:1px solid #F3F4F6;padding-top:6px;margin-bottom:8px;">'+kidList+'</div>':'')
       +'<div style="display:flex;gap:6px;">'
-      +'<button onclick="editMembre('+i+')" style="flex:1;padding:7px;background:#FFF3E0;color:#E65100;border:1px dashed #E65100;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
+      +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:7px;background:#FFF3E0;color:#E65100;border:1px dashed #E65100;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
       +'<button onclick="ajouterEnfantMembre('+i+')" style="flex:1;padding:7px;background:#E3F2FD;color:#1565C0;border:1px dashed #1565C0;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">+ Enfant</button>'
       +'<button onclick="supprimerMembre('+i+')" style="padding:7px 10px;background:#FEF2F2;color:#EF4444;border:none;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;">🗑️</button>'
       +'</div></div>';
