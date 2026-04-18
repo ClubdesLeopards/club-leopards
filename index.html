@@ -1910,12 +1910,19 @@ textarea{resize:vertical;}
                 <option value="matin">Matin</option><option value="aprem">Après-midi</option>
               </select></div>
               <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Saison</label>
-              <select id="nr-saison" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;background:#fff;">
+              <select id="nr-saison" onchange="updateResaSemaines()" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;background:#fff;">
                 <option value="ete">Été 2026</option><option value="automne">Automne 2026</option><option value="printemps">Printemps 2027</option>
               </select></div>
             </div>
             <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Semaine</label>
-            <input id="nr-semaine" placeholder="Semaine 1 — 6 au 10 juillet" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            <select id="nr-semaine-sel" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;background:#fff;">
+              <option value="">— Choisir une semaine —</option>
+            </select></div>
+            <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Enfants</label>
+            <div id="nr-enfants-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;">
+              <div style="display:flex;gap:8px;"><input placeholder="Prénom Nom (enfant 1)" id="nr-enfant-0" style="flex:1;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;"></div>
+            </div>
+            <button onclick="ajouterEnfantResa()" style="width:100%;padding:8px;background:#EFF6FF;color:#0099E6;border:1px dashed #BFDBFE;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Ajouter un enfant</button></div>
             <div><label style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Montant (€)</label>
             <input id="nr-montant" type="number" value="120" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>
             <button onclick="confirmerNouvelleResa()" style="padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">✅ Créer la réservation</button>
@@ -1958,6 +1965,46 @@ textarea{resize:vertical;}
         </div>
       </div>
 
+      <!-- AJOUTER ANIMATEUR OVERLAY -->
+      <div id="ajouter-animateur-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;max-height:85vh;overflow-y:auto;">
+          <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">👥 Nouvel animateur</div>
+            <button onclick="fermerAjouterAnimateur()" style="background:#F3F4F6;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom *</label>
+              <input id="aa-prenom" placeholder="Sophie" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>
+              <input id="aa-nom" placeholder="MARTIN" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            </div>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance</label>
+            <input id="aa-dob" type="date" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label>
+              <input id="aa-email" type="email" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Téléphone</label>
+              <input id="aa-tel" type="tel" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            </div>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">N° Sécurité sociale</label>
+            <input id="aa-secu" placeholder="1 95 03 75 000 000 00" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;font-family:monospace;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Diplôme</label>
+              <input id="aa-diplome" placeholder="BPJEPS, BAFA…" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Poste</label>
+              <select id="aa-poste" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="Animateur">Animateur</option>
+                <option value="Animatrice">Animatrice</option>
+                <option value="Responsable">Responsable</option>
+                <option value="Stagiaire">Stagiaire</option>
+              </select></div>
+            </div>
+            <button onclick="confirmerAjouterAnimateur()" style="padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-top:4px;">✅ Ajouter l'animateur</button>
+          </div>
+        </div>
+      </div>
+
       <!-- AJOUTER AVOIR OVERLAY -->
       <div id="ajouter-avoir-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
         <div style="background:#fff;border-radius:18px;max-width:400px;width:92%;">
@@ -1985,6 +2032,17 @@ textarea{resize:vertical;}
             <button onclick="fermerMembreEdit()" style="background:#F3F4F6;border:none;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
           </div>
           <div id="membre-edit-body" style="padding:22px;"></div>
+        </div>
+      </div>
+
+      <!-- FICHE MEMBRE OVERLAY -->
+      <div id="membre-fiche-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:18px;max-width:420px;width:92%;max-height:85vh;overflow-y:auto;">
+          <div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">
+            <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">Fiche membre</div>
+            <button onclick="fermerFicheMembre()" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;">✕</button>
+          </div>
+          <div id="membre-fiche-body"></div>
         </div>
       </div>
 
@@ -2172,6 +2230,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 // SUPABASE
 var SB_URL='https://kpizggqrpdrykoifvily.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2244,6 +2305,7 @@ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded'
 // ═══ ÉTAT GLOBAL ═══
 var ST = {
   adminTab:'dashboard', gPeriod:'matin',
+  adminWeekOffset:0,
   reservations:[], members:[],
 };
 
@@ -2310,6 +2372,16 @@ var DEMO_PAYMENTS = [
   {nom:'Fam. de Robalis',initiale:'RO',color:'#10B981',formule:'1 Sem. Matin', montant:120,statut:'payé',    mode:'Carte bleue',  date:'03/06/2025'},
   {nom:'Fam. Lecoeur',  initiale:'LE',color:'#EF4444',formule:'1 Sem. Aprem',  montant:120,statut:'attente', mode:'',             date:'04/06/2025'},
 ];
+
+var AVOIRS = {
+  nMoins1: [
+    {id:1, membre:'Fam. Mouthet',  somme:120, motif:'Annulation météo – Été 2025', solde:false, dateSolde:''},
+    {id:2, membre:'Fam. Lecoeur',  somme:60,  motif:'Absence médicale – Printemps 2025', solde:true, dateSolde:'15/09/2025'},
+  ],
+  n: [
+    {id:3, membre:'',  somme:0, motif:'', solde:false, dateSolde:''},
+  ],
+};
 
 var DEMO_FREQ = {
   jours:   [{label:'Lun',matin:14,aprem:11},{label:'Mar',matin:18,aprem:16},{label:'Mer',matin:12,aprem:8},{label:'Jeu',matin:20,aprem:15},{label:'Ven',matin:16,aprem:13}],
@@ -2841,67 +2913,6 @@ function renderAdmin(){
 // ═══════════════════════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════════════════════
-function renderDashboard(){
-  var el=document.getElementById('admin-dashboard-content');if(!el)return;
-  var kids=allKids(),resas=[].concat(DEMO_RESAS,ST.reservations);
-  var att=resas.filter(function(r){return r.statut==='en attente';}).length;
-  var val=resas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
-  var TR=[{label:'3 – 5 ans',min:3,max:5.9,color:'#FF6B35',bg:'#FFF4F0',emoji:'🐥'},
-          {label:'6 – 9 ans',min:6,max:9.9,color:'#0099E6',bg:'#EFF8FF',emoji:'🐬'},
-          {label:'10 – 13 ans',min:10,max:13.9,color:'#7C3AED',bg:'#F5F0FF',emoji:'🏅'}];
-  var total=kids.length||1;
-  var groups=TR.map(function(t){
-    var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;
-    return {label:t.label,cnt:cnt,pct:Math.round(cnt/total*100),color:t.color,bg:t.bg,emoji:t.emoji};
-  });
-  var grandTotal=groups.reduce(function(s,g){return s+g.cnt;},0);
-  var today=new Date();
-  var days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-  var months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-
-  el.innerHTML=
-    // Header date
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:14px 18px;background:linear-gradient(135deg,#0A0F2C,#0077C8);border-radius:16px;color:#fff;">'
-    +'<div><div style="font-size:11px;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:1px;">Aujourd\'hui</div>'
-    +'<div style="font-size:18px;font-weight:700;margin-top:2px;">'+days[today.getDay()]+' '+today.getDate()+' '+months[today.getMonth()]+' '+today.getFullYear()+'</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:11px;opacity:.7;">Saison</div><div style="font-size:18px;font-weight:700;color:#FF8C00;">2026</div></div>'
-    +'</div>'
-
-    // Réservations KPIs
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
-    +'<div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:4px solid #FF6B35;">'
-    +'<div style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">En attente</div>'
-    +'<div style="font-size:26px;font-weight:800;color:#FF6B35;">'+att+'</div>'
-    +(att>0?'<button onclick="setAdminTab(\'reservations\')" style="margin-top:6px;padding:5px 12px;background:#FFF4F0;color:#FF6B35;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">Voir →</button>':'')
-    +'</div>'
-    +'<div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:4px solid #00C48C;">'
-    +'<div style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Validées</div>'
-    +'<div style="font-size:26px;font-weight:800;color:#00C48C;">'+val+'</div>'
-    +'</div></div>'
-
-    // Fréquentation par âge
-    +'<div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:14px;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
-    +'<div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#0A0F2C;">👶 Fréquentation par âge</div>'
-    +'<div style="display:flex;gap:5px;">'
-    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;padding:4px 10px;">Saison</button>'
-    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;padding:4px 10px;">Semaine</button>'
-    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;padding:4px 10px;">Jour</button>'
-    +'</div></div>'
-    +'<div id="dash-freq-content">'+buildDashFreq('saison',kids,TR,grandTotal)+'</div>'
-    +'</div>'
-
-    // Actions rapides
-    +'<div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.06);">'
-    +'<div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#0A0F2C;margin-bottom:12px;">⚡ Actions rapides</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-    +[['membres','👨‍👩‍👧','Membres','linear-gradient(135deg,#0077C8,#00BFFF)'],
-      ['reservations','📅','Réservations','linear-gradient(135deg,#FF6B35,#FF8C00)'],
-      ['paiements','💳','Paiements','linear-gradient(135deg,#00C48C,#00A86B)'],
-      ['groupes','🏖️','Groupes','linear-gradient(135deg,#7C3AED,#5B21B6)'],
-    ].map(function(x){return '<button onclick="setAdminTab(\''+x[0]+'\')" style="padding:14px;background:'+x[3]+';color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:10px;text-align:left;"><span style="font-size:20px;">'+x[1]+'</span>'+x[2]+'</button>';}).join('')
-    +'</div></div>';
-}
 
 function buildDashFreq(period,kids,TR,grandTotal){
   if(!kids)kids=allKids();
@@ -2941,59 +2952,6 @@ function setDashFreq(p){
 var _membreAlpha='';
 function filterMembreAlpha(l){_membreAlpha=(_membreAlpha===l?'':l);renderMembres();}
 
-function renderMembres(){
-  var el=document.getElementById('admin-membres-content');if(!el)return;
-  var q=(document.getElementById('membre-search')||{value:''}).value.toLowerCase();
-  var all=[].concat(DEMO_FAMS,ST.members);
-  if(q)all=all.filter(function(m){return(m.nom||'').toLowerCase().includes(q)||(m.prenom||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q);});
-  if(_membreAlpha)all=all.filter(function(m){return(m.nom||'').toUpperCase().startsWith(_membreAlpha);});
-  all.sort(function(a,b){return(a.nom||'').localeCompare(b.nom||'','fr');});
-  var usedLetters=[];
-  [].concat(DEMO_FAMS,ST.members).forEach(function(m){var l=(m.nom||'').charAt(0).toUpperCase();if(l&&usedLetters.indexOf(l)<0)usedLetters.push(l);});
-  var alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(function(l){
-    var active=_membreAlpha===l,has=usedLetters.indexOf(l)>=0;
-    return '<button onclick="filterMembreAlpha(\''+l+'\')" style="padding:3px 7px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(active?'#0099E6':has?'#F0F4FF':'#F9FAFB')+';color:'+(active?'#fff':has?'#0A0F2C':'#D1D5DB')+';">'+l+'</button>';
-  }).join('');
-  var header='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-    +'<div style="font-size:13px;font-weight:700;color:#374151;">'+all.length+' / '+([].concat(DEMO_FAMS,ST.members).length)+' membres</div>'
-    +'<button onclick="ajouterMembreModal()" style="padding:8px 16px;background:linear-gradient(135deg,#00C48C,#00A86B);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:6px;">+ Nouveau membre</button>'
-    +'</div>'
-    +'<div style="display:flex;gap:2px;flex-wrap:wrap;margin-bottom:10px;">'
-    +'<button onclick="filterMembreAlpha(\'\')" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(_membreAlpha?'#F9FAFB':'#0099E6')+';color:'+(_membreAlpha?'#9CA3AF':'#fff')+';">Tous</button>'
-    +alpha+'</div>'
-    +'<input id="membre-search" placeholder="🔍 Rechercher par nom, prénom, email..." oninput="renderMembres()" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:12px;">';
-  if(!all.length){el.innerHTML=header+'<div class="empty"><div class="empty-icon">👨‍👩‍👧</div><p>Aucun résultat</p></div>';return;}
-  var cards=all.map(function(m,i){
-    var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
-    var nbKids=(m.children||[]).length;
-    var colors=['#0099E6','#7C3AED','#FF6B35','#00C48C','#FF8C00','#EF4444'];
-    var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
-    var kids=(m.children||[]).map(function(ch){
-      var g=getGroupe(parseFloat(ch.age)||0);
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;"><span style="font-size:12px;color:#374151;">'+(g?g.emoji+' ':'')+ch.name+'<span style="color:#9CA3AF;font-size:10px;margin-left:4px;">'+ch.age+' ans</span></span>'
-        +'<button onclick="supprimerEnfantMembre('+i+',\''+ch.name+'\')" style="background:none;border:none;cursor:pointer;font-size:13px;color:#D1D5DB;padding:0;">×</button></div>';
-    }).join('');
-    return '<div style="background:#fff;border-radius:18px;padding:16px;box-shadow:0 2px 16px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04);transition:box-shadow .2s;" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 16px rgba(0,0,0,.06)\'">'
-      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-      +'<div style="width:42px;height:42px;border-radius:12px;background:'+col+'18;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
-      +'<div style="flex:1;min-width:0;">'
-      +'<div style="font-size:14px;font-weight:700;color:#0A0F2C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+m.prenom+' <span style="text-transform:uppercase;">'+m.nom+'</span></div>'
-      +'<div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+m.email+'</div></div>'
-      +'<a href="tel:'+m.tel+'" style="background:#F0F4FF;color:#0099E6;border-radius:8px;padding:6px 8px;font-size:14px;text-decoration:none;flex-shrink:0;">📞</a></div>'
-      +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'
-      +'<span class="badge badge-orange">👶 '+nbKids+' enfant'+(nbKids>1?'s':'')+'</span>'
-      +(m.droit_image!==false?'<span class="badge badge-green">📷 OK</span>':'')
-      +(m.statut?'<span class="badge badge-blue">'+m.statut+'</span>':'')
-      +'</div>'
-      +(kids?'<div style="border-top:1px solid #F3F4F6;padding-top:8px;margin-bottom:10px;">'+kids+'</div>':'')
-      +'<div style="display:flex;gap:6px;">'
-      +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:8px;background:#F0F4FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
-      +'<button onclick="ajouterEnfantMembre('+i+')" style="flex:1;padding:8px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">+ Enfant</button>'
-      +'<button onclick="supprimerMembre('+i+')" style="padding:8px 10px;background:#FEF2F2;color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:14px;">🗑️</button>'
-      +'</div></div>';
-  }).join('');
-  el.innerHTML=header+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;">'+cards+'</div>';
-}
 
 function ouvrirMembreEdit(i){
   var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
@@ -3076,8 +3034,7 @@ function setGPeriod(p){
   ['matin','aprem'].forEach(function(x){var b=document.getElementById('gp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});
   renderAdminGroupes();
 }
-function adminPrevWeek(){if((ST.adminWeekOffset||0)>0){ST.adminWeekOffset--;renderAdminGroupes();}}
-function adminNextWeek(){var s=SAISONS.ete;var max=(s?s.semaines.length:9)-1;if((ST.adminWeekOffset||0)<max){ST.adminWeekOffset++;renderAdminGroupes();}}
+
 
 function renderAdminGroupes(){
   var el=document.getElementById('groupes-grid');if(!el)return;
@@ -3239,7 +3196,7 @@ function renderEquipe(){
     }).join('')+'</div>'
     +'<button onclick="ajouterAnimateur()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">+ Ajouter un animateur</button>';
 }
-function ajouterAnimateur(){var p=prompt('Prénom :');if(!p)return;var n=prompt('Nom :');if(!n)return;EQUIPE.push({id:Date.now(),prenom:p,nom:n,dob:'',email:prompt('Email :')||'',tel:'',secu:'',diplome:prompt('Diplôme :')||'',poste:'Animateur'});renderEquipe();}
+
 function editEquipe(id){var a=EQUIPE.find(function(x){return x.id===id;});if(!a)return;a.diplome=prompt('Diplôme :',a.diplome)||a.diplome;a.email=prompt('Email :',a.email)||a.email;a.tel=prompt('Tél :',a.tel)||a.tel;a.secu=prompt('N° Sécu :',a.secu)||a.secu;renderEquipe();}
 function delEquipe(id){if(!confirm('Supprimer ?'))return;EQUIPE=EQUIPE.filter(function(x){return x.id!==id;});renderEquipe();}
 
@@ -3247,37 +3204,8 @@ function delEquipe(id){if(!confirm('Supprimer ?'))return;EQUIPE=EQUIPE.filter(fu
 // FRÉQUENTATION
 // ═══════════════════════════════════════════════════════════
 var freqPeriod='semaine';
-function setFreqPeriod(p){freqPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('fp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderFrequentation();}
-function renderFrequentation(){
-  var el=document.getElementById('frequentation-content');if(!el)return;
-  var pds={jour:{data:DEMO_FREQ.jours},semaine:{data:DEMO_FREQ.semaines},mois:{data:DEMO_FREQ.mois},saison:{data:[{label:'Été 26',matin:780,aprem:620},{label:'Auto',matin:160,aprem:130},{label:'Print',matin:340,aprem:270}]}};
-  var pd=pds[freqPeriod]||pds.semaine;
-  var maxAll=Math.max.apply(null,pd.data.map(function(d){return Math.max(d.matin,d.aprem);}));maxAll=maxAll||1;
-  var totM=pd.data.reduce(function(s,d){return s+d.matin;},0);
-  var totA=pd.data.reduce(function(s,d){return s+d.aprem;},0);
-  var kids=allKids();
-  var TR=[{label:'3-5 ans',min:3,max:5.9,color:'#FF6B35'},{label:'6-9 ans',min:6,max:9.9,color:'#0099E6'},{label:'10-13 ans',min:10,max:13.9,color:'#7C3AED'}];
-  var total=kids.length||1;
-  function barChart(vals,color){return vals.map(function(d){var h=Math.round(d.val/maxAll*80);return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div style="width:100%;background:#F3F4F6;border-radius:4px;height:80px;display:flex;align-items:flex-end;"><div style="width:100%;background:'+color+';border-radius:4px 4px 0 0;height:'+h+'px;min-height:3px;transition:height .4s;"></div></div><div style="font-size:9px;color:#9CA3AF;margin-top:3px;text-align:center;">'+d.l+'</div></div>';}).join('');}
-  el.innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
-    +'<div style="background:linear-gradient(135deg,#FFF4F0,#FFE8E0);border-radius:14px;padding:14px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#FF6B35;text-transform:uppercase;margin-bottom:3px;">🌅 Matin</div><div style="font-size:24px;font-weight:800;color:#FF6B35;">'+totM+'</div></div>'
-    +'<div style="background:linear-gradient(135deg,#EFF8FF,#DCF1FF);border-radius:14px;padding:14px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#0099E6;text-transform:uppercase;margin-bottom:3px;">🌞 Après-midi</div><div style="font-size:24px;font-weight:800;color:#0099E6;">'+totA+'</div></div>'
-    +'</div>'
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>🌅</span> Matin</div>'
-    +'<div style="display:flex;gap:3px;align-items:flex-end;height:90px;">'+barChart(pd.data.map(function(d){return{val:d.matin,l:d.label};}), '#FF6B35')+'</div></div>'
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>🌞</span> Après-midi</div>'
-    +'<div style="display:flex;gap:3px;align-items:flex-end;height:90px;">'+barChart(pd.data.map(function(d){return{val:d.aprem,l:d.label};}), '#0099E6')+'</div></div>'
-    +'<div class="wcard"><div class="wcard-title"><span>👶</span> Par groupe d\'âge</div>'
-    +'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">'
-    +TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;var pct=Math.round(cnt/total*100);return '<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:3px;"><span style="color:'+t.color+';">'+t.label+'</span><span style="color:#374151;">'+cnt+' enfants ('+pct+'%)</span></div><div style="background:#F3F4F6;border-radius:5px;height:7px;overflow:hidden;"><div style="background:'+t.color+';height:7px;border-radius:5px;width:'+pct+'%;transition:width .4s;"></div></div></div>';}).join('')
-    +'</div><div style="font-size:12px;font-weight:700;color:#0A0F2C;">Total : <span style="color:#0099E6;">'+total+'</span> enfants inscrits</div></div>';
-}
 
-// ═══════════════════════════════════════════════════════════
-// PAIEMENTS
-// ═══════════════════════════════════════════════════════════
-var paiPeriod='semaine';
+
 function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
 function renderPaiements(){
   var el=document.getElementById('paiements-content');if(!el)return;
@@ -3366,29 +3294,7 @@ function fermerNouvelleResa(){
   var ov=document.getElementById('nouvelle-resa-overlay');
   if(ov)ov.style.display='none';
 }
-function confirmerNouvelleResa(){
-  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var nom=f('nr-nom');if(!nom){toast('Nom requis','ko');return;}
-  var email=f('nr-email');
-  var tel=f('nr-tel');
-  var enfant=f('nr-enfant');
-  var periode=f('nr-periode');
-  var semaine=f('nr-semaine');
-  var saison=f('nr-saison');
-  var montant=parseInt(f('nr-montant')||'120');
-  var sLabel=saison==='ete'?'Été 2026':saison==='automne'?'Automne 2026':'Printemps 2027';
-  ST.reservations.push({
-    id:Date.now(),nom:'Fam. '+nom,email:email,tel:tel,
-    slot:{time:periode==='matin'?'Matin':'Après-midi',date:semaine},
-    saisonLabel:sLabel,
-    children:enfant?[{name:enfant,age:0}]:[],
-    paid:montant,statut:'en attente',
-    date:new Date().toLocaleDateString('fr-FR')
-  });
-  fermerNouvelleResa();
-  toast('Réservation créée ✅','ok');
-  renderAdminResas();
-}
+
 function setComptaTab(t){var b=document.getElementById('compta-bilan-content');var s=document.getElementById('compta-suivi-content');var bB=document.getElementById('ct-bilan');var bS=document.getElementById('ct-suivi');if(b)b.style.display=t==='bilan'?'block':'none';if(s)s.style.display=t==='suivi'?'block':'none';if(bB){bB.classList.toggle('active',t==='bilan');bB.classList.toggle('btn-ghost',t!=='bilan');}if(bS){bS.classList.toggle('active',t==='suivi');bS.classList.toggle('btn-ghost',t!=='suivi');}if(t==='suivi')renderSuiviQuotidien();else renderComptabilite();}
 function renderComptabilite(){
   var el=document.getElementById('comptabilite-content');if(!el)return;
@@ -3423,73 +3329,100 @@ function renderSuiviQuotidien(){
 function renderFactureTab(){
   var d=document.getElementById('fac-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
   var facContent=document.getElementById('fac-content');if(!facContent)return;
-
-  // Réservations validées
+  var fams=[].concat(DEMO_FAMS,ST.members);
   var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
-  // Paiements encaissés
-  var payees=DEMO_PAYMENTS.filter(function(p){return p.statut==='paye'||p.statut==='payé';});
-  var q='';var facEl=document.getElementById('fac-search');if(facEl)q=facEl.value.toLowerCase();
-  if(q){
-    resasVal=resasVal.filter(function(r){return r.nom.toLowerCase().includes(q);});
-    payees=payees.filter(function(p){return p.nom.toLowerCase().includes(q);});
-  }
 
-  var resaCards=resasVal.map(function(r,i){
-    var ref='FAC-2026-'+(2000+i);
-    var ch=(r.children||[]).map(function(c){return '<span style="background:#EFF6FF;color:#0099E6;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">'+c.name+'</span>';}).join('');
-    return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:3px solid #10B981;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
-      +'<div><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+r.nom+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?' · '+r.saisonLabel:'')+'</div></div>'
-      +'<div style="font-size:16px;font-weight:800;color:#10B981;">'+(r.paid||120)+'€</div></div>'
-      +(ch?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">'+ch+'</div>':'')
-      +'<div style="display:flex;gap:6px;">'
-      +'<button onclick="genererFactureFromResa('+i+')" style="flex:1;padding:8px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">🧾 Générer facture</button>'
-      +(r.email?'<button onclick="envoyerFactureMail(\''+r.email+'\',\''+ref+'\',\''+r.nom.replace('Fam. ','').replace(/'/g,"\\'")+'\',\''+(r.slot?r.slot.time+' '+r.slot.date:'')+'\',\''+(r.paid||120)+'\')" style="flex:1;padding:8px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">📧 Envoyer</button>':'')
-      +'</div></div>';
-  }).join('');
-
-  var paiCards=payees.map(function(p,i){
-    var ref='FAC-2026-'+(1000+i);
-    return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:3px solid #8B5CF6;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
-      +'<div><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+p.nom+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div>'
-      +'<div style="font-size:16px;font-weight:800;color:#8B5CF6;">'+p.montant+'€</div></div>'
-      +'<div style="display:flex;gap:6px;">'
-      +'<button onclick="ouvrirFactureDepuisPaiement(\''+p.nom.replace(/'/g,"\\'")+'\','+p.montant+',\''+p.mode+'\')" style="flex:1;padding:8px;background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">🧾 Facture paiement</button>'
-      +'</div></div>';
+  // Cartes par famille avec réservations validées
+  var famCards=fams.map(function(m,mi){
+    var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+    var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'];
+    var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+    var kidsChips=(m.children||[]).map(function(ch,ci){
+      var g=getGroupe(parseFloat(ch.age)||0);
+      return '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:600;padding:4px 8px;border-radius:20px;background:'+(g?g.color+'12':'#F3F4F6')+';color:'+(g?g.color:'#6B7280')+';">'
+        +'<input type="checkbox" class="fac-kid-'+mi+'" data-name="'+ch.name+'" data-age="'+ch.age+'" style="accent-color:'+col+';"> '
+        +(g?g.emoji+' ':'')+ch.name+' ('+ch.age+'a)</label>';
+    }).join('');
+    // Réservations validées de cette famille
+    var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+m.nom);});
+    var resaChips=famResas.map(function(r,ri){
+      return '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:600;padding:4px 8px;border-radius:20px;background:#D1FAE5;color:#065F46;">'
+        +'<input type="checkbox" class="fac-resa-'+mi+'" data-resa="'+ri+'" style="accent-color:#10B981;"> '
+        +'✅ '+(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?' · '+r.saisonLabel:'')+'</label>';
+    }).join('');
+    return '<div style="background:#fff;border-radius:13px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid '+col+';">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+      +'<div style="width:38px;height:38px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">'+ini+'</div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+m.prenom+' '+m.nom.toUpperCase()+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+m.email+'</div></div>'
+      +'<button onclick="genererFactureFamille('+mi+')" style="padding:8px 14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">🧾 Facture</button>'
+      +'</div>'
+      +(kidsChips?'<div style="margin-bottom:6px;"><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px;">Enfants</div><div style="display:flex;gap:5px;flex-wrap:wrap;">'+kidsChips+'</div></div>':'')
+      +(resaChips?'<div><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px;">Réservations validées</div><div style="display:flex;gap:5px;flex-wrap:wrap;">'+resaChips+'</div></div>':'')
+      +'</div>';
   }).join('');
 
   facContent.innerHTML=
-    '<div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;margin-bottom:4px;">📋 Génération de factures</div>'
-    +'<div style="font-size:11px;color:#9CA3AF;margin-bottom:12px;">Numérotation FAC-2026-XXX automatique</div>'
-    +'<input id="fac-search" placeholder="🔍 Rechercher..." oninput="renderFactureTab()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:14px;">'
-
-    // Réservations validées
-    +(resasVal.length?'<div style="font-size:12px;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">✅ Depuis réservations validées</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px;">'+resaCards+'</div>':'')
-
-    // Paiements encaissés
-    +(payees.length?'<div style="font-size:12px;font-weight:700;color:#8B5CF6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">💳 Depuis paiements encaissés</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px;">'+paiCards+'</div>':'')
-
-    // Formulaire manuel
-    +'<div style="font-size:12px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📝 Facture manuelle</div>'
-    +'<div class="wcard">'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Famille *</label><input id="fac-famille" placeholder="DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label><input id="fac-email" type="email" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Enfant</label><input id="fac-enfant" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prestation</label><input id="fac-prestation" placeholder="1 semaine matin" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Montant (€)</label><input id="fac-montant" type="number" value="120" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Mode paiement</label><input id="fac-mode" placeholder="Virement" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Dates prestation</label><input id="fac-dates" placeholder="6 au 10 juillet" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date facture</label><input id="fac-date" type="date" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'</div>'
-    +'<button onclick="genererFacture()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0A0F1E,#0D1B3E);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">🧾 Générer la facture</button>'
-    +'</div>'
+    '<div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;margin-bottom:4px;">📋 Génération de factures</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;margin-bottom:12px;">Sélectionnez les enfants et réservations, cliquez Facture</div>'
+    +'<input id="fac-search" placeholder="🔍 Rechercher un membre..." oninput="renderFactureTab()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:12px;">'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:16px;">'+famCards+'</div>'
     +'<div id="facture-preview"></div>';
+}
+
+function genererFactureFamille(mi){
+  var fams=[].concat(DEMO_FAMS,ST.members);
+  var m=fams[mi];if(!m)return;
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+m.nom);});
+
+  // Collect selected kids
+  var selectedKids=[];
+  document.querySelectorAll('.fac-kid-'+mi+':checked').forEach(function(cb){
+    selectedKids.push({name:cb.dataset.name,age:cb.dataset.age});
+  });
+  // Collect selected resas
+  var selectedResas=[];
+  document.querySelectorAll('.fac-resa-'+mi+':checked').forEach(function(cb){
+    var ri=parseInt(cb.dataset.resa);
+    if(famResas[ri])selectedResas.push(famResas[ri]);
+  });
+  // If nothing selected, use all
+  if(!selectedKids.length&&m.children)selectedKids=m.children.map(function(c){return{name:c.name,age:c.age};});
+  if(!selectedResas.length)selectedResas=famResas;
+
+  var ref='FAC-2026-'+Math.floor(Math.random()*9000+1000);
+  var dateF=new Date().toLocaleDateString('fr-FR');
+  var montantTotal=selectedResas.reduce(function(s,r){return s+(r.paid||120);},0)||120;
+
+  var prestLines=selectedResas.length
+    ?selectedResas.map(function(r){return '<tr><td style="padding:9px 12px;font-size:12px;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?'<br><span style="color:#9CA3AF;font-size:10px;">'+r.saisonLabel+'</span>':'')+'</td><td style="padding:9px 12px;text-align:right;font-size:13px;font-weight:700;">'+(r.paid||120)+'€</td></tr>';}).join('')
+    :'<tr><td style="padding:9px 12px;font-size:12px;">Prestation club</td><td style="padding:9px 12px;text-align:right;font-weight:700;">120€</td></tr>';
+
+  var el=document.getElementById('facture-preview');if(!el)return;
+  el.innerHTML='<div style="margin-top:14px;background:#fff;border:2px solid #E5E7EB;border-radius:14px;padding:22px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">'
+    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;">🐆 Club des Léopards</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">clubdesleopards@free.fr · SIRET 50237123000025</div></div>'
+    +'<div style="text-align:right;"><div style="font-size:15px;font-weight:800;color:#0099E6;font-family:\'Syne\',sans-serif;">FACTURE</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">'+ref+'</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">'+dateF+'</div></div></div>'
+    +'<div style="background:#F9FAFB;border-radius:10px;padding:12px;margin-bottom:14px;">'
+    +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#9CA3AF;margin-bottom:5px;">Facturé à</div>'
+    +'<div style="font-size:14px;font-weight:800;">'+m.prenom+' '+m.nom+'</div>'
+    +(selectedKids.length?'<div style="font-size:12px;color:#374151;margin-top:2px;">Enfant'+(selectedKids.length>1?'s':'')+' : '+selectedKids.map(function(k){return k.name+'('+k.age+'a)';}).join(', ')+'</div>':'')
+    +(m.email?'<div style="font-size:11px;color:#9CA3AF;">'+m.email+'</div>':'')+'</div>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:12px;">'
+    +'<tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;"><th style="padding:9px 12px;text-align:left;font-size:11px;">Prestation</th><th style="padding:9px 12px;text-align:right;font-size:11px;">Montant</th></tr>'
+    +prestLines
+    +'<tr style="background:#F9FAFB;border-top:2px solid #E5E7EB;"><td style="padding:9px 12px;font-weight:700;font-size:13px;">Total TTC</td>'
+    +'<td style="padding:9px 12px;text-align:right;font-size:16px;font-weight:800;color:#0099E6;">'+montantTotal+'€</td></tr>'
+    +'</table>'
+    +'<div style="display:flex;gap:8px;">'
+    +'<button onclick="window.print()" style="flex:1;padding:10px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">🖨️ Imprimer</button>'
+    +(m.email?'<button onclick="envoyerFactureMail(\''+m.email+'\',\''+ref+'\',\''+m.prenom+' '+m.nom+'\',\'Prestations Club\',\''+montantTotal+'\')" style="flex:1;padding:10px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">📧 Envoyer</button>':'')
+    +'</div></div>';
+  el.scrollIntoView({behavior:'smooth'});
 }
 
 function genererFactureFromResa(i){
@@ -3572,9 +3505,449 @@ function _navigateTo(name){
 
 
 
+
+// ═══ FIX ST — ajouter adminWeekOffset ═══
+// (sera injecté dans var ST = {...})
+
+// ═══ DASHBOARD — 5 derniers membres + dernières réservations ═══
+function renderDashboard(){
+  var el=document.getElementById('admin-dashboard-content');if(!el)return;
+  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
+  var allResas=[].concat(DEMO_RESAS,ST.reservations);
+  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='payé'?p.montant:0);},0);
+  var att=allResas.filter(function(r){return r.statut==='en attente';}).length;
+  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
+  var today=new Date();
+  var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var dateStr=jours[today.getDay()]+' '+today.getDate()+' '+mois[today.getMonth()]+' '+today.getFullYear();
+
+  // 5 derniers membres inscrits
+  var derniersMembres=fams.slice(-5).reverse();
+  var membresHTML=derniersMembres.length
+    ?derniersMembres.map(function(m){
+        var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+        var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'];
+        var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6;">'
+          +'<div style="width:34px;height:34px;border-radius:10px;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
+          +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+m.prenom+' '+m.nom+'</div>'
+          +'<div style="font-size:11px;color:#9CA3AF;">'+(m.children||[]).length+' enfant'+(((m.children||[]).length)>1?'s':'')+' · '+( m.date||'')+'</div></div>'
+          +'<div style="font-size:11px;font-weight:700;color:'+col+';background:'+col+'10;padding:2px 8px;border-radius:20px;">Nouveau</div>'
+          +'</div>';
+      }).join('')
+    :'<div style="text-align:center;color:#9CA3AF;padding:16px;font-size:13px;">Aucun membre</div>';
+
+  el.innerHTML=
+    // Bandeau bienvenue
+    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,107,53,.2) 0%,transparent 70%);"></div>'
+    +'<div><div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">'+dateStr+'</div>'
+    +'<div style="font-size:18px;font-weight:800;color:#fff;font-family:\'Syne\',sans-serif;">Bonjour 👋</div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Club des Léopards · Saison 2026</div></div>'
+    +'<div style="text-align:right;"><div style="font-size:26px;font-weight:800;color:#FF6B35;font-family:\'Syne\',sans-serif;">'+kids.length+'</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.4);">enfants inscrits</div></div></div>'
+
+    // 4 KPIs colorées
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;">'
+    +[
+      {icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',tab:'membres'},
+      {icon:'📅',val:allResas.length,lbl:'Réservations',color:'#F97316',bg:'#FFF7ED',tab:'reservations'},
+      {icon:'✅',val:val,lbl:'Validées',color:'#10B981',bg:'#F0FDF4',tab:'reservations'},
+      {icon:'💰',val:enc+'€',lbl:'Encaissé',color:'#8B5CF6',bg:'#F5F3FF',tab:'paiements'},
+    ].map(function(k){
+      return '<div onclick="setAdminTab(\''+k.tab+'\')" style="background:'+k.bg+';border-radius:12px;padding:14px;cursor:pointer;border:1.5px solid '+k.color+'15;">'
+        +'<div style="font-size:20px;margin-bottom:4px;">'+k.icon+'</div>'
+        +'<div style="font-size:22px;font-weight:800;color:'+k.color+';line-height:1;font-family:\'Syne\',sans-serif;">'+k.val+'</div>'
+        +'<div style="font-size:11px;font-weight:600;color:#374151;margin-top:2px;">'+k.lbl+'</div>'
+        +'</div>';
+    }).join('')+'</div>'
+
+    // Alerte réservations en attente
+    +(att>0?'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">'
+      +'<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">⏳</span><div><div style="font-size:13px;font-weight:700;color:#92400E;">'+att+' en attente</div></div></div>'
+      +'<button onclick="setAdminTab(\'reservations\')" style="padding:6px 12px;background:#F97316;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">Voir →</button></div>':'')
+
+    // 5 derniers membres inscrits
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>👤</span> Derniers inscrits</div>'
+    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#0099E6;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button>'
+    +'</div>'+membresHTML+'</div>'
+
+    // Fréquentation par âge
+    +'<div class="wcard">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>👶</span> Répartition par âge</div>'
+    +'<div style="display:flex;gap:4px;">'
+    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;padding:3px 8px;">Saison</button>'
+    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;padding:3px 8px;">Semaine</button>'
+    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;padding:3px 8px;">Jour</button>'
+    +'</div></div>'
+    +'<div id="dash-freq-content">'+buildDashFreq('saison',kids)+'</div>'
+    +'</div>';
+}
+
+// ═══ ÉQUIPE — formulaire complet ═══
+function ajouterAnimateur(){
+  var ov=document.getElementById('ajouter-animateur-overlay');
+  if(ov){
+    ['aa-prenom','aa-nom','aa-email','aa-tel','aa-dob','aa-secu','aa-diplome','aa-poste'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ov.style.display='flex';
+  }
+}
+function fermerAjouterAnimateur(){
+  var ov=document.getElementById('ajouter-animateur-overlay');if(ov)ov.style.display='none';
+}
+function confirmerAjouterAnimateur(){
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var p=f('aa-prenom');if(!p){toast('Prénom requis','ko');return;}
+  var n=f('aa-nom');if(!n){toast('Nom requis','ko');return;}
+  EQUIPE.push({id:Date.now(),prenom:p,nom:n,dob:f('aa-dob'),email:f('aa-email'),tel:f('aa-tel'),secu:f('aa-secu'),diplome:f('aa-diplome'),poste:f('aa-poste')||'Animateur'});
+  fermerAjouterAnimateur();
+  toast('Animateur ajouté ✅','ok');
+  renderEquipe();
+}
+
+// ═══ MEMBRES — fiche au clic ═══
+function renderMembres(){
+  var el=document.getElementById('admin-membres-content');if(!el)return;
+  var q=(document.getElementById('membre-search')||{value:''}).value.toLowerCase();
+  var all=[].concat(DEMO_FAMS,ST.members);
+  if(q)all=all.filter(function(m){return(m.nom||'').toLowerCase().includes(q)||(m.prenom||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q);});
+  if(_membreAlpha)all=all.filter(function(m){return(m.nom||'').toUpperCase().startsWith(_membreAlpha);});
+  all.sort(function(a,b){return(a.nom||'').localeCompare(b.nom||'','fr');});
+
+  var letters=[];all.forEach(function(m){var l=(m.nom||'').charAt(0).toUpperCase();if(l&&letters.indexOf(l)<0)letters.push(l);});letters.sort();
+  var alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(function(l){
+    var a=_membreAlpha===l,has=letters.indexOf(l)>=0;
+    return '<button onclick="filterMembreAlpha(\''+l+'\')" style="padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(a?'#0099E6':has?'#fff':'#F3F4F6')+';color:'+(a?'#fff':has?'#0A0F1E':'#D1D5DB')+';">'+l+'</button>';
+  }).join('');
+
+  var bar='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div style="font-size:13px;font-weight:700;color:#374151;">'+all.length+'/'+([].concat(DEMO_FAMS,ST.members).length)+' membres</div>'
+    +'<button onclick="ajouterMembre()" style="padding:7px 14px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Nouveau membre</button>'
+    +'</div>'
+    +'<input id="membre-search" placeholder="🔍 Rechercher nom, prénom, email..." oninput="renderMembres()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:8px;">'
+    +'<div style="display:flex;gap:2px;flex-wrap:wrap;margin-bottom:10px;">'
+    +'<button onclick="filterMembreAlpha(\'\')" style="padding:2px 7px;border-radius:5px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(_membreAlpha?'#F3F4F6':'#0099E6')+';color:'+(_membreAlpha?'#6B7280':'#fff')+';">Tous</button>'
+    +alpha+'</div>';
+
+  if(!all.length){el.innerHTML=bar+'<div class="empty"><div class="empty-icon">👨‍👩‍👧</div><p>Aucun résultat</p></div>';return;}
+
+  var cards=all.map(function(m,i){
+    var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+    var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899','#F59E0B'];
+    var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+    var nbK=(m.children||[]).length;
+    return '<div onclick="voirFicheMembre('+i+')" style="background:#fff;border-radius:13px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;transition:box-shadow .15s;border-top:3px solid '+col+';" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.12)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.06)\'">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+      +'<div style="width:40px;height:40px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+m.prenom+' '+m.nom.toUpperCase()+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+m.email+'</div>'
+      +'</div></div>'
+      +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+      +'<span style="background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">👶 '+nbK+' enfant'+(nbK>1?'s':'')+'</span>'
+      +(m.droit_image!==false?'<span style="background:#E8F5E9;color:#2E7D32;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">📷 OK</span>':'')
+      +'</div>'
+      +'<div style="font-size:10px;color:#9CA3AF;margin-top:8px;text-align:right;">Cliquer pour voir la fiche</div>'
+      +'</div>';
+  }).join('');
+
+  el.innerHTML=bar+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">'+cards+'</div>';
+}
+
+function voirFicheMembre(i){
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[i];if(!m)return;
+  window._editMembreIdx=i;
+  var ov=document.getElementById('membre-fiche-overlay');
+  var body=document.getElementById('membre-fiche-body');
+  if(!ov||!body)return;
+  var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899','#F59E0B'];
+  var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+  var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+  var kidsHTML=(m.children||[]).map(function(ch,ci){
+    var g=getGroupe(parseFloat(ch.age)||0);
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F3F4F6;">'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+      +'<span style="font-size:16px;">'+(g?g.emoji:'🧒')+'</span>'
+      +'<div><div style="font-size:13px;font-weight:600;">'+ch.name+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+ch.age+' ans'+(g?' · '+g.name:'')+'</div></div></div>'
+      +'<button onclick="supprimerEnfantMembre('+i+',\''+ch.name+'\')" style="background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px;">🗑️</button>'
+      +'</div>';
+  }).join('');
+  body.innerHTML='<div style="padding:20px;">'
+    +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">'
+    +'<div style="width:52px;height:52px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">'+ini+'</div>'
+    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;">'+m.prenom+' '+m.nom.toUpperCase()+'</div>'
+    +'<div style="font-size:12px;color:#9CA3AF;">Inscrit le '+(m.date||'—')+'</div></div></div>'
+    +'<div style="display:flex;flex-direction:column;gap:0;margin-bottom:14px;">'
+    +[['📧 Email',m.email||'—'],['📞 Téléphone',m.tel||'—'],['🏠 Adresse',m.adresse||'—'],['🆘 Urgence',m.urgence||'—'],['📸 Droit image',m.droit_image!==false?'Autorisé':'Non autorisé']].map(function(r){
+      return '<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #F3F4F6;font-size:13px;">'
+        +'<span style="color:#9CA3AF;min-width:110px;">'+r[0]+'</span>'
+        +'<span style="font-weight:600;color:#0A0F1E;flex:1;">'+r[1]+'</span></div>';
+    }).join('')+'</div>'
+    +'<div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Enfants</div>'
+    +(kidsHTML||'<div style="color:#9CA3AF;font-size:13px;padding:8px 0;">Aucun enfant enregistré</div>')
+    +'<div style="display:flex;gap:8px;margin-top:14px;">'
+    +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:10px;background:#EFF6FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
+    +'<button onclick="ajouterEnfantMembre('+i+')" style="flex:1;padding:10px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Enfant</button>'
+    +'<button onclick="supprimerMembre('+i+')" style="padding:10px 14px;background:#FEF2F2;color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-family:inherit;">🗑️</button>'
+    +'</div></div>';
+  ov.style.display='flex';
+}
+function fermerFicheMembre(){var ov=document.getElementById('membre-fiche-overlay');if(ov)ov.style.display='none';}
+
+// ═══ GROUPES — fix semaine ═══
+function adminPrevWeek(){
+  if(!ST.adminWeekOffset)ST.adminWeekOffset=0;
+  if(ST.adminWeekOffset>0){ST.adminWeekOffset--;renderAdminGroupes();}
+}
+function adminNextWeek(){
+  if(!ST.adminWeekOffset)ST.adminWeekOffset=0;
+  var max=(SAISONS.ete.semaines.length||9)-1;
+  if(ST.adminWeekOffset<max){ST.adminWeekOffset++;renderAdminGroupes();}
+}
+
+// ═══ RÉSERVATIONS — semaines dynamiques par saison ═══
+function updateResaSemaines(){
+  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
+  var s=SAISONS[saison];
+  var semSel=document.getElementById('nr-semaine-sel');
+  if(!semSel||!s)return;
+  var opts=(s.semaines||[]).map(function(wk){return '<option value="'+wk.label+' · '+wk.debut+' au '+wk.fin+'">'+wk.label+' · '+wk.debut+' → '+wk.fin+'</option>';}).join('');
+  semSel.innerHTML='<option value="">— Choisir une semaine —</option>'+opts;
+}
+
+function ajouterEnfantResa(){
+  var cont=document.getElementById('nr-enfants-list');if(!cont)return;
+  var idx=cont.children.length;
+  var div=document.createElement('div');
+  div.style.cssText='display:flex;gap:8px;margin-bottom:6px;';
+  div.innerHTML='<input placeholder="Prénom Nom" id="nr-enfant-'+idx+'" style="flex:1;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;">'
+    +'<button onclick="this.parentNode.remove()" style="padding:0 12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:9px;cursor:pointer;font-size:16px;">✕</button>';
+  cont.appendChild(div);
+}
+
+function confirmerNouvelleResa(){
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var nom=f('nr-nom');if(!nom){toast('Nom requis','ko');return;}
+  var email=f('nr-email'),tel=f('nr-tel');
+  var periode=f('nr-periode');
+  var saison=f('nr-saison');
+  var semaine=(document.getElementById('nr-semaine-sel')||{value:''}).value;
+  if(!semaine){toast('Choisissez une semaine','ko');return;}
+  var montant=parseInt(f('nr-montant')||'120');
+  var sLabel=saison==='ete'?'Été 2026':saison==='automne'?'Automne 2026':'Printemps 2027';
+  // Collect all children
+  var enfants=[];
+  var cont=document.getElementById('nr-enfants-list');
+  if(cont){
+    var inputs=cont.querySelectorAll('input');
+    inputs.forEach(function(inp){if(inp.value.trim())enfants.push({name:inp.value.trim(),age:0});});
+  }
+  ST.reservations.push({
+    id:Date.now(),nom:'Fam. '+nom,email:email,tel:tel,
+    slot:{time:periode==='matin'?'Matin':'Après-midi',date:semaine},
+    saisonLabel:sLabel,children:enfants,
+    paid:montant,statut:'en attente',
+    date:new Date().toLocaleDateString('fr-FR')
+  });
+  fermerNouvelleResa();
+  toast('Réservation créée ✅','ok');
+  renderAdminResas();
+}
+
+// ═══ FRÉQUENTATION — navigation semaine/mois/saison ═══
+var freqPeriod='semaine';
+var freqWeekOffset=0;
+var freqMonthOffset=0;
+var freqSaisonIdx=0;
+
+function setFreqPeriod(p){
+  freqPeriod=p;
+  ['jour','semaine','mois','saison'].forEach(function(x){
+    var b=document.getElementById('fp-'+x);
+    if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}
+  });
+  renderFrequentation();
+}
+
+function renderFrequentation(){
+  var el=document.getElementById('frequentation-content');if(!el)return;
+  var today=new Date();
+  var jours=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  var moisNoms=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  var navHTML='';
+  var data=[];
+  var title='';
+
+  if(freqPeriod==='jour'){
+    var d=new Date(today);d.setDate(d.getDate());
+    title=jours[d.getDay()]+' '+d.getDate()+' '+moisNoms[d.getMonth()]+' '+d.getFullYear();
+    data=DEMO_FREQ.jours.slice(0,1);// just today's data
+    navHTML='<div style="font-size:13px;font-weight:700;color:#374151;text-align:center;padding:6px 0;">'+title+'</div>';
+  } else if(freqPeriod==='semaine'){
+    var sems=SAISONS.ete.semaines;
+    var wi=Math.max(0,Math.min(sems.length-1,freqWeekOffset));
+    var wk=sems[wi]||{label:'S1',debut:'',fin:''};
+    title=wk.label+' · '+wk.debut+' → '+wk.fin;
+    data=DEMO_FREQ.semaines.slice(wi,wi+1).length?[DEMO_FREQ.semaines[wi]||DEMO_FREQ.semaines[0]]:[DEMO_FREQ.semaines[0]];
+    data=DEMO_FREQ.jours;// show days of the week
+    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+      +'<button onclick="freqWeekOffset=Math.max(0,freqWeekOffset-1);renderFrequentation();" style="padding:6px 12px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<div style="font-size:13px;font-weight:700;color:#374151;">'+title+'</div>'
+      +'<button onclick="freqWeekOffset=Math.min('+(sems.length-1)+',freqWeekOffset+1);renderFrequentation();" style="padding:6px 12px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button>'
+      +'</div>';
+  } else if(freqPeriod==='mois'){
+    var moidx=((today.getMonth()+freqMonthOffset)%12+12)%12;
+    title=moisNoms[moidx]+' '+(today.getFullYear()+(freqMonthOffset<0?-1:0));
+    data=DEMO_FREQ.mois.slice(0,3);
+    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+      +'<button onclick="freqMonthOffset--;renderFrequentation();" style="padding:6px 12px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<div style="font-size:13px;font-weight:700;color:#374151;">'+title+'</div>'
+      +'<button onclick="freqMonthOffset++;renderFrequentation();" style="padding:6px 12px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button>'
+      +'</div>';
+  } else {
+    var saisons=[{label:'Été 2026'},{label:'Automne 2026'},{label:'Printemps 2027'}];
+    var si=((freqSaisonIdx%3)+3)%3;
+    title=saisons[si].label;
+    data=DEMO_FREQ.mois;
+    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+      +'<button onclick="freqSaisonIdx--;renderFrequentation();" style="padding:6px 12px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<div style="font-size:13px;font-weight:700;color:#374151;">'+title+'</div>'
+      +'<button onclick="freqSaisonIdx++;renderFrequentation();" style="padding:6px 12px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button>'
+      +'</div>';
+  }
+
+  var maxAll=Math.max.apply(null,data.map(function(d){return Math.max(d.matin,d.aprem);}));maxAll=maxAll||1;
+  var totM=data.reduce(function(s,d){return s+d.matin;},0);
+  var totA=data.reduce(function(s,d){return s+d.aprem;},0);
+
+  var kids=allKids();
+  var TR=[{label:'3-5 ans',min:3,max:5.9,color:'#F97316'},{label:'6-9 ans',min:6,max:9.9,color:'#0099E6'},{label:'10-13 ans',min:10,max:13.9,color:'#8B5CF6'}];
+  var totalK=kids.length||1;
+
+  el.innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+    +'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:2px;">Matin</div><div style="font-size:22px;font-weight:800;color:#92400E;">'+totM+'</div></div>'
+    +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:2px;">Après-midi</div><div style="font-size:22px;font-weight:800;color:#1565C0;">'+totA+'</div></div>'
+    +'</div>'
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div class="wcard-title"><span>📊</span> Matin & Après-midi</div>'
+    +navHTML
+    +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:8px;">'
+    +data.map(function(d){
+      var hM=Math.round(d.matin/maxAll*72),hA=Math.round(d.aprem/maxAll*72);
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">'
+        +'<div style="display:flex;gap:2px;align-items:flex-end;width:100%;height:72px;">'
+        +'<div style="flex:1;background:#F97316;border-radius:3px 3px 0 0;height:'+hM+'px;min-height:2px;"></div>'
+        +'<div style="flex:1;background:#0099E6;border-radius:3px 3px 0 0;height:'+hA+'px;min-height:2px;"></div>'
+        +'</div><div style="font-size:9px;color:#9CA3AF;text-align:center;">'+d.label+'</div></div>';
+    }).join('')
+    +'</div>'
+    +'<div style="display:flex;gap:12px;"><div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:50%;background:#F97316;"></div><span style="font-size:11px;">Matin</span></div>'
+    +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:50%;background:#0099E6;"></div><span style="font-size:11px;">Après-midi</span></div></div>'
+    +'</div>'
+    +'<div class="wcard"><div class="wcard-title"><span>👶</span> Par groupe d\'âge</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">'
+    +TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;var pct=Math.round(cnt/totalK*100);return '<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:3px;"><span style="color:'+t.color+';">'+t.label+'</span><span>'+cnt+' ('+pct+'%)</span></div><div style="background:#F3F4F6;border-radius:5px;height:6px;"><div style="background:'+t.color+';height:6px;border-radius:5px;width:'+pct+'%;"></div></div></div>';}).join('')
+    +'</div></div>';
+}
+
+// ═══ AVOIRS — restauré complet ═══
+function renderAvoirs(){
+  var el=document.getElementById('admin-avoirs-content');if(!el)return;
+  function makeTable(items,ni){
+    var real=items.filter(function(a){return a.membre;});
+    var restant=real.filter(function(a){return !a.solde;}).reduce(function(s,a){return s+a.somme;},0);
+    var rows=real.length?real.map(function(a,i){
+      return '<tr style="border-bottom:1px solid #F3F4F6;">'
+        +'<td style="padding:9px 8px;font-size:12px;font-weight:600;">'+a.membre+'</td>'
+        +'<td style="padding:9px 8px;font-size:12px;text-align:right;font-weight:700;color:#0099E6;">'+a.somme+'€</td>'
+        +'<td style="padding:9px 8px;font-size:11px;color:#374151;">'+a.motif+'</td>'
+        +'<td style="padding:9px 8px;text-align:center;">'
+        +(a.solde?'<span style="background:#D1FAE5;color:#065F46;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">✅ '+a.dateSolde+'</span>'
+          :'<button onclick="solderAvoir('+ni+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')
+        +'</td>'
+        +'<td style="padding:9px 8px;text-align:center;">'
+        +'<button onclick="genererDocAvoir(\''+a.membre.replace(/'/g,"\\'")+'\','+a.somme+',\''+a.motif.replace(/'/g,"\\'")+'\','+ni+')" style="background:#EFF6FF;color:#0099E6;border:none;border-radius:7px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">🧾</button>'
+        +'</td></tr>';
+    }).join('')
+    :'<tr><td colspan="5" style="text-align:center;color:#9CA3AF;padding:16px;font-style:italic;">Aucun avoir</td></tr>';
+    return '<div style="overflow-x:auto;margin-bottom:10px;">'
+      +'<table style="width:100%;border-collapse:collapse;min-width:400px;font-size:12px;">'
+      +'<thead><tr style="background:#F9FAFB;">'
+      +'<th style="padding:7px 8px;text-align:left;font-size:10px;text-transform:uppercase;color:#9CA3AF;">Membre</th>'
+      +'<th style="padding:7px;text-align:right;font-size:10px;text-transform:uppercase;color:#9CA3AF;">Somme</th>'
+      +'<th style="padding:7px;font-size:10px;text-transform:uppercase;color:#9CA3AF;">Motif</th>'
+      +'<th style="padding:7px;text-align:center;font-size:10px;text-transform:uppercase;color:#9CA3AF;">Soldé</th>'
+      +'<th style="padding:7px;text-align:center;font-size:10px;text-transform:uppercase;color:#9CA3AF;">Doc</th>'
+      +'</tr></thead>'
+      +'<tbody>'+rows+'</tbody>'
+      +(restant>0?'<tfoot><tr style="background:#EFF6FF;"><td colspan="2" style="padding:7px 8px;font-size:12px;color:#0099E6;font-weight:700;">Restant : '+restant+'€</td><td colspan="3"></td></tr></tfoot>':'')
+      +'</table></div>'
+      +'<button onclick="ajouterAvoir('+ni+')" style="padding:9px 16px;background:linear-gradient(135deg,#FF6B35,#FF8C00);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Ajouter un avoir</button>';
+  }
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;">'
+    +'<div class="wcard"><div class="wcard-title"><span>📂</span> N−1 (2025)</div>'+makeTable(AVOIRS.nMoins1,0)+'</div>'
+    +'<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'+makeTable(AVOIRS.n,1)+'</div>'
+    +'</div>';
+}
+
+function solderAvoir(ti,ri){
+  var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;
+  var real=tab.filter(function(a){return a.membre;})[ri];if(!real)return;
+  real.solde=true;real.dateSolde=new Date().toLocaleDateString('fr-FR');
+  if(typeof solderAvoirSB==='function'&&real._id)solderAvoirSB(real._id).catch(function(){});
+  toast('Avoir soldé ✅','ok');renderAvoirs();
+}
+
+// ═══ RECHERCHE — par prénom, nom, email, tel ═══
+function globalSearch(){
+  var el=document.getElementById('search-results');if(!el)return;
+  var q=(document.getElementById('global-search')||{value:''}).value.trim().toLowerCase();
+  if(!q||q.length<2){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:30px;font-size:14px;">Saisissez au moins 2 caractères</div>';return;}
+
+  var results=[];
+  allKids().forEach(function(k){
+    var txt=(k.prenom+' '+k.nom+' '+k.parent+' '+(k.email||'')+' '+(k.tel||'')+' '+(k.medical||'')).toLowerCase();
+    if(txt.indexOf(q)>=0)results.push({type:'enfant',icon:'🧒',title:k.prenom+' '+k.nom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#6366F1',kid:k});
+  });
+  [].concat(DEMO_FAMS,ST.members).forEach(function(m){
+    var txt=(m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')+' '+(m.adresse||'')).toLowerCase();
+    if(txt.indexOf(q)>=0)results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:(m.email||'')+(m.tel?' · '+m.tel:''),color:'#F97316'});
+  });
+  [].concat(DEMO_RESAS,ST.reservations).forEach(function(r){
+    var txt=(r.nom+' '+(r.email||'')+' '+(r.saisonLabel||'')).toLowerCase();
+    if(txt.indexOf(q)>=0)results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+' · '+(r.saisonLabel||''),color:'#10B981'});
+  });
+  DEMO_PAYMENTS.forEach(function(p){
+    var txt=(p.nom+' '+(p.formule||'')+' '+(p.mode||'')).toLowerCase();
+    if(txt.indexOf(q)>=0)results.push({type:'paiement',icon:'💰',title:p.nom,sub:p.formule+' · '+p.montant+'€'+(p.mode?' · '+p.mode:''),color:'#8B5CF6'});
+  });
+
+  _searchResults=results;
+  if(!results.length){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:30px;">Aucun résultat pour "'+q+'"</div>';return;}
+
+  el.innerHTML='<div style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+' pour "'+q+'"</div>'
+    +results.map(function(r,i){
+      var click=r.type==='enfant'?'onclick="ouvrirFicheEnfant('+i+')" style="cursor:pointer;"':'';
+      return '<div '+click+' style="background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;gap:12px;border-left:3px solid '+r.color+';">'
+        +'<div style="width:36px;height:36px;border-radius:10px;background:'+r.color+'15;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+r.icon+'</div>'
+        +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+r.title+'</div>'
+        +'<div style="font-size:11px;color:#9CA3AF;">'+r.sub+'</div>'
+        +'<div style="font-size:10px;font-weight:700;color:'+r.color+';text-transform:uppercase;margin-top:2px;">'+r.type+(r.type==='enfant'?' · cliquer pour voir':'')+'</div></div>'
+        +'</div>';
+    }).join('');
+}
+
 // ═══ WINDOW BINDINGS ═══
 (function(){
-  var fns = ['navigate','_navigateTo','openAdminLogin','closeAdminLogin','checkAdminCode',
+  var fns = ['navigate','_navigateTo','voirFicheMembre','fermerFicheMembre','fermerAjouterAnimateur','confirmerAjouterAnimateur','updateResaSemaines','ajouterEnfantResa','freqWeekOffset','freqMonthOffset','freqSaisonIdx','openAdminLogin','closeAdminLogin','checkAdminCode',
     'onAdminCodeInput','toggleAdminEye','setAdminTab','setGPeriod','adminPrevWeek','adminNextWeek',
     'renderAdmin','renderDashboard','renderMembres','renderAdminGroupes','renderAdminResas',
     'renderPaiements','renderFrequentation','renderComptabilite','renderSuiviQuotidien',
@@ -3590,7 +3963,7 @@ function _navigateTo(name){
     'ajouterMembre','supprimerMembre','ajouterEnfantMembre','supprimerEnfantMembre',
     'filterMembreAlpha','editMembre','voirMembreDetail',
     'ouvrirSaisieQuotidienne','fermerSaisieQuotidienne','confirmerSaisieQuotidienne',
-    'genererFactureFromResa','ouvrirFactureDepuisPaiement','envoyerFactureMail',
+    'genererFactureFromResa','genererFactureFamille','ouvrirFactureDepuisPaiement','envoyerFactureMail',
     'chargerDepuisPaiement','toutSelectionnerFac','toutDeselectionnerFac',
     'ajouterAvoir','fermerAjouterAvoir','confirmerAjouterAvoir','genererDocAvoir',
     'ouvrirFicheEnfant','fermerFicheEnfant','ouvrirFicheEnfantGroupe',
