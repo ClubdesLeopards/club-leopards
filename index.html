@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Club des Léopards</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{
-  font-family:'DM Sans','Helvetica Neue',sans-serif;
+  font-family:'Rockwell','Rockwell Nova','Georgia',serif;
   background:#F2F4F8;
   color:#1A1A2E;
   min-height:100vh;
@@ -177,16 +176,13 @@ body{
 
 /* ── WHITE CARDS ── */
 .wcard{
-  background:#fff;border-radius:16px;
-  padding:18px 20px;margin-bottom:14px;
-  box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
-  border:1px solid rgba(0,0,0,.04);
-  transition:box-shadow .2s;
+  background:#fff;border-radius:18px;
+  padding:20px;margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
 }
 .wcard-title{
-  font-size:14px;font-weight:700;color:#0A0F1E;
+  font-size:15px;font-weight:700;color:#1A1A2E;
   margin-bottom:14px;display:flex;align-items:center;gap:7px;
-  font-family:'Syne',sans-serif;letter-spacing:.3px;
 }
 
 /* ── FORMS ── */
@@ -919,7 +915,7 @@ textarea{resize:vertical;}
   .kpi-row { grid-template-columns:repeat(4,1fr); }
 
   /* Admin */
-  #page-admin .content { padding:24px 32px; background:#F5F7FF; border-radius:0; }
+  #page-admin .content { padding:24px 32px; }
   .admin-tabs { flex-wrap:nowrap; overflow-x:auto; }
 
   /* Cards */
@@ -1128,204 +1124,180 @@ textarea{resize:vertical;}
 .doc-item-head:hover { background:#F9FAFB; }
 .doc-item-body { padding:0 16px 14px; border-top:1px solid #F3F4F6; }
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
-/* ═══════════════════════════════════════════
-   IMPORT GOOGLE FONT — DM Sans + Syne
-   ═══════════════════════════════════════════ */
 
-/* ═══════════════════════════════════════════
-   ADMIN VARIABLES
-   ═══════════════════════════════════════════ */
-:root {
-  --adm-bg:       #F0F4FF;
-  --adm-card:     #FFFFFF;
-  --adm-navy:     #0B1437;
-  --adm-blue:     #0099E6;
-  --adm-blue2:    #0077C8;
-  --adm-orange:   #FF8C00;
-  --adm-gold:     #FFC200;
-  --adm-green:    #10B981;
-  --adm-red:      #EF4444;
-  --adm-purple:   #8B5CF6;
-  --adm-text:     #1E293B;
-  --adm-muted:    #64748B;
-  --adm-border:   #E2E8F0;
-  --adm-shadow:   0 4px 24px rgba(11,20,55,.08);
-  --adm-shadow-lg:0 8px 40px rgba(11,20,55,.14);
-  --adm-radius:   16px;
-  --adm-font:     'DM Sans', 'Segoe UI', system-ui, sans-serif;
+/* ═══ ADMIN REDESIGN CSS ═══════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
+
+/* Override font on admin page */
+#page-admin,
+#page-admin * {
+  font-family: 'DM Sans', system-ui, sans-serif !important;
+}
+#page-admin .admin-hero,
+#page-admin .wcard-title,
+#page-admin .stat-val,
+#page-admin .admin-tab {
+  font-family: 'Syne', system-ui, sans-serif !important;
 }
 
-/* Override page admin bg */
-#page-admin {
-  background: var(--adm-bg) !important;
-  font-family: var(--adm-font) !important;
-}
-
-/* ═══ HERO ADMIN ═══════════════════════════ */
+/* Admin hero redesign */
 .admin-hero {
-  background: linear-gradient(135deg, #0B1437 0%, #0F2055 50%, #0B3A7A 100%) !important;
-  padding: 0 !important;
-  position: relative !important;
-  overflow: hidden !important;
+  background: linear-gradient(135deg, #0A0F2C 0%, #0D2137 40%, #0A3D5C 75%, #0077C8 100%) !important;
+  position: relative;
+  overflow: hidden;
 }
 .admin-hero::before {
   content: '';
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 60% 80% at 90% -10%, rgba(0,153,230,.25) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 60% at -10% 110%, rgba(255,140,0,.18) 0%, transparent 60%);
-  pointer-events: none;
-}
-.admin-hero-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
 }
 
-/* ═══ STAT CARDS ════════════════════════════ */
+/* Stat cards — glassmorphism on dark bg */
 .stat-card {
-  border-radius: 14px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 16px !important;
   padding: 14px 12px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 2px !important;
-  background: rgba(255,255,255,.10) !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(12px) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  transition: transform .2s !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.stat-card:hover { transform: translateY(-2px) !important; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
 .stat-card::after {
   content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, transparent 50%);
-  pointer-events: none;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
 }
-.stat-icon  { font-size: 18px !important; margin-bottom: 2px !important; }
-.stat-val   { font-size: 22px !important; font-weight: 800 !important; color: #fff !important; line-height: 1 !important; font-family: var(--adm-font) !important; }
-.stat-lbl   { font-size: 9px !important; font-weight: 600 !important; color: rgba(255,255,255,.65) !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
+.stat-icon { font-size: 20px !important; margin-bottom: 6px !important; }
+.stat-val  { font-size: 26px !important; font-weight: 800 !important; color: #fff !important; }
+.stat-lbl  { font-size: 10px !important; font-weight: 600 !important; color: rgba(255,255,255,0.6) !important; text-transform: uppercase; letter-spacing: 1px; }
 
-/* ═══ ADMIN TABS ════════════════════════════ */
+/* Admin tabs — pill style on dark strip */
 .admin-tab {
-  flex-shrink: 0 !important;
-  padding: 8px 14px !important;
-  border-radius: 10px !important;
-  border: none !important;
-  background: rgba(255,255,255,.08) !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: rgba(255,255,255,.65) !important;
-  cursor: pointer !important;
-  transition: all .18s !important;
-  white-space: nowrap !important;
-  font-family: var(--adm-font) !important;
-  letter-spacing: .2px !important;
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif !important;
+  letter-spacing: 0.2px;
 }
 .admin-tab:hover {
-  background: rgba(255,255,255,.18) !important;
-  color: #fff !important;
+  background: rgba(255,255,255,0.16);
+  color: #fff;
+  border-color: rgba(255,255,255,0.35);
 }
 .admin-tab.active {
-  background: linear-gradient(135deg, #FF8C00, #FFC200) !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  box-shadow: 0 4px 16px rgba(255,140,0,.4) !important;
+  background: linear-gradient(135deg, #FF6B35, #FF8C00);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255,107,53,0.45);
+  font-weight: 700;
 }
 
-/* ═══ WCARDS ════════════════════════════════ */
-.wcard {
-  background: var(--adm-card) !important;
-  border-radius: var(--adm-radius) !important;
-  padding: 20px !important;
-  margin-bottom: 14px !important;
-  box-shadow: var(--adm-shadow) !important;
-  border: 1px solid var(--adm-border) !important;
-  font-family: var(--adm-font) !important;
-  transition: box-shadow .2s !important;
+/* WCards in admin — elevated style */
+#page-admin .wcard {
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
 }
-.wcard:hover { box-shadow: var(--adm-shadow-lg) !important; }
-.wcard-title {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: var(--adm-text) !important;
-  margin-bottom: 14px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-  font-family: var(--adm-font) !important;
-  letter-spacing: -.2px !important;
+#page-admin .wcard:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.1); }
+#page-admin .wcard-title {
+  font-family: 'Syne', sans-serif !important;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0A0F2C;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* ═══ BUTTONS ═══════════════════════════════ */
+/* Accent colors CSS variables */
+#page-admin {
+  --c-blue:   #0099E6;
+  --c-orange: #FF6B35;
+  --c-green:  #00C48C;
+  --c-purple: #7C3AED;
+  --c-gold:   #FF8C00;
+  --c-dark:   #0A0F2C;
+  background: #F0F4FF;
+}
+
+/* Buttons in admin */
 #page-admin .btn {
-  font-family: var(--adm-font) !important;
-  font-weight: 600 !important;
-  letter-spacing: -.1px !important;
-}
-#page-admin .btn-blue {
-  background: linear-gradient(135deg, var(--adm-blue2), var(--adm-blue)) !important;
-  box-shadow: 0 4px 14px rgba(0,153,230,.3) !important;
-}
-#page-admin .btn-sm {
-  background: var(--adm-bg) !important;
-  color: var(--adm-muted) !important;
-  border: 1.5px solid var(--adm-border) !important;
-  border-radius: 8px !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  font-family: var(--adm-font) !important;
-}
-#page-admin .btn-sm.active {
-  background: var(--adm-navy) !important;
-  color: #fff !important;
-  border-color: var(--adm-navy) !important;
-}
-#page-admin .btn-ghost {
-  background: transparent !important;
-  color: var(--adm-muted) !important;
-  border: 1.5px solid var(--adm-border) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
-/* ═══ INPUTS ════════════════════════════════ */
+/* KPI card color variants */
+.kpi-blue   { background: linear-gradient(135deg,#0077C8,#00BFFF) !important; }
+.kpi-orange { background: linear-gradient(135deg,#FF6B35,#FF8C00) !important; }
+.kpi-green  { background: linear-gradient(135deg,#00C48C,#00A86B) !important; }
+.kpi-purple { background: linear-gradient(135deg,#7C3AED,#5B21B6) !important; }
+
+/* Badge styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif !important;
+}
+.badge-blue   { background: #E0F2FE; color: #0369A1; }
+.badge-green  { background: #DCFCE7; color: #166534; }
+.badge-orange { background: #FEF3C7; color: #92400E; }
+.badge-red    { background: #FEE2E2; color: #991B1B; }
+.badge-purple { background: #EDE9FE; color: #5B21B6; }
+
+/* Table styles in admin */
+#page-admin table { border-collapse: collapse; width: 100%; font-size: 13px; }
+#page-admin th { padding: 10px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #6B7280; background: #F9FAFB; }
+#page-admin td { padding: 11px 12px; border-bottom: 1px solid #F3F4F6; color: #374151; }
+#page-admin tr:hover td { background: #F9FAFB; }
+
+/* Input styles in admin */
 #page-admin input, #page-admin select, #page-admin textarea {
-  font-family: var(--adm-font) !important;
-  border-radius: 10px !important;
-  border: 1.5px solid var(--adm-border) !important;
-  font-size: 13px !important;
-  color: var(--adm-text) !important;
-  transition: border-color .18s !important;
+  font-family: 'DM Sans', sans-serif !important;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
 }
-#page-admin input:focus, #page-admin select:focus {
-  outline: none !important;
-  border-color: var(--adm-blue) !important;
-  box-shadow: 0 0 0 3px rgba(0,153,230,.12) !important;
+#page-admin input:focus, #page-admin select:focus, #page-admin textarea:focus {
+  border-color: #0099E6;
+  box-shadow: 0 0 0 3px rgba(0,153,230,0.1);
 }
 
-/* ═══ TABLES ════════════════════════════════ */
-#page-admin table { font-family: var(--adm-font) !important; }
-#page-admin th { font-weight: 700 !important; letter-spacing: .3px !important; }
-
-/* ═══ EMPTY STATE ═══════════════════════════ */
-#page-admin .empty { text-align: center; padding: 48px 20px; }
-#page-admin .empty-icon { font-size: 48px; margin-bottom: 12px; }
-#page-admin .empty p { color: var(--adm-muted); font-family: var(--adm-font); font-size: 14px; }
-
-/* ═══ ANIMATIONS ════════════════════════════ */
-@keyframes adm-slide-up {
+/* Animation for tab content */
+#page-admin .wcard {
+  animation: slideInUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideInUp {
   from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: none; }
 }
-#page-admin .wcard { animation: adm-slide-up .25s ease both; }
-
-/* ═══ SCROLLBAR ═════════════════════════════ */
-#page-admin *::-webkit-scrollbar { width: 5px; height: 5px; }
-#page-admin *::-webkit-scrollbar-track { background: transparent; }
-#page-admin *::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+/* ═══ END ADMIN REDESIGN CSS ═══════════════════════════════ */
 
 </style>
 </head>
@@ -1824,7 +1796,7 @@ textarea{resize:vertical;}
   <div class="page" id="page-admin">
 
     <!-- HEADER -->
-    <div class="admin-hero" style="background:linear-gradient(135deg,#0A0F1E 0%,#0D1B3E 50%,#0A2E5C 100%);padding:0;position:relative;overflow:hidden;">
+    <div class="admin-hero" style="padding:0;position:relative;overflow:hidden;">
 
       <!-- Accent blobs décoratifs -->
       <div style="position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(233,177,13,.25) 0%,transparent 70%);pointer-events:none;"></div>
@@ -1836,18 +1808,17 @@ textarea{resize:vertical;}
           <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#E9B10D,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(233,177,13,.4);">🐆</div>
           <div>
             <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1.5px;">Club des Léopards</div>
-            <div style="font-size:18px;font-weight:800;color:#fff;margin-top:1px;line-height:1.2;font-family:'Syne',sans-serif;letter-spacing:-.2px;">Dashboard Admin</div>
+            <div style="font-size:17px;font-weight:800;color:#fff;margin-top:1px;line-height:1.2;">Dashboard Admin</div>
           </div>
         </div>
         <div style="background:rgba(233,177,13,.15);border:1px solid rgba(233,177,13,.35);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;color:#E9B10D;letter-spacing:.5px;">Saison 2026</div>
       </div>
 
       <!-- KPI cards -->
-      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 14px;"></div>
+      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px;"></div>
 
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
-      <div class="admin-hero-grid"></div>
-      <div class="admin-tabs" style="display:flex;gap:5px;overflow-x:auto;padding:10px 16px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.08);justify-content:center;">
+      <div class="admin-tabs" style="display:flex;gap:5px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.08);justify-content:center;">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
         <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
         <button class="admin-tab"        id="an-groupes"       onclick="setAdminTab('groupes')">🏖️ Groupes</button>
@@ -1871,6 +1842,7 @@ textarea{resize:vertical;}
 
       <!-- MEMBRES -->
       <div id="at-membres" style="display:none;">
+        <input type="hidden" id="membre-alpha" value="">
         <input id="membre-search" placeholder="🔍 Chercher nom, email, enfant..." style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid #E5E7EB;font-size:14px;font-family:inherit;margin-bottom:12px;box-sizing:border-box;" oninput="renderMembres()">
         <div id="admin-membres-content"></div>
       </div>
@@ -1978,40 +1950,33 @@ textarea{resize:vertical;}
       </div>
 
       <!-- RECHERCHE -->
-      <!-- ÉQUIPE -->
+      <!-- EQUIPE -->
       <div id="at-equipe" style="display:none;">
         <div id="at-equipe-content"></div>
       </div>
 
       <!-- MODAL MODIFIER MEMBRE -->
-      <div id="membre-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(11,20,55,.6);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
-        <div style="background:#fff;border-radius:20px;max-width:440px;width:92%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.2);">
-          <div style="padding:16px 20px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;border-radius:20px 20px 0 0;">
-            <div style="font-size:15px;font-weight:800;color:#0B1437;font-family:var(--adm-font);">✏️ Modifier le membre</div>
-            <button onclick="fermerMembreEdit()" style="background:#F1F5F9;border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;color:#64748B;">✕</button>
+      <div id="membre-edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,15,44,0.6);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:24px;max-width:440px;width:94%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+          <div style="padding:18px 22px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;border-radius:24px 24px 0 0;">
+            <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;color:#0A0F2C;">✏️ Modifier le membre</div>
+            <button onclick="fermerMembreEdit()" style="background:#F3F4F6;border:none;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
           </div>
-          <div id="membre-edit-body" style="padding:20px;"></div>
+          <div id="membre-edit-body" style="padding:22px;"></div>
         </div>
       </div>
 
       <!-- FICHE ENFANT OVERLAY -->
-      <div id="fiche-enfant-overlay" style="display:none;position:fixed;inset:0;background:rgba(11,20,55,.6);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
-        <div style="background:#fff;border-radius:20px;max-width:380px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.2);">
-          <div style="padding:14px 18px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:14px;font-weight:800;color:#0B1437;font-family:var(--adm-font);">Fiche enfant</div>
-            <button onclick="fermerFicheEnfant()" style="background:#F1F5F9;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;color:#64748B;">✕</button>
+      <div id="fiche-enfant-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,15,44,0.6);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:24px;max-width:400px;width:92%;max-height:82vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+          <div style="padding:16px 20px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;sticky;top:0;background:#fff;border-radius:24px 24px 0 0;">
+            <div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;">Fiche enfant</div>
+            <button onclick="fermerFicheEnfant()" style="background:#F3F4F6;border:none;border-radius:10px;width:30px;height:30px;cursor:pointer;">✕</button>
           </div>
           <div id="fiche-enfant-body"></div>
         </div>
       </div>
 
-      <!-- HIDDEN ALPHA FILTER -->
-      <input type="hidden" id="membre-alpha" value="">
-
-      <!-- FACTURE FROM PAI WRAPPER -->
-      <div style="display:none;" id="fac-from-paiement-wrap"></div>
-
-      <!-- RECHERCHE -->
       <div id="at-recherche" style="display:none;">
         <input id="global-search" placeholder="🔍 Nom, prénom, email, téléphone..." style="width:100%;padding:14px 16px;border-radius:16px;border:2px solid #E5E7EB;font-size:15px;font-family:inherit;margin-bottom:16px;box-sizing:border-box;" oninput="globalSearch()">
         <div id="search-results"></div>
@@ -2184,13 +2149,67 @@ textarea{resize:vertical;}
 var SB_URL='https://kpizggqrpdrykoifvily.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
 var SB_ON=true;
-var SB={h:function(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};},get:async function(t,p){var r=await fetch(SB_URL+'/rest/v1/'+t+(p||''),{headers:SB.h()});if(!r.ok)throw new Error('GET '+t);return r.json();},post:async function(t,d){var r=await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:SB.h(),body:JSON.stringify(d)});if(!r.ok)throw new Error('POST '+t);var rows=await r.json();return Array.isArray(rows)?rows[0]:rows;},patch:async function(t,m,d){var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+m,{method:'PATCH',headers:SB.h(),body:JSON.stringify(d)});if(!r.ok)throw new Error('PATCH '+t);var rows=await r.json();return Array.isArray(rows)?rows[0]:rows;}};
-async function chargerDonnees(){try{var membres=await SB.get('membres','?order=nom.asc');var enfants=await SB.get('enfants','?order=nom.asc');DEMO_FAMS=membres.map(function(m){var kids=enfants.filter(function(e){return e.membre_id===m.id;});return{_id:m.id,prenom:m.prenom,nom:m.nom,email:m.email,tel:m.tel||'',adresse:m.adresse_vacances||'',urgence:[m.urgence_nom,m.urgence_tel].filter(Boolean).join(' · '),droit_image:m.droit_image,date:(m.created_at||'').slice(0,10),children:kids.map(function(e){return{_id:e.id,name:e.prenom+' '+e.nom,age:e.age,dob:e.date_naissance,medical:e.medical};})};});DEMO_KIDS=enfants.map(function(e){var m=membres.find(function(x){return x.id===e.membre_id;})||{};return{_id:e.id,prenom:e.prenom,nom:e.nom,age:parseFloat(e.age)||0,parent:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',medical:e.medical||'RAS',urgence:m.urgence_tel||'',periode:['matin'],inscrit:(e.created_at||'').slice(0,10).split('-').reverse().join('/')};});var resas=await SB.get('reservations','?order=created_at.desc&select=*,membres(prenom,nom,email,tel),enfants(prenom,nom,age)');DEMO_RESAS=resas.map(function(r){var m=r.membres||{},e=r.enfants||{};return{_id:r.id,nom:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',slot:{time:r.periode==='matin'?'Matin':'Après-midi',date:(r.semaine_debut||'').split('-').reverse().join('/')},saisonLabel:r.saison==='ete'?'Été 2026':r.saison==='automne'?'Automne 2026':'Printemps 2027',children:[{name:(e.prenom||'')+' '+(e.nom||''),age:e.age||0}],paid:parseFloat(r.montant)||0,statut:r.statut==='valide'?'valide':r.statut==='annule'?'annule':'en attente',modePaiement:r.mode_paiement||'',date:(r.created_at||'').slice(0,10).split('-').reverse().join('/')};});var pais=await SB.get('paiements','?order=created_at.desc&select=*,membres(prenom,nom)');var PAL=['#2196F3','#9C27B0','#F97316','#10B981','#EF4444','#8B5CF6','#F59E0B'];DEMO_PAYMENTS=pais.map(function(p){var m=p.membres||{},nom='Fam. '+(m.nom||'');return{_id:p.id,nom:nom,initiale:((m.prenom||'?').charAt(0)+(m.nom||'?').charAt(0)).toUpperCase(),color:PAL[nom.charCodeAt(4)%PAL.length]||'#2196F3',formule:p.reference||'',montant:parseFloat(p.montant)||0,statut:p.statut==='paye'?'paye':'attente',mode:p.mode||'',date:p.date_paiement||''};});var avrs=await SB.get('avoirs','?order=created_at.asc');var anN=new Date().getFullYear();AVOIRS={nMoins1:avrs.filter(function(a){return a.annee<anN;}).map(function(a){return{_id:a.id,membre:a.membre_nom||'',somme:a.somme,motif:a.motif,solde:a.solde,dateSolde:a.date_solde||''};}),n:avrs.filter(function(a){return a.annee>=anN;}).map(function(a){return{_id:a.id,membre:a.membre_nom||'',somme:a.somme,motif:a.motif,solde:a.solde,dateSolde:a.date_solde||''};})};var suivi=await SB.get('suivi_quotidien','?order=date.asc');SUIVI_QUOTIDIEN=suivi.map(function(s){return{_id:s.id,date:(s.date||'').split('-').reverse().join('/'),ref:s.reference||'',cb:parseFloat(s.cb)||0,vir:parseFloat(s.virement)||0,chq:parseFloat(s.cheque)||0,chqvac:parseFloat(s.cheques_vacances)||0,esp:parseFloat(s.especes)||0,avoir24:parseFloat(s.avoir_n_moins_1)||0,remb25:parseFloat(s.remboursement)||0};});console.log('Supabase OK - '+DEMO_KIDS.length+' enfants, '+DEMO_FAMS.length+' familles');if(typeof toast==='function')toast('Données chargées','ok');if(window.adminUnlocked&&typeof renderAdmin==='function')renderAdmin();}catch(err){console.warn('Supabase erreur:',err.message);}}
-async function validerResaSB(id,mode,montant){await SB.patch('reservations','id=eq.'+id,{statut:'valide',mode_paiement:mode});await SB.post('paiements',{reservation_id:id,montant:montant||120,mode:mode,statut:'paye',date_paiement:new Date().toISOString().slice(0,10)});await chargerDonnees();}
-async function ajouterAvoirSB(nom,somme,motif){await SB.post('avoirs',{membre_nom:nom,somme:somme,motif:motif,annee:new Date().getFullYear(),solde:false});await chargerDonnees();}
-async function solderAvoirSB(id){await SB.patch('avoirs','id=eq.'+id,{solde:true,date_solde:new Date().toISOString().slice(0,10)});await chargerDonnees();}
-async function sauvegarderInscription(membreData,enfantData){var membre=await SB.post('membres',membreData);enfantData.membre_id=membre.id;await SB.post('enfants',enfantData);await chargerDonnees();return membre;}
+var SB={
+  h:function(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};},
+  get:async function(t,p){var r=await fetch(SB_URL+'/rest/v1/'+t+(p||''),{headers:SB.h()});if(!r.ok)throw new Error(r.status);return r.json();},
+  post:async function(t,d){var r=await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:SB.h(),body:JSON.stringify(d)});if(!r.ok)throw new Error(r.status);var rows=await r.json();return Array.isArray(rows)?rows[0]:rows;},
+  patch:async function(t,m,d){var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+m,{method:'PATCH',headers:SB.h(),body:JSON.stringify(d)});if(!r.ok)throw new Error(r.status);var rows=await r.json();return Array.isArray(rows)?rows[0]:rows;}
+};
+async function chargerDonnees(){
+  try{
+    var membres=await SB.get('membres','?order=nom.asc');
+    var enfants=await SB.get('enfants','?order=nom.asc');
+    DEMO_FAMS=membres.map(function(m){
+      var kids=enfants.filter(function(e){return e.membre_id===m.id;});
+      return{_id:m.id,prenom:m.prenom,nom:m.nom,email:m.email,tel:m.tel||'',adresse:m.adresse_vacances||'',
+        urgence:[m.urgence_nom,m.urgence_tel].filter(Boolean).join(' - '),droit_image:m.droit_image,
+        date:(m.created_at||'').slice(0,10),
+        children:kids.map(function(e){return{_id:e.id,name:e.prenom+' '+e.nom,age:e.age,dob:e.date_naissance,medical:e.medical};})};});
+    DEMO_KIDS=enfants.map(function(e){
+      var m=membres.find(function(x){return x.id===e.membre_id;})||{};
+      return{_id:e.id,prenom:e.prenom,nom:e.nom,age:parseFloat(e.age)||0,
+        parent:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',
+        medical:e.medical||'RAS',urgence:m.urgence_tel||'',
+        periode:['matin'],inscrit:(e.created_at||'').slice(0,10).split('-').reverse().join('/'),
+        dob:e.date_naissance};});
+    var resas=await SB.get('reservations','?order=created_at.desc&select=*,membres(prenom,nom,email,tel),enfants(prenom,nom,age)');
+    DEMO_RESAS=resas.map(function(r){
+      var m=r.membres||{},e=r.enfants||{};
+      return{_id:r.id,nom:'Fam. '+(m.nom||''),email:m.email||'',tel:m.tel||'',
+        slot:{time:r.periode==='matin'?'Matin':'Apres-midi',date:(r.semaine_debut||'').split('-').reverse().join('/')},
+        saisonLabel:r.saison==='ete'?'Été 2026':r.saison==='automne'?'Automne 2026':'Printemps 2027',
+        children:[{name:(e.prenom||'')+' '+(e.nom||''),age:e.age||0}],
+        paid:parseFloat(r.montant)||0,statut:r.statut==='valide'?'valide':'en attente',
+        modePaiement:r.mode_paiement||'',date:(r.created_at||'').slice(0,10).split('-').reverse().join('/')};});
+    var pais=await SB.get('paiements','?order=created_at.desc&select=*,membres(prenom,nom)');
+    var PAL=['#0099E6','#9C27B0','#FF6B35','#00C48C','#EF4444','#7C3AED','#FF8C00'];
+    DEMO_PAYMENTS=pais.map(function(p){
+      var m=p.membres||{},nom='Fam. '+(m.nom||'');
+      return{_id:p.id,nom:nom,initiale:((m.prenom||'?').charAt(0)+(m.nom||'?').charAt(0)).toUpperCase(),
+        color:PAL[nom.charCodeAt(4)%PAL.length]||'#0099E6',
+        formule:p.reference||'',montant:parseFloat(p.montant)||0,
+        statut:p.statut==='paye'?'payé':'attente',mode:p.mode||'',date:p.date_paiement||''};});
+    var avrs=await SB.get('avoirs','?order=created_at.asc');
+    var anN=new Date().getFullYear();
+    AVOIRS={nMoins1:avrs.filter(function(a){return a.annee<anN;}).map(function(a){
+      return{_id:a.id,membre:a.membre_nom||'',somme:a.somme,motif:a.motif,solde:a.solde,dateSolde:a.date_solde||''};}),n:avrs.filter(function(a){return a.annee>=anN;}).map(function(a){
+      return{_id:a.id,membre:a.membre_nom||'',somme:a.somme,motif:a.motif,solde:a.solde,dateSolde:a.date_solde||''};}) };
+    var suivi=await SB.get('suivi_quotidien','?order=date.asc');
+    SUIVI_QUOTIDIEN=suivi.map(function(s){return{_id:s.id,date:(s.date||'').split('-').reverse().join('/'),ref:s.reference||'',
+      cb:parseFloat(s.cb)||0,vir:parseFloat(s.virement)||0,chq:parseFloat(s.cheque)||0,
+      chqvac:parseFloat(s.cheques_vacances)||0,esp:parseFloat(s.especes)||0,
+      avoir24:parseFloat(s.avoir_n_moins_1)||0,remb25:parseFloat(s.remboursement)||0};});
+    console.log('Supabase OK - '+DEMO_KIDS.length+' enfants, '+DEMO_FAMS.length+' familles');
+    if(typeof toast==='function')toast('Données chargées','ok');
+    if(window.adminUnlocked&&typeof renderAdmin==='function')renderAdmin();
+  }catch(err){console.warn('Supabase erreur:',err.message);}
+}
+async function validerResaSB(id,mode,montant){try{await SB.patch('reservations','id=eq.'+id,{statut:'valide',mode_paiement:mode});await SB.post('paiements',{reservation_id:id,montant:montant||120,mode:mode,statut:'paye',date_paiement:new Date().toISOString().slice(0,10)});await chargerDonnees();}catch(e){}}
+async function ajouterAvoirSB(nom,somme,motif){try{await SB.post('avoirs',{membre_nom:nom,somme:somme,motif:motif,annee:new Date().getFullYear(),solde:false});await chargerDonnees();}catch(e){}}
+async function solderAvoirSB(id){try{await SB.patch('avoirs','id=eq.'+id,{solde:true,date_solde:new Date().toISOString().slice(0,10)});await chargerDonnees();}catch(e){}}
+async function sauvegarderInscription(membreData,enfantData){var m=await SB.post('membres',membreData);enfantData.membre_id=m.id;await SB.post('enfants',enfantData);await chargerDonnees();return m;}
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',chargerDonnees);}else{chargerDonnees();}
+
 
 
 
@@ -2408,36 +2427,7 @@ function buildInscRecap() {
   var el=document.getElementById('insc-recap-content'); if(el) el.innerHTML=html;
 }
 
-function submitInscription() {
-  var ri=document.getElementById('i-accept-ri'), cgv=document.getElementById('i-accept-cgv'), resp=document.getElementById('i-accept-resp');
-  var ok=true;
-  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
-  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
-  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
-  if(!ok) return;
-  var nom=(document.getElementById('i-nom')||{value:''}).value;
-  var prenom=(document.getElementById('i-prenom')||{value:''}).value;
-  var dob=(document.getElementById('i-dob')||{value:''}).value;
-  // Supabase save
-  if(typeof sauvegarderInscription==='function'&&typeof SB_ON!=='undefined'&&SB_ON){
-    sauvegarderInscription({prenom:(document.getElementById('i-resp-prenom')||{value:''}).value.trim(),nom:(document.getElementById('i-resp-nom')||{value:''}).value.trim(),email:(document.getElementById('i-email')||{value:''}).value.trim(),tel:(document.getElementById('i-tel')||{value:''}).value.trim(),adresse_vacances:(document.getElementById('i-adresse-vacances')||{value:''}).value.trim(),droit_image:inscDroit==='oui'},{prenom:nom,nom:(document.getElementById('i-resp-nom')||{value:''}).value.trim(),date_naissance:dob,age:parseAge(dob),medical:(document.getElementById('i-medical')||{value:''}).value||'RAS'}).catch(function(){});
-  }
-  ST.members.push({
-    prenom:(document.getElementById('i-resp-prenom')||{value:''}).value, nom:(document.getElementById('i-resp-nom')||{value:''}).value,
-    email:(document.getElementById('i-email')||{value:''}).value, tel:(document.getElementById('i-tel')||{value:''}).value,
-    adresse:(document.getElementById('i-adresse-vacances')||{value:''}).value, medical:(document.getElementById('i-medical')||{value:''}).value,
-    urgence:(document.getElementById('i-urgence')||{value:''}).value, droitImage:inscDroit,
-    children:[{name:nom+' '+prenom, age:parseAge(dob), dob:dob, periode:'matin'}],
-    date:new Date().toLocaleDateString('fr-FR'),
-  });
-  toast('✅ Inscription enregistrée !','ok');
-  inscDroit=null;
-  ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  var ad=document.getElementById('i-age-display'); if(ad) ad.textContent='— ans';
-  if(ri)ri.checked=false; if(cgv)cgv.checked=false; if(resp)resp.checked=false;
-  inscGoStep(1);
-  setTimeout(function(){ navigate('home'); }, 1200);
-}
+
 
 function addInscChild(){}
 function addInscChild2(){}
@@ -2716,50 +2706,12 @@ function checkAdminCode() {
 }
 
 // ═══ ADMIN DASHBOARD ═══
-function renderAdmin() {
-  var el=document.getElementById('admin-stats'); if(!el) return;
-  var kids=allKids(), fams=[].concat(DEMO_FAMS,ST.members), resas=[].concat(DEMO_RESAS,ST.reservations);
-  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  el.innerHTML='<div class="stat-card"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
-    +'<div class="stat-card"><div class="stat-icon">👥</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
-    +'<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>';
-  if(ST.adminTab==='dashboard')        renderDashboard();
-  else if(ST.adminTab==='membres')     renderMembres();
-  else if(ST.adminTab==='groupes')     renderAdminGroupes();
-  else if(ST.adminTab==='reservations') renderAdminResas();
-  else if(ST.adminTab==='paiements')   renderPaiements();
-  else if(ST.adminTab==='frequentation') renderFrequentation();
-  else if(ST.adminTab==='comptabilite') renderComptabilite();
-  else if(ST.adminTab==='facture')     renderFactureTab();
-  else if(ST.adminTab==='avoirs')      renderAvoirs();
-  else if(ST.adminTab==='equipe')      renderEquipe();
-  else if(ST.adminTab==='recherche')   globalSearch();
-}
-
-function setAdminTab(t) {
-  ST.adminTab = t;
-  ['dashboard','membres','groupes','reservations','paiements','frequentation','comptabilite','facture','avoirs','equipe','recherche'].forEach(function(tab) {
-    var atEl = document.getElementById('at-' + tab);
-    var anEl = document.getElementById('an-' + tab);
-    if (atEl) atEl.style.display = tab === t ? '' : 'none';
-    if (anEl) anEl.classList.toggle('active', tab === t);
-  });
-  renderAdmin();
-}
 
 
 
 
-// ═══ AVOIRS ═══
-var AVOIRS = {
-  nMoins1: [
-    {id:1, membre:'Fam. Mouthet',  somme:120, motif:'Annulation météo – Été 2025', solde:false, dateSolde:''},
-    {id:2, membre:'Fam. Lecoeur',  somme:60,  motif:'Absence médicale – Printemps 2025', solde:true, dateSolde:'15/09/2025'},
-  ],
-  n: [
-    {id:3, membre:'',  somme:0, motif:'', solde:false, dateSolde:''},
-  ],
-};
+
+
 
 
 
@@ -2778,690 +2730,591 @@ var SUIVI_QUOTIDIEN = [
 
 // ═══ BINDINGS WINDOW ═══
 
-// ═══════════════════════════════════════════════════════════
-// NOUVELLES DONNÉES & FONCTIONS ADMIN
-// ═══════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════
+// DONNÉES ÉQUIPE
+// ═══════════════════════════════════════════════════════════
 var EQUIPE = [
   {id:1,prenom:'Sophie',nom:'Martin',dob:'1995-03-15',email:'sophie.martin@club.fr',tel:'06 10 10 10 10',secu:'1 95 03 75 000 000 00',diplome:'BPJEPS AAN',poste:'Responsable'},
   {id:2,prenom:'Lucas',nom:'Durand',dob:'1998-07-22',email:'lucas.durand@club.fr',tel:'06 20 20 20 20',secu:'1 98 07 75 000 000 00',diplome:'BPJEPS Surf',poste:'Animateur'},
   {id:3,prenom:'Emma',nom:'Petit',dob:'2000-01-10',email:'emma.petit@club.fr',tel:'06 30 30 30 30',secu:'2 00 01 75 000 000 00',diplome:'BAFA',poste:'Animatrice'},
 ];
 
+// Premier jour du club
 var CLUB_DEBUT = new Date('2026-07-06');
-var _membreAlpha = '';
-var _editMembreIdx = null;
-var resaAdminSaison = 'ete';
-var resaFilter = 'all';
-var _adminResas = [];
-var paiPeriod = 'semaine';
-var freqPeriod = 'semaine';
 
-function ageAuClub(dob) {
-  if(!dob) return 0;
-  var d = new Date(dob);
-  var annees = CLUB_DEBUT.getFullYear() - d.getFullYear();
-  var moisDiff = CLUB_DEBUT.getMonth() - d.getMonth();
-  var jourDiff = CLUB_DEBUT.getDate() - d.getDate();
-  if(moisDiff < 0 || (moisDiff === 0 && jourDiff < 0)) annees--;
-  var moisApres = (d.getMonth() + 6) % 12;
-  var anneeApres = d.getMonth() >= 6 ? d.getFullYear() + annees + 1 : d.getFullYear() + annees;
-  var demiDate = new Date(anneeApres, moisApres, d.getDate());
-  if(CLUB_DEBUT >= demiDate) return annees + 0.5;
-  return annees;
+function ageAuClub(dob){
+  if(!dob)return 0;
+  var d=new Date(dob);
+  var ans=CLUB_DEBUT.getFullYear()-d.getFullYear();
+  var md=CLUB_DEBUT.getMonth()-d.getMonth();
+  var jd=CLUB_DEBUT.getDate()-d.getDate();
+  if(md<0||(md===0&&jd<0))ans--;
+  var mA=(d.getMonth()+6)%12;
+  var aA=d.getMonth()>=6?d.getFullYear()+ans+1:d.getFullYear()+ans;
+  var demi=new Date(aA,mA,d.getDate());
+  return CLUB_DEBUT>=demi?ans+0.5:ans;
+}
+function ageLabel(age){
+  var e=Math.floor(age);
+  return (age-e>=0.4)?e+'\u00bd ans':e+' ans';
 }
 
-function ageLabel(a) {
-  var ent = Math.floor(a);
-  return (a - ent >= 0.4) ? ent + '½ ans' : ent + ' ans';
-}
-
-// ═══ DASHBOARD ═══════════════════════════════════════════
-function renderDashboard() {
-  var el = document.getElementById('admin-dashboard-content'); if(!el) return;
-  var kids = allKids();
-  var fams = [].concat(DEMO_FAMS, ST.members);
-  var allResas = [].concat(DEMO_RESAS, ST.reservations);
-  var enc = DEMO_PAYMENTS.reduce(function(s,p){ return s+(p.statut==='payé'||p.statut==='paye'?p.montant:0); }, 0);
-  var att = allResas.filter(function(r){ return r.statut==='en attente'; }).length;
-  var val = allResas.filter(function(r){ return r.statut==='validé'||r.statut==='valide'; }).length;
-
-  var TR = [
-    {label:'3–5 ans',  min:3,  max:5.9,  color:'#FF8C00', bg:'#FFF3E0', emoji:'🐥'},
-    {label:'6–9 ans',  min:6,  max:9.9,  color:'#0099E6', bg:'#E3F2FD', emoji:'🐬'},
-    {label:'10–13 ans',min:10, max:13.9, color:'#8B5CF6', bg:'#F3E8FF', emoji:'🏅'},
-  ];
-  var totalK = kids.length || 1;
-
-  // Build freq cards
-  var freqCards = TR.map(function(t) {
-    var cnt = kids.filter(function(k){ return parseFloat(k.age)>=t.min && parseFloat(k.age)<=t.max; }).length;
-    var pct = Math.round(cnt/totalK*100);
-    return '<div style="background:'+t.bg+';border-radius:14px;padding:16px;text-align:center;border:1px solid '+t.color+'22;">'
-      +'<div style="font-size:26px;margin-bottom:6px;">'+t.emoji+'</div>'
-      +'<div style="font-size:26px;font-weight:800;color:'+t.color+';">'+cnt+'</div>'
-      +'<div style="font-size:12px;font-weight:700;color:#374151;margin-top:3px;">'+t.label+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+pct+'%</div>'
-      +'</div>';
-  }).join('');
-  var totalCard = '<div style="background:linear-gradient(135deg,#0B1437,#0F2055);border-radius:14px;padding:16px;text-align:center;">'
-    +'<div style="font-size:26px;margin-bottom:6px;">👥</div>'
-    +'<div style="font-size:26px;font-weight:800;color:#fff;">'+kids.length+'</div>'
-    +'<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.75);margin-top:3px;">Total</div>'
-    +'<div style="font-size:11px;color:rgba(255,255,255,.45);">100%</div>'
-    +'</div>';
-
-  // Progress bar
-  var barParts = TR.map(function(t) {
-    var cnt = kids.filter(function(k){ return parseFloat(k.age)>=t.min && parseFloat(k.age)<=t.max; }).length;
-    var pct = Math.round(cnt/totalK*100);
-    return '<div style="flex:'+pct+';background:'+t.color+';height:100%;min-width:'+(cnt>0?'4px':'0')+';"></div>';
-  }).join('');
-
-  // Activité récente
-  var recents = [].concat(DEMO_RESAS, ST.reservations).slice(0,4).map(function(r) {
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F8FAFC;">'
-      +'<div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">'+(r.nom||'?').charAt(r.nom.indexOf('.')+2||5)+'</div>'
-      +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1E293B;">'+r.nom+'</div>'
-      +'<div style="font-size:11px;color:#94A3B8;">'+(r.saisonLabel||'')+(r.slot?' · '+r.slot.time:'')+'</div></div>'
-      +'<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:'+(r.statut==='en attente'?'#FEF3C7':'#D1FAE5')+';color:'+(r.statut==='en attente'?'#92400E':'#065F46')+';">'+(r.statut==='en attente'?'En attente':'Validé')+'</span>'
-      +'</div>';
-  }).join('');
-
-  el.innerHTML =
-    // Quick actions
-    '<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>⚡</span> Actions rapides</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">'
-    + [['membres','👥','Membres',''+fams.length,'linear-gradient(135deg,#6366F1,#4F46E5)'],
-       ['reservations','📅','Réservations',''+allResas.length,'linear-gradient(135deg,#FF8C00,#FFC200)'],
-       ['paiements','💰','Encaissé',enc+'€','linear-gradient(135deg,#10B981,#059669)'],
-       ['groupes','🏖️','Groupes',''+GROUPES_MATIN.length,'linear-gradient(135deg,#0077C8,#0099E6)'],
-      ].map(function(x) {
-        return '<button data-tab="'+x[0]+'" onclick="setAdminTab(this.dataset.tab)" style="padding:14px 10px;background:'+x[4]+';color:#fff;border:none;border-radius:14px;cursor:pointer;font-family:var(--adm-font);text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.15);transition:transform .15s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">'
-          +'<div style="font-size:22px;margin-bottom:6px;">'+x[1]+'</div>'
-          +'<div style="font-size:10px;font-weight:600;opacity:.85;text-transform:uppercase;letter-spacing:.5px;">'+x[2]+'</div>'
-          +'<div style="font-size:22px;font-weight:800;margin-top:2px;">'+x[3]+'</div>'
-          +'</button>';
-      }).join('')
-    +'</div></div>'
-    // Reservations status
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📅</span> Réservations</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-    +'<div style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border-radius:12px;padding:14px;text-align:center;">'
-    +'<div style="font-size:24px;font-weight:800;color:#065F46;">'+val+'</div>'
-    +'<div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;">Validées</div></div>'
-    +'<div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;padding:14px;text-align:center;">'
-    +'<div style="font-size:24px;font-weight:800;color:#92400E;">'+att+'</div>'
-    +'<div style="font-size:10px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.5px;">En attente</div></div>'
-    +'</div>'
-    +(att>0?'<button data-tab="reservations" onclick="setAdminTab(this.dataset.tab)" style="width:100%;padding:11px;background:linear-gradient(135deg,#FF8C00,#FFC200);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:var(--adm-font);">Voir les '+att+' demande'+(att>1?'s':'')+' en attente →</button>':'')
-    +'</div>'
-    // Frequentation par age
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>👶</span> Fréquentation par âge</div>'
-    +'<div style="display:flex;gap:5px;">'
-    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;">Saison</button>'
-    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;">Semaine</button>'
-    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;">Jour</button>'
-    +'</div></div>'
-    +'<div id="dash-freq-content">'
-    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;">'+freqCards+totalCard+'</div>'
-    +'<div style="height:8px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:4px;">'+barParts+'</div>'
-    +'<div style="display:flex;gap:10px;justify-content:center;">'
-    +TR.map(function(t){return '<div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:'+t.color+';"></div><span style="font-size:11px;color:#64748B;">'+t.label+'</span></div>';}).join('')
-    +'</div></div></div>'
-    // Activite recente
-    +'<div class="wcard">'
-    +'<div class="wcard-title"><span>🕐</span> Activité récente</div>'
-    +(recents||'<div style="color:#94A3B8;font-size:13px;text-align:center;padding:20px;">Aucune activité récente</div>')
-    +'</div>';
-}
-
-function setDashFreq(p) {
-  ['saison','semaine','jour'].forEach(function(x){
-    var b = document.getElementById('df-'+x);
-    if(b){ b.classList.toggle('active',x===p); b.classList.toggle('btn-ghost',x!==p); }
+// ═══════════════════════════════════════════════════════════
+// SETADMINTAB — mise à jour
+// ═══════════════════════════════════════════════════════════
+function setAdminTab(t){
+  ST.adminTab=t;
+  ['dashboard','membres','groupes','reservations','paiements','frequentation','comptabilite','facture','avoirs','equipe','recherche'].forEach(function(tab){
+    var atEl=document.getElementById('at-'+tab);
+    var anEl=document.getElementById('an-'+tab);
+    if(atEl)atEl.style.display=tab===t?'':'none';
+    if(anEl)anEl.classList.toggle('active',tab===t);
   });
-  // Just toggle active state - data is same
+  renderAdmin();
 }
 
-// ═══ MEMBRES ═════════════════════════════════════════════
-function filterMembreAlpha(l) { _membreAlpha = (_membreAlpha===l?'':l); renderMembres(); }
+// ═══════════════════════════════════════════════════════════
+// RENDER ADMIN — KPIs + dispatch
+// ═══════════════════════════════════════════════════════════
+function renderAdmin(){
+  var el=document.getElementById('admin-stats');if(!el)return;
+  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members),resas=[].concat(DEMO_RESAS,ST.reservations);
+  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
+  el.innerHTML=
+    '<div class="stat-card kpi-blue"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
+    +'<div class="stat-card kpi-orange"><div class="stat-icon">📅</div><div class="stat-val">'+resas.length+'</div><div class="stat-lbl">Réservations</div></div>'
+    +'<div class="stat-card kpi-green"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>';
+  if(ST.adminTab==='dashboard')        renderDashboard();
+  else if(ST.adminTab==='membres')     renderMembres();
+  else if(ST.adminTab==='groupes')     renderAdminGroupes();
+  else if(ST.adminTab==='reservations')renderAdminResas();
+  else if(ST.adminTab==='paiements')   renderPaiements();
+  else if(ST.adminTab==='frequentation')renderFrequentation();
+  else if(ST.adminTab==='comptabilite')renderComptabilite();
+  else if(ST.adminTab==='facture')     renderFactureTab();
+  else if(ST.adminTab==='avoirs')      renderAvoirs();
+  else if(ST.adminTab==='equipe')      renderEquipe();
+  else if(ST.adminTab==='recherche')   globalSearch();
+}
 
-function renderMembres() {
-  var el = document.getElementById('admin-membres-content'); if(!el) return;
-  var q = (document.getElementById('membre-search')||{value:''}).value.toLowerCase();
-  var all = [].concat(DEMO_FAMS, ST.members);
-  if(q) all = all.filter(function(m){ return (m.nom||'').toLowerCase().includes(q)||(m.prenom||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q); });
-  if(_membreAlpha) all = all.filter(function(m){ return (m.nom||'').toUpperCase().startsWith(_membreAlpha); });
-  all.sort(function(a,b){ return (a.nom||'').localeCompare(b.nom||'','fr'); });
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function renderDashboard(){
+  var el=document.getElementById('admin-dashboard-content');if(!el)return;
+  var kids=allKids(),resas=[].concat(DEMO_RESAS,ST.reservations);
+  var att=resas.filter(function(r){return r.statut==='en attente';}).length;
+  var val=resas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
+  var TR=[{label:'3 – 5 ans',min:3,max:5.9,color:'#FF6B35',bg:'#FFF4F0',emoji:'🐥'},
+          {label:'6 – 9 ans',min:6,max:9.9,color:'#0099E6',bg:'#EFF8FF',emoji:'🐬'},
+          {label:'10 – 13 ans',min:10,max:13.9,color:'#7C3AED',bg:'#F5F0FF',emoji:'🏅'}];
+  var total=kids.length||1;
+  var groups=TR.map(function(t){
+    var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;
+    return {label:t.label,cnt:cnt,pct:Math.round(cnt/total*100),color:t.color,bg:t.bg,emoji:t.emoji};
+  });
+  var grandTotal=groups.reduce(function(s,g){return s+g.cnt;},0);
+  var today=new Date();
+  var days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
-  var letters = [];
-  all.forEach(function(m){ var l=(m.nom||'').charAt(0).toUpperCase(); if(l&&letters.indexOf(l)<0)letters.push(l); });
-
-  var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(function(l){
-    var a = _membreAlpha===l, has = letters.indexOf(l)>=0;
-    return '<button onclick="filterMembreAlpha(\''+l+'\')" style="padding:3px 7px;border-radius:6px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--adm-font);background:'+(a?'#0099E6':has?'#fff':'#F1F5F9')+';color:'+(a?'#fff':has?'#1E293B':'#CBD5E1')+';border:1px solid '+(a?'#0099E6':has?'#E2E8F0':'transparent')+';">'+l+'</button>';
-  }).join('');
-
-  var bar = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-    +'<div style="font-size:13px;font-weight:700;color:#1E293B;">'+all.length+' / '+([].concat(DEMO_FAMS,ST.members).length)+' membres</div>'
-    +'<button onclick="ajouterMembre()" style="padding:8px 16px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--adm-font);box-shadow:0 4px 12px rgba(16,185,129,.3);">+ Nouveau membre</button>'
+  el.innerHTML=
+    // Header date
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:14px 18px;background:linear-gradient(135deg,#0A0F2C,#0077C8);border-radius:16px;color:#fff;">'
+    +'<div><div style="font-size:11px;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:1px;">Aujourd\'hui</div>'
+    +'<div style="font-size:18px;font-weight:700;margin-top:2px;">'+days[today.getDay()]+' '+today.getDate()+' '+months[today.getMonth()]+' '+today.getFullYear()+'</div></div>'
+    +'<div style="text-align:right;"><div style="font-size:11px;opacity:.7;">Saison</div><div style="font-size:18px;font-weight:700;color:#FF8C00;">2026</div></div>'
     +'</div>'
-    +'<input id="membre-search" placeholder="🔍 Rechercher par nom, prénom, email..." oninput="renderMembres()" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #E2E8F0;font-family:var(--adm-font);font-size:13px;box-sizing:border-box;margin-bottom:8px;background:#fff;">'
-    +'<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px;">'
-    +'<button onclick="filterMembreAlpha(\'\')" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--adm-font);background:'+(_membreAlpha?'#F1F5F9':'#0099E6')+';color:'+(_membreAlpha?'#64748B':'#fff')+';">Tous</button>'
-    +alpha+'</div>';
 
-  if(!all.length){ el.innerHTML=bar+'<div class="empty"><div class="empty-icon">👥</div><p>Aucun résultat</p></div>'; return; }
+    // Réservations KPIs
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
+    +'<div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:4px solid #FF6B35;">'
+    +'<div style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">En attente</div>'
+    +'<div style="font-size:26px;font-weight:800;color:#FF6B35;">'+att+'</div>'
+    +(att>0?'<button onclick="setAdminTab(\'reservations\')" style="margin-top:6px;padding:5px 12px;background:#FFF4F0;color:#FF6B35;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">Voir →</button>':'')
+    +'</div>'
+    +'<div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:4px solid #00C48C;">'
+    +'<div style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Validées</div>'
+    +'<div style="font-size:26px;font-weight:800;color:#00C48C;">'+val+'</div>'
+    +'</div></div>'
 
-  var cards = all.map(function(m,i){
-    var ini = ((m.prenom||'?').charAt(0)+(m.nom||'?').charAt(0)).toUpperCase();
-    var colors = ['#6366F1','#0099E6','#10B981','#F97316','#8B5CF6','#EF4444','#F59E0B'];
-    var col = colors[(m.nom||'').charCodeAt(0)%colors.length];
-    var nbK = (m.children||[]).length;
-    var tags = '<div style="display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 8px;">'
-      +'<span style="background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">👶 '+nbK+' enfant'+(nbK>1?'s':'')+'</span>'
-      +(m.droit_image!==false?'<span style="background:#E8F5E9;color:#2E7D32;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">📷 OK</span>':'')
-      +'</div>';
-    var kidList = (m.children||[]).map(function(ch){
-      var g = getGroupe(parseFloat(ch.age)||0);
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F8FAFC;">'
-        +'<span style="font-size:12px;color:#374151;">'+(g?g.emoji+' ':'')+ch.name+'</span>'
-        +'<button onclick="supprimerEnfantMembre('+i+',\''+ch.name+'\')" style="background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:13px;padding:0;">🗑️</button>'
-        +'</div>';
+    // Fréquentation par âge
+    +'<div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:14px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
+    +'<div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#0A0F2C;">👶 Fréquentation par âge</div>'
+    +'<div style="display:flex;gap:5px;">'
+    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;padding:4px 10px;">Saison</button>'
+    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;padding:4px 10px;">Semaine</button>'
+    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;padding:4px 10px;">Jour</button>'
+    +'</div></div>'
+    +'<div id="dash-freq-content">'+buildDashFreq('saison',kids,TR,grandTotal)+'</div>'
+    +'</div>'
+
+    // Actions rapides
+    +'<div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.06);">'
+    +'<div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#0A0F2C;margin-bottom:12px;">⚡ Actions rapides</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    +[['membres','👨‍👩‍👧','Membres','linear-gradient(135deg,#0077C8,#00BFFF)'],
+      ['reservations','📅','Réservations','linear-gradient(135deg,#FF6B35,#FF8C00)'],
+      ['paiements','💳','Paiements','linear-gradient(135deg,#00C48C,#00A86B)'],
+      ['groupes','🏖️','Groupes','linear-gradient(135deg,#7C3AED,#5B21B6)'],
+    ].map(function(x){return '<button onclick="setAdminTab(\''+x[0]+'\')" style="padding:14px;background:'+x[3]+';color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:10px;text-align:left;"><span style="font-size:20px;">'+x[1]+'</span>'+x[2]+'</button>';}).join('')
+    +'</div></div>';
+}
+
+function buildDashFreq(period,kids,TR,grandTotal){
+  if(!kids)kids=allKids();
+  if(!TR)TR=[{label:'3 – 5 ans',min:3,max:5.9,color:'#FF6B35',bg:'#FFF4F0',emoji:'🐥'},{label:'6 – 9 ans',min:6,max:9.9,color:'#0099E6',bg:'#EFF8FF',emoji:'🐬'},{label:'10 – 13 ans',min:10,max:13.9,color:'#7C3AED',bg:'#F5F0FF',emoji:'🏅'}];
+  var total=kids.length||1;
+  var groups=TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;return{label:t.label,cnt:cnt,pct:Math.round(cnt/total*100),color:t.color,bg:t.bg,emoji:t.emoji};});
+  if(!grandTotal)grandTotal=groups.reduce(function(s,g){return s+g.cnt;},0);
+
+  var cards=groups.map(function(g){
+    return '<div style="background:'+g.bg+';border-radius:14px;padding:14px;text-align:center;transition:transform .2s;" onmouseover="this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.transform=\'\'">'+
+      '<div style="font-size:26px;margin-bottom:4px;">'+g.emoji+'</div>'+
+      '<div style="font-size:26px;font-weight:800;color:'+g.color+';">'+g.cnt+'</div>'+
+      '<div style="font-size:11px;font-weight:700;color:#374151;margin-top:3px;">'+g.label+'</div>'+
+      '<div style="font-size:11px;color:#9CA3AF;">'+g.pct+'%</div></div>';
+  }).join('');
+  var totalCard='<div style="background:linear-gradient(135deg,#0A0F2C,#0D2137);border-radius:14px;padding:14px;text-align:center;">'
+    +'<div style="font-size:26px;margin-bottom:4px;">👥</div>'
+    +'<div style="font-size:26px;font-weight:800;color:#fff;">'+grandTotal+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:3px;">Total</div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,.4);">100%</div></div>';
+  var bar=groups.map(function(g){return '<div style="flex:'+g.pct+';background:'+g.color+';height:100%;min-width:'+(g.cnt>0?'4px':'0')+';"title="'+g.label+': '+g.pct+'%"></div>';}).join('');
+  return '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;">'+cards+totalCard+'</div>'
+    +'<div style="height:8px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:6px;">'+bar+'</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;text-align:center;">'+grandTotal+' enfants · Saison 2026</div>';
+}
+
+function setDashFreq(p){
+  ['saison','semaine','jour'].forEach(function(x){var b=document.getElementById('df-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});
+  var el=document.getElementById('dash-freq-content');if(!el)return;
+  var kids=allKids();
+  el.innerHTML=buildDashFreq(p,kids);
+}
+
+// ═══════════════════════════════════════════════════════════
+// MEMBRES — modal edit, 4 colonnes, alpha
+// ═══════════════════════════════════════════════════════════
+var _membreAlpha='';
+function filterMembreAlpha(l){_membreAlpha=(_membreAlpha===l?'':l);renderMembres();}
+
+function renderMembres(){
+  var el=document.getElementById('admin-membres-content');if(!el)return;
+  var q=(document.getElementById('membre-search')||{value:''}).value.toLowerCase();
+  var all=[].concat(DEMO_FAMS,ST.members);
+  if(q)all=all.filter(function(m){return(m.nom||'').toLowerCase().includes(q)||(m.prenom||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q);});
+  if(_membreAlpha)all=all.filter(function(m){return(m.nom||'').toUpperCase().startsWith(_membreAlpha);});
+  all.sort(function(a,b){return(a.nom||'').localeCompare(b.nom||'','fr');});
+  var usedLetters=[];
+  [].concat(DEMO_FAMS,ST.members).forEach(function(m){var l=(m.nom||'').charAt(0).toUpperCase();if(l&&usedLetters.indexOf(l)<0)usedLetters.push(l);});
+  var alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(function(l){
+    var active=_membreAlpha===l,has=usedLetters.indexOf(l)>=0;
+    return '<button onclick="filterMembreAlpha(\''+l+'\')" style="padding:3px 7px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(active?'#0099E6':has?'#F0F4FF':'#F9FAFB')+';color:'+(active?'#fff':has?'#0A0F2C':'#D1D5DB')+';">'+l+'</button>';
+  }).join('');
+  var header='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+    +'<div style="font-size:13px;font-weight:700;color:#374151;">'+all.length+' / '+([].concat(DEMO_FAMS,ST.members).length)+' membres</div>'
+    +'<button onclick="ajouterMembreModal()" style="padding:8px 16px;background:linear-gradient(135deg,#00C48C,#00A86B);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:6px;">+ Nouveau membre</button>'
+    +'</div>'
+    +'<div style="display:flex;gap:2px;flex-wrap:wrap;margin-bottom:10px;">'
+    +'<button onclick="filterMembreAlpha(\'\')" style="padding:3px 8px;border-radius:6px;border:none;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(_membreAlpha?'#F9FAFB':'#0099E6')+';color:'+(_membreAlpha?'#9CA3AF':'#fff')+';">Tous</button>'
+    +alpha+'</div>'
+    +'<input id="membre-search" placeholder="🔍 Rechercher par nom, prénom, email..." oninput="renderMembres()" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:12px;">';
+  if(!all.length){el.innerHTML=header+'<div class="empty"><div class="empty-icon">👨‍👩‍👧</div><p>Aucun résultat</p></div>';return;}
+  var cards=all.map(function(m,i){
+    var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+    var nbKids=(m.children||[]).length;
+    var colors=['#0099E6','#7C3AED','#FF6B35','#00C48C','#FF8C00','#EF4444'];
+    var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+    var kids=(m.children||[]).map(function(ch){
+      var g=getGroupe(parseFloat(ch.age)||0);
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;"><span style="font-size:12px;color:#374151;">'+(g?g.emoji+' ':'')+ch.name+'<span style="color:#9CA3AF;font-size:10px;margin-left:4px;">'+ch.age+' ans</span></span>'
+        +'<button onclick="supprimerEnfantMembre('+i+',\''+ch.name+'\')" style="background:none;border:none;cursor:pointer;font-size:13px;color:#D1D5DB;padding:0;">×</button></div>';
     }).join('');
-    return '<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid #E2E8F0;transition:box-shadow .2s;" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 10px rgba(0,0,0,.06)\'">'
-      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
-      +'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,'+col+','+col+'99);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
+    return '<div style="background:#fff;border-radius:18px;padding:16px;box-shadow:0 2px 16px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04);transition:box-shadow .2s;" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 16px rgba(0,0,0,.06)\'">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+      +'<div style="width:42px;height:42px;border-radius:12px;background:'+col+'18;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
       +'<div style="flex:1;min-width:0;">'
-      +'<div style="font-size:14px;font-weight:700;color:#1E293B;">'+m.prenom+' <span style="text-transform:uppercase;">'+m.nom+'</span></div>'
-      +'<div style="font-size:11px;color:#94A3B8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+m.email+'</div>'
+      +'<div style="font-size:14px;font-weight:700;color:#0A0F2C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+m.prenom+' <span style="text-transform:uppercase;">'+m.nom+'</span></div>'
+      +'<div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+m.email+'</div></div>'
+      +'<a href="tel:'+m.tel+'" style="background:#F0F4FF;color:#0099E6;border-radius:8px;padding:6px 8px;font-size:14px;text-decoration:none;flex-shrink:0;">📞</a></div>'
+      +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'
+      +'<span class="badge badge-orange">👶 '+nbKids+' enfant'+(nbKids>1?'s':'')+'</span>'
+      +(m.droit_image!==false?'<span class="badge badge-green">📷 OK</span>':'')
+      +(m.statut?'<span class="badge badge-blue">'+m.statut+'</span>':'')
       +'</div>'
-      +'<button onclick="ouvrirMembreEdit('+i+')" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;color:#64748B;">›</button>'
-      +'</div>'
-      +tags
-      +(kidList?'<div style="border-top:1px solid #F1F5F9;padding-top:8px;margin-bottom:10px;">'+kidList+'</div>':'')
+      +(kids?'<div style="border-top:1px solid #F3F4F6;padding-top:8px;margin-bottom:10px;">'+kids+'</div>':'')
       +'<div style="display:flex;gap:6px;">'
-      +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:7px;background:#FFF3E0;color:#E65100;border:1px solid #FDBA74;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--adm-font);">✏️ Modifier</button>'
-      +'<button onclick="ajouterEnfantMembre('+i+')" style="flex:1;padding:7px;background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--adm-font);">+ Enfant</button>'
-      +'<button onclick="supprimerMembre('+i+')" style="padding:7px 10px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;cursor:pointer;font-size:13px;">🗑️</button>'
+      +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:8px;background:#F0F4FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
+      +'<button onclick="ajouterEnfantMembre('+i+')" style="flex:1;padding:8px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">+ Enfant</button>'
+      +'<button onclick="supprimerMembre('+i+')" style="padding:8px 10px;background:#FEF2F2;color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:14px;">🗑️</button>'
       +'</div></div>';
   }).join('');
-
-  el.innerHTML = bar + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">'+cards+'</div>';
+  el.innerHTML=header+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;">'+cards+'</div>';
 }
 
-function ouvrirMembreEdit(i) {
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[i]; if(!m) return;
-  var ov = document.getElementById('membre-edit-overlay');
-  var body = document.getElementById('membre-edit-body');
-  if(!ov||!body) return;
-  _editMembreIdx = i;
-  var kidsRows = (m.children||[]).map(function(ch,ci){
-    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #F8FAFC;">'
-      +'<input value="'+ch.name+'" id="ek-name-'+ci+'" placeholder="Prénom Nom" style="flex:1;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:var(--adm-font);font-size:13px;">'
-      +'<input value="'+ch.age+'" id="ek-age-'+ci+'" type="number" min="0" max="13" style="width:56px;padding:8px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:var(--adm-font);font-size:13px;text-align:center;">'
-      +'<span style="font-size:11px;color:#94A3B8;white-space:nowrap;">ans</span>'
-      +'<button onclick="supprimerEnfantEdit('+i+','+ci+')" style="background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:7px;padding:5px 8px;cursor:pointer;font-size:13px;">🗑️</button>'
+function ouvrirMembreEdit(i){
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
+  var ov=document.getElementById('membre-edit-overlay');
+  var body=document.getElementById('membre-edit-body');if(!ov||!body)return;
+  var kidsHtml=(m.children||[]).map(function(ch,ci){
+    return '<div style="display:flex;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid #F9FAFB;">'
+      +'<input value="'+ch.name+'" id="ek-n-'+ci+'" style="flex:1;padding:7px 9px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;">'
+      +'<input value="'+ch.age+'" id="ek-a-'+ci+'" type="number" min="0" max="13" style="width:56px;padding:7px 8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;">'
+      +'<span style="font-size:10px;color:#9CA3AF;flex-shrink:0;">ans</span>'
+      +'<button onclick="supprimerEnfantEdit('+i+','+ci+')" style="background:#FEF2F2;color:#EF4444;border:none;border-radius:7px;padding:5px 7px;cursor:pointer;font-size:12px;">×</button>'
       +'</div>';
   }).join('');
-  body.innerHTML =
-    '<div style="display:flex;flex-direction:column;gap:10px;">'
-    + [['Prénom','em-prenom',m.prenom,'text'],['Nom','em-nom',m.nom,'text'],['Email','em-email',m.email||'','email'],['Téléphone','em-tel',m.tel||'','tel'],['Adresse','em-adresse',m.adresse||'','text']].map(function(f){
-        return '<div><label style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">'+f[0]+'</label>'
-          +'<input id="'+f[1]+'" value="'+f[2]+'" type="'+f[3]+'" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:10px;font-family:var(--adm-font);font-size:14px;box-sizing:border-box;"></div>';
-      }).join('')
-    +'<div><label style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Enfants</label>'
-    +'<div id="em-kids">'+kidsRows+'</div>'
-    +'<button onclick="ajouterEnfantEdit('+i+')" style="margin-top:8px;padding:8px;width:100%;background:#F0F9FF;color:#0099E6;border:1.5px dashed #0099E6;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--adm-font);">+ Ajouter un enfant</button>'
-    +'</div>'
-    +'<button onclick="sauvegarderMembreEdit('+i+')" style="width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:var(--adm-font);box-shadow:0 4px 14px rgba(0,153,230,.3);">✅ Sauvegarder</button>'
+  body.innerHTML='<div style="display:flex;flex-direction:column;gap:12px;">'
+    +[['Prénom','em-prenom',m.prenom],['Nom','em-nom',m.nom],['Email','em-email',m.email||''],['Téléphone','em-tel',m.tel||''],['Adresse','em-adresse',m.adresse||'']].map(function(f){
+      return '<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">'+f[0]+'</label>'
+        +'<input id="'+f[1]+'" value="'+f[2]+'" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>';
+    }).join('')
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Enfants</label>'
+    +'<div id="em-kids">'+kidsHtml+'</div>'
+    +'<button onclick="ajouterEnfantEdit('+i+')" style="margin-top:8px;width:100%;padding:8px;background:#F0F4FF;color:#0099E6;border:1px dashed #0099E6;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Ajouter un enfant</button></div>'
+    +'<button onclick="sauvegarderMembreEdit('+i+')" style="width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">✅ Sauvegarder</button>'
     +'</div>';
-  ov.style.display = 'flex';
+  window._editMembreIdx=i;
+  ov.style.display='flex';
 }
-
-function fermerMembreEdit() {
-  var ov = document.getElementById('membre-edit-overlay');
-  if(ov) ov.style.display = 'none';
-}
-
-function sauvegarderMembreEdit(i) {
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[i]; if(!m) return;
-  var f = function(id){ return (document.getElementById(id)||{value:''}).value.trim(); };
-  m.prenom  = f('em-prenom') || m.prenom;
-  m.nom     = f('em-nom')    || m.nom;
-  m.email   = f('em-email')  || m.email;
-  m.tel     = f('em-tel')    || m.tel;
-  m.adresse = f('em-adresse')|| m.adresse;
+function fermerMembreEdit(){var ov=document.getElementById('membre-edit-overlay');if(ov)ov.style.display='none';}
+function sauvegarderMembreEdit(i){
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  m.prenom=f('em-prenom')||m.prenom;m.nom=f('em-nom')||m.nom;
+  m.email=f('em-email');m.tel=f('em-tel');m.adresse=f('em-adresse');
   (m.children||[]).forEach(function(ch,ci){
-    var nm = (document.getElementById('ek-name-'+ci)||{value:ch.name}).value.trim();
-    var ag = parseInt((document.getElementById('ek-age-'+ci)||{value:ch.age}).value)||ch.age;
-    ch.name = nm; ch.age = ag;
+    ch.name=(document.getElementById('ek-n-'+ci)||{value:ch.name}).value.trim();
+    ch.age=parseInt((document.getElementById('ek-a-'+ci)||{value:ch.age}).value)||ch.age;
   });
-  fermerMembreEdit();
-  toast('Membre sauvegardé ✅','ok');
+  fermerMembreEdit();toast('Membre sauvegardé ✅','ok');renderMembres();
+}
+function supprimerEnfantEdit(mi,ci){
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[mi];if(!m||!m.children)return;
+  m.children.splice(ci,1);ouvrirMembreEdit(mi);
+}
+function ajouterEnfantEdit(mi){
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[mi];if(!m)return;
+  if(!m.children)m.children=[];m.children.push({name:'Nouvel enfant',age:6});ouvrirMembreEdit(mi);
+}
+function ajouterMembreModal(){
+  var p=prompt('Prénom :');if(!p)return;
+  var n=prompt('Nom :');if(!n)return;
+  var e=prompt('Email :');var t=prompt('Téléphone :');
+  ST.members.push({prenom:p,nom:n,email:e||'',tel:t||'',adresse:'',children:[],droit_image:true,date:new Date().toLocaleDateString('fr-FR')});
+  toast('Membre ajouté ✅','ok');renderMembres();
+}
+function supprimerMembre(i){
+  if(!confirm('Supprimer ce membre ?'))return;
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];
+  DEMO_FAMS=DEMO_FAMS.filter(function(x){return x!==m;});
+  ST.members=ST.members.filter(function(x){return x!==m;});
+  toast('Supprimé','ok');renderMembres();
+}
+function ajouterEnfantMembre(i){
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
+  var nom=prompt('Prénom Nom :');if(!nom)return;
+  var age=parseInt(prompt('Âge :')||'0');
+  if(!m.children)m.children=[];m.children.push({name:nom,age:age});
+  toast('Enfant ajouté','ok');renderMembres();
+}
+function supprimerEnfantMembre(i,nom){
+  if(!confirm('Supprimer '+nom+' ?'))return;
+  var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
+  m.children=(m.children||[]).filter(function(c){return c.name!==nom;});
   renderMembres();
 }
 
-function supprimerEnfantEdit(mi,ci) {
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[mi]; if(!m||!m.children) return;
-  m.children.splice(ci,1);
-  ouvrirMembreEdit(mi);
-}
-
-function ajouterEnfantEdit(mi) {
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[mi]; if(!m) return;
-  if(!m.children) m.children = [];
-  m.children.push({name:'Nouvel enfant', age:6});
-  ouvrirMembreEdit(mi);
-}
-
-function ajouterMembre() {
-  var p = prompt('Prénom :'); if(!p) return;
-  var n = prompt('Nom :'); if(!n) return;
-  var e = prompt('Email :');
-  var t = prompt('Téléphone :');
-  ST.members.push({prenom:p,nom:n,email:e||'',tel:t||'',adresse:'',children:[],date:new Date().toLocaleDateString('fr-FR')});
-  toast('Membre ajouté ✅','ok'); renderMembres();
-}
-
-function supprimerMembre(i) {
-  if(!confirm('Supprimer ce membre ?')) return;
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[i];
-  DEMO_FAMS = DEMO_FAMS.filter(function(x){ return x!==m; });
-  ST.members = ST.members.filter(function(x){ return x!==m; });
-  toast('Membre supprimé','ok'); renderMembres();
-}
-
-function ajouterEnfantMembre(i) {
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[i]; if(!m) return;
-  var nom = prompt("Prénom Nom de l'enfant :"); if(!nom) return;
-  var age = parseInt(prompt('Âge :')||'0');
-  if(!m.children) m.children = [];
-  m.children.push({name:nom, age:age});
-  toast('Enfant ajouté ✅','ok'); renderMembres();
-}
-
-function supprimerEnfantMembre(i,nom) {
-  if(!confirm('Supprimer '+nom+' ?')) return;
-  var all = [].concat(DEMO_FAMS, ST.members);
-  var m = all[i]; if(!m) return;
-  m.children = (m.children||[]).filter(function(c){ return c.name!==nom; });
-  toast('Enfant supprimé','ok'); renderMembres();
-}
-
-// ═══ GROUPES — âge au 1er jour club + demi-années ════════
-function setGPeriod(p) {
-  ST.gPeriod = p;
-  ['matin','aprem'].forEach(function(x){
-    var b = document.getElementById('gp-'+x);
-    if(b){ b.classList.toggle('active',x===p); b.classList.toggle('btn-ghost',x!==p); }
-  });
+// ═══════════════════════════════════════════════════════════
+// GROUPES — âge au 1er jour du club, demi-années, impression
+// ═══════════════════════════════════════════════════════════
+function setGPeriod(p){
+  ST.gPeriod=p;
+  ['matin','aprem'].forEach(function(x){var b=document.getElementById('gp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});
   renderAdminGroupes();
 }
+function adminPrevWeek(){if((ST.adminWeekOffset||0)>0){ST.adminWeekOffset--;renderAdminGroupes();}}
+function adminNextWeek(){var s=SAISONS.ete;var max=(s?s.semaines.length:9)-1;if((ST.adminWeekOffset||0)<max){ST.adminWeekOffset++;renderAdminGroupes();}}
 
-function adminPrevWeek() {
-  if((ST.adminWeekOffset||0)>0){ ST.adminWeekOffset--; renderAdminGroupes(); }
-}
-function adminNextWeek() {
-  var max = (SAISONS.ete.semaines.length||9)-1;
-  if((ST.adminWeekOffset||0)<max){ ST.adminWeekOffset++; renderAdminGroupes(); }
-}
-
-function renderAdminGroupes() {
-  var el = document.getElementById('groupes-grid'); if(!el) return;
-  var wi = Math.max(0, Math.min(8, ST.adminWeekOffset||0));
-  var wk = SAISONS.ete.semaines[wi];
-  var awl = document.getElementById('admin-week-lbl');
-  if(awl) awl.textContent = wk.label+' · '+wk.debut+' → '+wk.fin;
-  var kids = allKids();
-  var active = ST.gPeriod==='aprem' ? GROUPES_APREM : GROUPES_MATIN;
-
-  el.innerHTML = active.map(function(g){
-    var enf = kids.filter(function(k){
-      var age = k.dob ? ageAuClub(k.dob) : parseFloat(k.age)||0;
-      return age>=g.min && age<=g.max && (k.periode||[]).indexOf(ST.gPeriod)>=0;
+function renderAdminGroupes(){
+  var el=document.getElementById('groupes-grid');if(!el)return;
+  var wi=Math.max(0,Math.min(8,ST.adminWeekOffset||0));
+  var wk=SAISONS.ete.semaines[wi];
+  var awl=document.getElementById('admin-week-lbl');if(awl)awl.textContent=wk.label+' · '+wk.debut+' → '+wk.fin;
+  var kids=allKids();
+  var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
+  el.innerHTML=active.map(function(g){
+    var enf=kids.filter(function(k){
+      var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+      return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
     });
-    var pct = Math.round(enf.length/MAX_G*100);
-    var alert = enf.length>=MAX_G ? '🔴 Complet' : enf.length>=MAX_G*0.8 ? '🟡 Presque plein' : '';
-    return '<div style="background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid #E2E8F0;border-left:4px solid '+g.color+';">'
+    var pct=Math.round(enf.length/MAX_G*100);
+    var isFull=enf.length>=MAX_G;
+    return '<div style="background:#fff;border-radius:18px;padding:16px;margin-bottom:10px;box-shadow:0 2px 16px rgba(0,0,0,.06);border-left:4px solid '+g.color+';transition:box-shadow .2s;" onmouseover="this.style.boxShadow=\'0 6px 24px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 16px rgba(0,0,0,.06)\'">'
       +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
       +'<div style="display:flex;align-items:center;gap:8px;">'
       +'<span style="font-size:22px;">'+g.emoji+'</span>'
-      +'<div><div style="font-size:14px;font-weight:700;color:#1E293B;">'+g.name+'</div>'
+      +'<div><div style="font-size:14px;font-weight:700;color:#0A0F2C;">'+g.name+'</div>'
       +'<div style="font-size:11px;color:'+g.color+';font-weight:600;">'+g.ages+'</div></div></div>'
       +'<div style="text-align:right;">'
-      +(alert?'<div style="font-size:10px;font-weight:700;margin-bottom:2px;">'+alert+'</div>':'')
-      +'<div style="font-size:20px;font-weight:800;color:'+g.color+';">'+enf.length+'<span style="font-size:11px;font-weight:400;color:#94A3B8;">/'+MAX_G+'</span></div>'
+      +'<div style="font-size:18px;font-weight:800;color:'+(isFull?'#EF4444':g.color)+';">'+enf.length+'<span style="font-size:11px;color:#9CA3AF;">/'+MAX_G+'</span></div>'
+      +(isFull?'<div style="font-size:10px;color:#EF4444;font-weight:700;">Complet !</div>':'')
       +'</div></div>'
-      +'<div style="background:#F1F5F9;border-radius:4px;height:5px;overflow:hidden;margin-bottom:10px;">'
-      +'<div style="background:'+g.color+';height:100%;width:'+pct+'%;border-radius:4px;transition:width .3s;"></div></div>'
-      +(enf.length
-        ?'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
-          +enf.map(function(k){
-            var age = k.dob ? ageAuClub(k.dob) : parseFloat(k.age)||0;
-            var hasMed = k.medical && k.medical!=='RAS';
-            return '<span onclick="ouvrirFicheEnfantGroupe(\''+k.prenom+' '+k.nom+'\')" title="'+ageLabel(age)+(hasMed?' · ⚠️ '+k.medical:'')+'" style="background:'+g.color+'12;color:'+g.color+';border:1px solid '+g.color+'30;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background=\''+g.color+'25\'" onmouseout="this.style.background=\''+g.color+'12\'">'+k.prenom+(hasMed?' ⚠️':'')+'</span>';
-          }).join('')+'</div>'
-        :'<div style="font-size:12px;color:#CBD5E1;text-align:center;padding:10px 0;font-style:italic;">Aucun enfant inscrit</div>')
+      +'<div style="background:#F3F4F6;border-radius:5px;height:5px;overflow:hidden;margin-bottom:10px;">'
+      +'<div style="background:'+(isFull?'#EF4444':g.color)+';height:100%;width:'+pct+'%;transition:width .4s;"></div></div>'
+      +(enf.length?'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
+        +enf.map(function(k){
+          var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+          var hasMed=k.medical&&k.medical!=='RAS';
+          return '<span onclick="ouvrirFicheEnfantGroupe(\''+k.prenom+' '+k.nom+'\')" title="'+ageLabel(age)+(hasMed?' - ⚠️ '+k.medical:'')+'" style="background:'+g.color+'12;color:'+g.color+';font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background=\''+g.color+'25\'" onmouseout="this.style.background=\''+g.color+'12\'">'+k.prenom+(hasMed?' ⚠️':'')+'</span>';
+        }).join('')+'</div>'
+      :'<div style="font-size:11px;color:#D1D5DB;font-style:italic;text-align:center;padding:6px 0;">Aucun enfant inscrit</div>')
       +'</div>';
   }).join('');
 }
 
-function ouvrirFicheEnfantGroupe(nom) {
-  var k = allKids().find(function(x){ return (x.prenom+' '+x.nom)===nom; });
-  if(!k) return;
-  var g = getGroupe(parseFloat(k.age)||0);
-  var ov = document.getElementById('fiche-enfant-overlay');
-  var body = document.getElementById('fiche-enfant-body');
-  if(!ov||!body) return;
-  var age = k.dob ? ageAuClub(k.dob) : parseFloat(k.age)||0;
-  body.innerHTML = '<div style="padding:20px;font-family:var(--adm-font);">'
+function ouvrirFicheEnfantGroupe(nom){
+  var k=allKids().find(function(x){return (x.prenom+' '+x.nom)===nom;});if(!k)return;
+  var g=getGroupe(parseFloat(k.age)||0);
+  var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+  var ov=document.getElementById('fiche-enfant-overlay');
+  var body=document.getElementById('fiche-enfant-body');if(!ov||!body)return;
+  body.innerHTML='<div style="padding:20px;">'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'
-    +'<div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,'+(g?g.color:'#0099E6')+','+(g?g.color+'99':'#00BFFF')+');color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">'+(k.prenom||'?').charAt(0)+'</div>'
-    +'<div><div style="font-size:17px;font-weight:800;color:#1E293B;">'+k.prenom+' '+k.nom+'</div>'
+    +'<div style="width:50px;height:50px;border-radius:14px;background:'+(g?g.color:'#0099E6')+'18;color:'+(g?g.color:'#0099E6')+';display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">'+(k.prenom||'?').charAt(0)+'</div>'
+    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F2C;">'+k.prenom+' '+k.nom+'</div>'
     +(g?'<div style="font-size:12px;color:'+g.color+';font-weight:700;">'+g.emoji+' '+g.name+' · '+g.ages+'</div>':'')+'</div></div>'
-    +'<div>'
-    +[['Âge au 1er jour club',ageLabel(age)],['Famille',k.parent],['Email',k.email||'—'],['Tél',k.tel||'—'],['Médical',k.medical||'RAS'],['Inscrit le',k.inscrit||'—']].map(function(r){
-      return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F1F5F9;font-size:13px;">'
-        +'<span style="color:#94A3B8;font-weight:500;">'+r[0]+'</span>'
-        +'<span style="font-weight:700;color:'+(r[0]==='Médical'&&r[1]!=='RAS'?'#EF4444':'#1E293B')+';">'+r[1]+'</span></div>';
+    +'<div>'+[['Âge au 1er jour',ageLabel(age)],['Famille',k.parent],['Email',k.email||'-'],['Tél',k.tel||'-'],['Médical',k.medical||'RAS'],['Inscrit le',k.inscrit||'-']].map(function(r){
+      return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#9CA3AF;">'+r[0]+'</span><span style="font-weight:600;color:'+(r[0]==='Médical'&&r[1]!=='RAS'?'#EF4444':'#0A0F2C')+';">'+r[1]+'</span></div>';
     }).join('')+'</div></div>';
-  ov.style.display = 'flex';
+  ov.style.display='flex';
 }
+function fermerFicheEnfant(){var ov=document.getElementById('fiche-enfant-overlay');if(ov)ov.style.display='none';}
 
-function imprimerGroupes() {
-  var kids = allKids();
-  var wi = Math.max(0, Math.min(8, ST.adminWeekOffset||0));
-  var wk = SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
-  var active = ST.gPeriod==='aprem' ? GROUPES_APREM : GROUPES_MATIN;
-  var win = window.open('','_blank','width=900,height=700');
-  if(!win){ toast('Autoriser les popups','ko'); return; }
-
-  var pages = active.map(function(g,gi){
-    var enf = kids.filter(function(k){
-      var age = k.dob ? ageAuClub(k.dob) : parseFloat(k.age)||0;
-      return age>=g.min && age<=g.max && (k.periode||[]).indexOf(ST.gPeriod)>=0;
+function imprimerGroupes(){
+  var kids=allKids();
+  var wi=Math.max(0,Math.min(8,ST.adminWeekOffset||0));
+  var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
+  var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
+  var win=window.open('','_blank','width=900,height=700');if(!win){toast('Autoriser les popups','ko');return;}
+  var pages=active.map(function(g,gi){
+    var enf=kids.filter(function(k){
+      var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+      return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
     });
-    var rows = enf.length
-      ? enf.map(function(k){
-          var age = k.dob ? ageAuClub(k.dob) : parseFloat(k.age)||0;
-          var med = k.medical&&k.medical!=='RAS' ? '<strong style="color:#DC2626;">'+k.medical+'</strong>' : '<span style="color:#9CA3AF;">RAS</span>';
-          return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td style="text-align:center;">'+ageLabel(age)+'</td><td>'+med+'</td></tr>';
-        }).join('')
-      : '<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:20px;font-style:italic;">Aucun enfant</td></tr>';
-
-    return '<div style="'+(gi>0?'page-break-before:always;':'')+'padding:32px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:3px solid '+g.color+';">'
-      +'<div><div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Club des Léopards</div>'
-      +'<div style="font-size:26px;font-weight:800;color:#1E293B;">'+g.emoji+' '+g.name+'</div>'
-      +'<div style="font-size:13px;color:'+g.color+';font-weight:700;margin-top:2px;">'+g.ages+' · '+(ST.gPeriod==='matin'?'Matin':'Après-midi')+'</div></div>'
-      +'<div style="text-align:right;"><div style="font-size:14px;font-weight:700;color:#1E293B;">'+wk.label+'</div>'
-      +'<div style="font-size:12px;color:#6B7280;">'+wk.debut+' → '+wk.fin+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;margin-top:4px;">'+new Date().toLocaleDateString('fr-FR')+'</div></div></div>'
-      +'<div style="display:inline-block;background:'+g.color+'15;border:1.5px solid '+g.color+'44;border-radius:8px;padding:5px 14px;font-size:12px;font-weight:700;color:'+g.color+';margin-bottom:16px;">'+enf.length+' / '+MAX_G+' enfants</div>'
+    var pb=gi>0?'page-break-before:always;':'';
+    var rows=enf.length
+      ?enf.map(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var med=k.medical&&k.medical!=='RAS'?'<strong style="color:#DC2626;">'+k.medical+'</strong>':'<span style="color:#9CA3AF;">RAS</span>';return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td style="text-align:center;">'+ageLabel(age)+'</td><td>'+med+'</td></tr>';}).join('')
+      :'<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:16px;font-style:italic;">Aucun enfant</td></tr>';
+    return '<div style="'+pb+'padding:30px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;padding-bottom:12px;border-bottom:3px solid '+g.color+';">'
+      +'<div><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:2px;margin-bottom:3px;">Club des Léopards</div>'
+      +'<div style="font-size:22px;font-weight:800;color:#0A0F2C;">'+g.emoji+' '+g.name+'</div>'
+      +'<div style="font-size:12px;color:'+g.color+';font-weight:700;">'+g.ages+' · '+(ST.gPeriod==='matin'?'Matin':'Après-midi')+'</div></div>'
+      +'<div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+wk.label+'</div>'
+      +'<div style="font-size:11px;color:#6B7280;">'+wk.debut+' → '+wk.fin+'</div>'
+      +'<div style="font-size:10px;color:#9CA3AF;">'+new Date().toLocaleDateString('fr-FR')+'</div></div></div>'
+      +'<div style="display:inline-block;background:'+g.color+'12;border:1px solid '+g.color+'44;border-radius:8px;padding:4px 12px;font-size:12px;font-weight:700;color:'+g.color+';margin-bottom:12px;">'+enf.length+' / '+MAX_G+' enfants</div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:13px;">'
-      +'<thead><tr style="background:'+g.color+';color:#fff;">'
-      +'<th style="padding:9px 12px;text-align:left;border-radius:6px 0 0 0;">Prénom</th>'
-      +'<th style="padding:9px 12px;text-align:left;">Nom</th>'
-      +'<th style="padding:9px 12px;text-align:center;width:90px;">Âge au club</th>'
-      +'<th style="padding:9px 12px;text-align:left;border-radius:0 6px 0 0;">Allergies / Médical</th>'
-      +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+      +'<thead><tr style="background:'+g.color+';color:#fff;"><th style="padding:9px 12px;text-align:left;">Prénom</th><th style="padding:9px 12px;text-align:left;">Nom</th><th style="padding:9px 12px;text-align:center;width:80px;">Âge</th><th style="padding:9px 12px;text-align:left;">Médical</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table></div>';
   }).join('');
-
-  win.document.write('<html><head><title>Groupes '+wk.label+' '+(ST.gPeriod==='matin'?'Matin':'AM')+'</title>'
-    +'<style>*{box-sizing:border-box;}body{font-family:Arial,sans-serif;margin:0;background:#fff;}'
-    +'tr:nth-child(even){background:#F9FAFB;}tr:nth-child(odd){background:#fff;}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;}'
-    +'@media print{button{display:none!important;}@page{margin:15mm;size:A4;}}</style>'
+  var html='<html><head><title>Groupes · '+wk.label+'</title>'
+    +'<style>*{box-sizing:border-box;}body{font-family:system-ui,sans-serif;margin:0;background:#fff;}tr:nth-child(even){background:#F9FAFB;}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;}@media print{button{display:none!important;}@page{margin:15mm;size:A4;}}</style>'
     +'</head><body>'+pages
-    +'<div style="position:fixed;bottom:20px;right:20px;">'
-    +'<button onclick="window.print()" style="padding:11px 22px;background:#0099E6;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.2);">🖨️ Imprimer</button>'
-    +'</div></body></html>');
-  win.document.close();
+    +'<div style="position:fixed;bottom:20px;right:20px;"><button onclick="window.print()" style="padding:11px 22px;background:#0A0F2C;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;">🖨️ Imprimer</button></div>'
+    +'</body></html>';
+  win.document.write(html);win.document.close();
 }
 
-// ═══ ÉQUIPE ═══════════════════════════════════════════════
-function renderEquipe() {
-  var el = document.getElementById('at-equipe-content'); if(!el) return;
-  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:14px;">'
-    + EQUIPE.map(function(a){
-        var age = new Date().getFullYear() - parseInt((a.dob||'2000').slice(0,4));
-        return '<div style="background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid #E2E8F0;border-top:4px solid #0099E6;">'
-          +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
-          +'<div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;">'+a.prenom.charAt(0)+a.nom.charAt(0)+'</div>'
-          +'<div><div style="font-size:15px;font-weight:700;color:#1E293B;">'+a.prenom+' '+a.nom+'</div>'
-          +'<div style="font-size:11px;color:#0099E6;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">'+a.poste+'</div></div></div>'
-          +'<div style="display:flex;flex-direction:column;gap:0;">'
-          +[['Naissance',(a.dob?new Date(a.dob).toLocaleDateString('fr-FR'):'-')+' ('+age+' ans)'],['Email',a.email],['Tel',a.tel],['N° Sécu',a.secu],['Diplôme',a.diplome]].map(function(r){
-            return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F1F5F9;font-size:12px;">'
-              +'<span style="color:#94A3B8;font-weight:500;">'+r[0]+'</span>'
-              +'<span style="font-weight:600;color:#1E293B;text-align:right;max-width:60%;">'+r[1]+'</span></div>';
-          }).join('')+'</div>'
-          +'<div style="display:flex;gap:8px;margin-top:12px;">'
-          +'<button onclick="editEquipe('+a.id+')" style="flex:1;padding:8px;background:#EFF6FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--adm-font);">✏️ Modifier</button>'
-          +'<button onclick="delEquipe('+a.id+')" style="flex:1;padding:8px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--adm-font);">🗑️ Supprimer</button>'
-          +'</div></div>';
-      }).join('')
-    +'</div>'
-    +'<button onclick="ajouterAnimateur()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:var(--adm-font);box-shadow:0 4px 14px rgba(0,153,230,.3);">+ Ajouter un animateur</button>';
-}
-
-function ajouterAnimateur() {
-  var p=prompt('Prénom :');if(!p)return;
-  var n=prompt('Nom :');if(!n)return;
-  var e=prompt('Email :');
-  var d=prompt('Diplôme (BPJEPS, BAFA…) :');
-  EQUIPE.push({id:Date.now(),prenom:p,nom:n,dob:'',email:e||'',tel:'',secu:'',diplome:d||'',poste:'Animateur'});
-  renderEquipe();
-}
-function editEquipe(id) {
-  var a=EQUIPE.find(function(x){return x.id===id;});if(!a)return;
-  a.email  = prompt('Email :',a.email)||a.email;
-  a.tel    = prompt('Téléphone :',a.tel)||a.tel;
-  a.secu   = prompt('N° Sécu :',a.secu)||a.secu;
-  a.diplome= prompt('Diplôme :',a.diplome)||a.diplome;
-  renderEquipe();
-}
-function delEquipe(id) {
-  if(!confirm('Supprimer ?')) return;
-  EQUIPE = EQUIPE.filter(function(x){return x.id!==id;});
-  renderEquipe();
-}
-
-// ═══ RÉSERVATIONS ════════════════════════════════════════
-function setResaAdminSaison(s) {
-  resaAdminSaison=s;
-  ['ete','automne','printemps'].forEach(function(x){var b=document.getElementById('rs-admin-'+x);if(b){b.classList.toggle('active',x===s);b.classList.toggle('btn-ghost',x!==s);}});
-  renderAdminResas();
-}
-function setResaFilter(f) {
-  resaFilter=f;
-  ['all','attente','valide'].forEach(function(x){var b=document.getElementById('rf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});
-  renderAdminResas();
-}
-function renderAdminResas() {
-  var el=document.getElementById('admin-resa-content');if(!el)return;
-  var all=[].concat(DEMO_RESAS,ST.reservations);
-  var sL=resaAdminSaison==='ete'?'Été':resaAdminSaison==='automne'?'Automne':'Printemps';
-  all=all.filter(function(r){return!r.saisonLabel||r.saisonLabel.indexOf(sL)>=0||r.saisonLabel.indexOf('Ete')>=0;});
-  if(resaFilter==='attente')all=all.filter(function(r){return r.statut==='en attente';});
-  if(resaFilter==='valide') all=all.filter(function(r){return r.statut==='validé'||r.statut==='valide';});
-  _adminResas=all;
-  if(!all.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation</p></div>'
-      +'<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:var(--adm-font);margin-top:12px;">+ Nouvelle réservation</button>';
-    return;
-  }
-  var cards=all.map(function(r,i){
-    var st=r.statut||'en attente';
-    var val=st==='validé'||st==='valide';
-    var sc=val?'#10B981':'#FF8C00';
-    var ch=(r.children||[]).map(function(c){return '<span style="font-size:10px;background:#F1F5F9;color:#374151;padding:2px 7px;border-radius:20px;font-weight:600;">'+c.name+'</span>';}).join('');
-    return '<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid #E2E8F0;border-top:3px solid '+sc+';">'
-      +'<div style="display:flex;justify-content:space-between;margin-bottom:6px;">'
-      +'<div style="font-size:13px;font-weight:700;color:#1E293B;">'+r.nom+'</div>'
-      +'<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:'+(val?'#D1FAE5':'#FEF3C7')+';color:'+(val?'#065F46':'#92400E')+'">'+(val?'✅ Validé':'⏳ Attente')+'</span></div>'
-      +'<div style="font-size:11px;color:#64748B;font-weight:600;margin-bottom:4px;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
-      +(ch?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">'+ch+'</div>':'')
-      +(r.saisonLabel?'<div style="font-size:10px;color:#94A3B8;margin-bottom:8px;">'+r.saisonLabel+'</div>':'')
-      +(!val?'<button onclick="ouvrirValidationResa('+i+')" style="width:100%;padding:8px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--adm-font);margin-bottom:8px;box-shadow:0 3px 10px rgba(16,185,129,.3);">✅ Valider</button>'
-         :'<div style="background:#D1FAE5;color:#065F46;border-radius:8px;padding:7px;font-size:11px;font-weight:700;text-align:center;margin-bottom:8px;">'+(r.modePaiement?'✅ '+r.modePaiement:'✅ Validé')+'</div>')
-      +'<div style="display:flex;gap:5px;">'
-      +'<button onclick="modResa('+i+')" style="flex:1;padding:6px;background:#FFF3E0;color:#E65100;border:1px solid #FDBA74;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--adm-font);">✏️</button>'
-      +'<button onclick="delResa('+i+')" style="flex:1;padding:6px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--adm-font);">🗑️</button>'
-      +'<button onclick="relanceResa(\''+r.nom.replace(/'/g,"\\'")+'\',\''+r.email+'\',\''+(r.slot?r.slot.time+' '+r.slot.date:'')+'\''+')" style="flex:1;padding:6px;background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--adm-font);">📧</button>'
-      +'</div></div>';
-  }).join('');
-  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">'+cards+'</div>'
-    +'<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:var(--adm-font);margin-top:12px;box-shadow:0 4px 14px rgba(0,153,230,.3);">+ Nouvelle réservation</button>';
-}
-function modResa(i){var r=_adminResas[i];if(!r)return;var n=prompt('Nom famille :',r.nom);if(!n)return;r.nom=n;toast('Modifié','ok');renderAdminResas();}
-function delResa(i){if(!confirm('Supprimer ?'))return;var r=_adminResas[i];DEMO_RESAS=DEMO_RESAS.filter(function(x){return x!==r;});ST.reservations=ST.reservations.filter(function(x){return x!==r;});toast('Supprimée','ok');renderAdminResas();}
-function relanceResa(nom,email,slot){var s=encodeURIComponent('Relance – Club des Léopards');var b=encodeURIComponent('Bonjour '+nom+',\n\nNous n\'avons pas encore reçu votre paiement pour : '+slot+'.\n\nCordialement,\nClub des Léopards');window.location.href='mailto:'+(email||'')+'?subject='+s+'&body='+b;}
-function nouvelleResaManuelle(){var n=prompt('Nom famille :');if(!n)return;var e=prompt('Email :');var p=prompt('Matin ou aprem :','matin');var s=prompt('Semaine :','Semaine 1');ST.reservations.push({id:Date.now(),nom:n,email:e||'',tel:'',slot:{time:p==='matin'?'Matin':'Aprem',date:s},saisonLabel:'Été 2026',children:[],paid:0,statut:'en attente',date:new Date().toLocaleDateString('fr-FR')});toast('Créée','ok');renderAdminResas();}
-
-// ═══ PAIEMENTS ═══════════════════════════════════════════
-function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
-
-function renderPaiements() {
-  var el=document.getElementById('paiements-content');if(!el)return;
-  var paies=[].concat(DEMO_PAYMENTS);
-  var payees=paies.filter(function(p){return p.statut==='paye'||p.statut==='payé';});
-  var att=paies.filter(function(p){return p.statut!=='paye'&&p.statut!=='payé';});
-  var enc=payees.reduce(function(s,p){return s+p.montant;},0);
-  var attMt=att.reduce(function(s,p){return s+p.montant;},0);
-  var total=enc+attMt; var pct=total>0?Math.round(enc/total*100):0;
-  var byMode={};payees.forEach(function(p){if(p.mode){byMode[p.mode]=(byMode[p.mode]||{cnt:0,amt:0});byMode[p.mode].cnt++;byMode[p.mode].amt+=p.montant;}});
-  var mC={'Virement':'#10B981','Carte bleue':'#3B82F6','Chèque':'#8B5CF6','Chèques vacances':'#F59E0B','Espèces':'#F97316','Avoirs':'#EC4899','Offert':'#6B7280'};
-  var modes=Object.keys(byMode).sort(function(a,b){return byMode[b].amt-byMode[a].amt;});
-  var barSegs=modes.map(function(m){var p=enc>0?Math.round(byMode[m].amt/enc*100):0;return '<div title="'+m+': '+p+'%" style="flex:'+p+';background:'+(mC[m]||'#9CA3AF')+';height:100%;min-width:'+(byMode[m].cnt>0?'6px':'0')+';display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;font-weight:700;color:#fff;">'+(p>10?p+'%':'')+'</span></div>';}).join('');
-  el.innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">'
-    +'<div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid #FF8C00;"><div style="font-size:22px;font-weight:800;color:#FF8C00;">'+att.length+'</div><div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">En attente</div></div>'
-    +'<div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid #10B981;"><div style="font-size:22px;font-weight:800;color:#10B981;">'+payees.length+'</div><div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Confirmées</div></div>'
-    +'<div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid #0099E6;"><div style="font-size:22px;font-weight:800;color:#0099E6;">'+paies.length+'</div><div style="font-size:10px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Total</div></div>'
-    +'</div>'
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>📊</span> Répartition des paiements</div>'
-    +'<div style="height:28px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:10px;">'+barSegs+'</div>'
-    +'<div style="display:flex;gap:10px;flex-wrap:wrap;">'
-    +modes.map(function(m){return '<div style="display:flex;align-items:center;gap:5px;"><div style="width:9px;height:9px;border-radius:50%;background:'+(mC[m]||'#9CA3AF')+';"></div><span style="font-size:12px;color:#374151;font-weight:600;">'+m+'</span><span style="font-size:11px;color:#94A3B8;">'+byMode[m].cnt+' · '+byMode[m].amt+'€</span></div>';}).join('')
-    +'</div></div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:10px;">'
-    +'<button id="pf-toutes" class="btn btn-sm active" style="flex:1;" onclick="renderPaiements()">Toutes</button>'
-    +'<button id="pf-attente" class="btn btn-sm btn-ghost" style="flex:1;" onclick="renderPaiements()">⏳ Attente</button>'
-    +'<button id="pf-payees" class="btn btn-sm btn-ghost" style="flex:1;" onclick="renderPaiements()">✅ Payées</button>'
-    +'</div>'
-    +'<div class="wcard">'
-    +'<div class="wcard-title"><span>💳</span> Tous les paiements</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">'
-    +paies.map(function(p){
-      var isPaye=p.statut==='paye'||p.statut==='payé';
-      var bc=isPaye?'#10B981':'#FF8C00';
-      return '<div style="border-radius:12px;padding:13px;background:#F8FAFC;border-left:3px solid '+bc+';">'
-        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">'
-        +'<div><div style="font-size:13px;font-weight:700;color:#1E293B;">'+p.nom+'</div><div style="font-size:10px;color:#94A3B8;">'+(p.mode||'—')+'</div></div>'
-        +'<div style="font-size:16px;font-weight:800;color:'+bc+';">'+p.montant+'€</div></div>'
-        +'<div style="font-size:11px;color:#64748B;margin-bottom:8px;">'+p.formule+'</div>'
-        +'<div style="display:flex;justify-content:space-between;align-items:center;">'
-        +'<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:'+(isPaye?'#D1FAE5':'#FEF3C7')+';color:'+(isPaye?'#065F46':'#92400E')+'">'+(isPaye?'✅ Payé':'⏳ Attente')+'</span>'
-        +(isPaye?'<button onclick="ouvrirFactureDepuisPaiement(\''+p.nom.replace(/'/g,"\\'")+'\','+p.montant+',\''+p.mode+'\')" style="background:#EFF6FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--adm-font);">🧾 Facture</button>':'')
+// ═══════════════════════════════════════════════════════════
+// ÉQUIPE
+// ═══════════════════════════════════════════════════════════
+function renderEquipe(){
+  var el=document.getElementById('at-equipe-content');if(!el)return;
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-bottom:14px;">'
+    +EQUIPE.map(function(a){
+      var age=new Date().getFullYear()-parseInt((a.dob||'2000').slice(0,4));
+      var colors=['#0099E6','#7C3AED','#FF6B35','#00C48C'];
+      var col=colors[a.id%colors.length];
+      return '<div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 16px rgba(0,0,0,.06);border-top:4px solid '+col+';transition:box-shadow .2s;" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.12)\'" onmouseout="this.style.boxShadow=\'0 2px 16px rgba(0,0,0,.06)\'">'
+        +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
+        +'<div style="width:48px;height:48px;border-radius:14px;background:'+col+'15;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;">'+a.prenom.charAt(0)+a.nom.charAt(0)+'</div>'
+        +'<div><div style="font-size:15px;font-weight:700;color:#0A0F2C;">'+a.prenom+' '+a.nom+'</div>'
+        +'<span class="badge" style="background:'+col+'15;color:'+col+';">'+a.poste+'</span></div></div>'
+        +'<div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">'
+        +[['📅 Naissance',(a.dob?new Date(a.dob).toLocaleDateString('fr-FR'):'-')+' ('+age+' ans)'],
+          ['📧 Email',a.email],['📞 Tél',a.tel],
+          ['🔒 N° Sécu','<span style="font-family:monospace;font-size:11px;">'+a.secu+'</span>'],
+          ['🎓 Diplôme','<span style="font-weight:700;color:#059669;">'+a.diplome+'</span>']
+        ].map(function(r){return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F9FAFB;"><span style="color:#9CA3AF;">'+r[0]+'</span><span>'+r[1]+'</span></div>';}).join('')
+        +'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:12px;">'
+        +'<button onclick="editEquipe('+a.id+')" style="flex:1;padding:8px;background:#F0F4FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
+        +'<button onclick="delEquipe('+a.id+')" style="flex:1;padding:8px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">🗑️ Supprimer</button>'
         +'</div></div>';
-    }).join('')+'</div></div>';
+    }).join('')+'</div>'
+    +'<button onclick="ajouterAnimateur()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">+ Ajouter un animateur</button>';
 }
+function ajouterAnimateur(){var p=prompt('Prénom :');if(!p)return;var n=prompt('Nom :');if(!n)return;EQUIPE.push({id:Date.now(),prenom:p,nom:n,dob:'',email:prompt('Email :')||'',tel:'',secu:'',diplome:prompt('Diplôme :')||'',poste:'Animateur'});renderEquipe();}
+function editEquipe(id){var a=EQUIPE.find(function(x){return x.id===id;});if(!a)return;a.diplome=prompt('Diplôme :',a.diplome)||a.diplome;a.email=prompt('Email :',a.email)||a.email;a.tel=prompt('Tél :',a.tel)||a.tel;a.secu=prompt('N° Sécu :',a.secu)||a.secu;renderEquipe();}
+function delEquipe(id){if(!confirm('Supprimer ?'))return;EQUIPE=EQUIPE.filter(function(x){return x.id!==id;});renderEquipe();}
 
-// ═══ FRÉQUENTATION ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// FRÉQUENTATION
+// ═══════════════════════════════════════════════════════════
+var freqPeriod='semaine';
 function setFreqPeriod(p){freqPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('fp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderFrequentation();}
-
-function renderFrequentation() {
+function renderFrequentation(){
   var el=document.getElementById('frequentation-content');if(!el)return;
   var pds={jour:{data:DEMO_FREQ.jours},semaine:{data:DEMO_FREQ.semaines},mois:{data:DEMO_FREQ.mois},saison:{data:[{label:'Été 26',matin:780,aprem:620},{label:'Auto',matin:160,aprem:130},{label:'Print',matin:340,aprem:270}]}};
   var pd=pds[freqPeriod]||pds.semaine;
-  var maxAll=Math.max.apply(null,pd.data.map(function(d){return Math.max(d.matin,d.aprem);}))||1;
+  var maxAll=Math.max.apply(null,pd.data.map(function(d){return Math.max(d.matin,d.aprem);}));maxAll=maxAll||1;
   var totM=pd.data.reduce(function(s,d){return s+d.matin;},0);
   var totA=pd.data.reduce(function(s,d){return s+d.aprem;},0);
-  var TR=[{label:'3–5 ans',min:3,max:5.9,color:'#FF8C00'},{label:'6–9 ans',min:6,max:9.9,color:'#0099E6'},{label:'10–13 ans',min:10,max:13.9,color:'#8B5CF6'}];
-  var kids=allKids(); var totalK=kids.length||1;
-  function barChart(data,color){return data.map(function(d){var h=Math.round(d.val/maxAll*80);return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div style="width:100%;background:#F1F5F9;border-radius:4px;height:80px;display:flex;align-items:flex-end;"><div style="width:100%;background:'+color+';border-radius:4px 4px 0 0;height:'+h+'px;min-height:3px;transition:height .3s;"></div></div><div style="font-size:9px;color:#94A3B8;margin-top:3px;text-align:center;">'+d.l+'</div></div>';}).join('');}
+  var kids=allKids();
+  var TR=[{label:'3-5 ans',min:3,max:5.9,color:'#FF6B35'},{label:'6-9 ans',min:6,max:9.9,color:'#0099E6'},{label:'10-13 ans',min:10,max:13.9,color:'#7C3AED'}];
+  var total=kids.length||1;
+  function barChart(vals,color){return vals.map(function(d){var h=Math.round(d.val/maxAll*80);return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div style="width:100%;background:#F3F4F6;border-radius:4px;height:80px;display:flex;align-items:flex-end;"><div style="width:100%;background:'+color+';border-radius:4px 4px 0 0;height:'+h+'px;min-height:3px;transition:height .4s;"></div></div><div style="font-size:9px;color:#9CA3AF;margin-top:3px;text-align:center;">'+d.l+'</div></div>';}).join('');}
   el.innerHTML=
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
-    +'<div style="background:linear-gradient(135deg,#FFF3E0,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:14px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">🌅 Matin</div><div style="font-size:24px;font-weight:800;color:#92400E;">'+totM+'</div></div>'
-    +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">🌞 Après-midi</div><div style="font-size:24px;font-weight:800;color:#1565C0;">'+totA+'</div></div>'
+    +'<div style="background:linear-gradient(135deg,#FFF4F0,#FFE8E0);border-radius:14px;padding:14px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#FF6B35;text-transform:uppercase;margin-bottom:3px;">🌅 Matin</div><div style="font-size:24px;font-weight:800;color:#FF6B35;">'+totM+'</div></div>'
+    +'<div style="background:linear-gradient(135deg,#EFF8FF,#DCF1FF);border-radius:14px;padding:14px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#0099E6;text-transform:uppercase;margin-bottom:3px;">🌞 Après-midi</div><div style="font-size:24px;font-weight:800;color:#0099E6;">'+totA+'</div></div>'
     +'</div>'
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>🌅</span> Matin</div><div style="display:flex;gap:3px;align-items:flex-end;height:90px;">'+barChart(pd.data.map(function(d){return{val:d.matin,l:d.label};}), '#FF8C00')+'</div></div>'
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>🌞</span> Après-midi</div><div style="display:flex;gap:3px;align-items:flex-end;height:90px;">'+barChart(pd.data.map(function(d){return{val:d.aprem,l:d.label};}), '#0099E6')+'</div></div>'
+    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>🌅</span> Matin</div>'
+    +'<div style="display:flex;gap:3px;align-items:flex-end;height:90px;">'+barChart(pd.data.map(function(d){return{val:d.matin,l:d.label};}), '#FF6B35')+'</div></div>'
+    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>🌞</span> Après-midi</div>'
+    +'<div style="display:flex;gap:3px;align-items:flex-end;height:90px;">'+barChart(pd.data.map(function(d){return{val:d.aprem,l:d.label};}), '#0099E6')+'</div></div>'
     +'<div class="wcard"><div class="wcard-title"><span>👶</span> Par groupe d\'âge</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">'
-    +TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;var pct=Math.round(cnt/totalK*100);return '<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;"><span style="color:'+t.color+';">'+t.label+'</span><span style="color:#64748B;">'+cnt+' ('+pct+'%)</span></div><div style="background:#F1F5F9;border-radius:5px;height:7px;overflow:hidden;"><div style="background:'+t.color+';height:100%;width:'+pct+'%;border-radius:5px;transition:width .3s;"></div></div></div>';}).join('')
-    +'</div><div style="font-size:12px;font-weight:700;color:#1E293B;border-top:1px solid #F1F5F9;padding-top:8px;">Total : '+totalK+' enfants inscrits</div></div>';
+    +TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;var pct=Math.round(cnt/total*100);return '<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:3px;"><span style="color:'+t.color+';">'+t.label+'</span><span style="color:#374151;">'+cnt+' enfants ('+pct+'%)</span></div><div style="background:#F3F4F6;border-radius:5px;height:7px;overflow:hidden;"><div style="background:'+t.color+';height:7px;border-radius:5px;width:'+pct+'%;transition:width .4s;"></div></div></div>';}).join('')
+    +'</div><div style="font-size:12px;font-weight:700;color:#0A0F2C;">Total : <span style="color:#0099E6;">'+total+'</span> enfants inscrits</div></div>';
 }
 
-// ═══ COMPTABILITÉ ═════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// PAIEMENTS
+// ═══════════════════════════════════════════════════════════
+var paiPeriod='semaine';
+function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
+function renderPaiements(){
+  var el=document.getElementById('paiements-content');if(!el)return;
+  var paies=[].concat(DEMO_PAYMENTS);
+  var payees=paies.filter(function(p){return p.statut==='payé'||p.statut==='paye';});
+  var attente=paies.filter(function(p){return p.statut!=='payé'&&p.statut!=='paye';});
+  var enc=payees.reduce(function(s,p){return s+p.montant;},0);
+  var att=attente.reduce(function(s,p){return s+p.montant;},0);
+  var total=enc+att;var pct=total>0?Math.round(enc/total*100):0;
+  var byMode={};payees.forEach(function(p){if(p.mode){if(!byMode[p.mode])byMode[p.mode]={cnt:0,amt:0};byMode[p.mode].cnt++;byMode[p.mode].amt+=p.montant;}});
+  var mC={'Virement':'#0099E6','Carte bleue':'#0077C8','Chèque':'#7C3AED','Chèques vacances':'#FF8C00','Espèces':'#FF6B35','Avoirs':'#EC4899','Offert':'#6B7280'};
+  var modes=Object.keys(byMode).sort(function(a,b){return byMode[b].amt-byMode[a].amt;});
+  var donut='',ang=-90,r=44,cx=60,cy=60,sw=18;
+  modes.forEach(function(m){var sw2=enc>0?byMode[m].amt/enc*360:0;if(sw2<2)return;var a1=ang*Math.PI/180,a2=(ang+sw2)*Math.PI/180;var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);donut+='<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' A'+r+','+r+' 0 '+(sw2>180?1:0)+',1 '+x2.toFixed(1)+','+y2.toFixed(1)+'" fill="none" stroke="'+(mC[m]||'#9CA3AF')+'" stroke-width="'+sw+'"/>';ang+=sw2;});
+  el.innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">'
+    +'<div style="background:#fff;border-radius:14px;padding:13px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #FF6B35;"><div style="font-size:20px;font-weight:800;color:#FF6B35;">'+attente.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;margin-top:2px;">En attente</div></div>'
+    +'<div style="background:#fff;border-radius:14px;padding:13px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #00C48C;"><div style="font-size:20px;font-weight:800;color:#00C48C;">'+payees.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;margin-top:2px;">Confirmées</div></div>'
+    +'<div style="background:#fff;border-radius:14px;padding:13px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #0099E6;"><div style="font-size:20px;font-weight:800;color:#0099E6;">'+paies.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;margin-top:2px;">Total</div></div>'
+    +'</div>'
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div style="display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center;">'
+    +'<div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:#DCFCE7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#166534;text-transform:uppercase;">Encaissé</div><div style="font-size:20px;font-weight:800;color:#166534;">'+enc+'€</div></div>'
+    +'<div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:20px;font-weight:800;color:#92400E;">'+att+'€</div></div>'
+    +'</div>'
+    +'<div style="background:#F3F4F6;border-radius:6px;height:7px;overflow:hidden;"><div style="background:linear-gradient(90deg,#0099E6,#00C48C);height:100%;width:'+pct+'%;transition:width .6s;"></div></div>'
+    +'<div style="font-size:10px;color:#9CA3AF;margin-top:3px;text-align:right;">'+pct+'% · '+total+'€ total</div></div>'
+    +'<svg width="110" height="110" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#F3F4F6" stroke-width="18"/>'+donut
+    +'<text x="60" y="54" text-anchor="middle" font-size="16" font-weight="800" fill="#0A0F2C">'+pct+'%</text>'
+    +'<text x="60" y="68" text-anchor="middle" font-size="9" fill="#9CA3AF">encaissé</text></svg></div>'
+    +(modes.length?'<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;border-top:1px solid #F3F4F6;padding-top:10px;">'
+    +modes.map(function(m){var p=enc>0?Math.round(byMode[m].amt/enc*100):0;return '<div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:'+(mC[m]||'#9CA3AF')+';flex-shrink:0;"></div><div style="flex:1;font-size:12px;font-weight:500;color:#374151;">'+m+'</div><div style="font-size:12px;font-weight:700;color:'+(mC[m]||'#9CA3AF')+';">'+byMode[m].amt+'€</div><div style="width:50px;"><div style="background:#F3F4F6;border-radius:3px;height:4px;"><div style="background:'+(mC[m]||'#9CA3AF')+';height:4px;border-radius:3px;width:'+p+'%;"></div></div></div></div>';}).join('')+'</div>':'')+'</div>'
+    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>⏳</span> En attente</div>'
+    +attente.map(function(p){return '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #F9FAFB;"><div style="width:34px;height:34px;border-radius:10px;background:'+p.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+p.initiale+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+p.nom+'</div><div style="font-size:11px;color:#9CA3AF;">'+p.formule+'</div></div><div style="font-size:14px;font-weight:800;color:#FF6B35;">'+p.montant+'€</div></div>';}).join('')+'</div>'
+    +'<div class="wcard"><div class="wcard-title"><span>✅</span> Encaissés</div>'
+    +payees.map(function(p){return '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #F9FAFB;"><div style="width:34px;height:34px;border-radius:10px;background:'+p.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+p.initiale+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+p.nom+'</div><div style="font-size:11px;color:#9CA3AF;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;color:#00C48C;">'+p.montant+'€</div><button onclick="ouvrirFactureDepuisPaiement(\''+p.nom.replace(/'/g,"\\'")+'\','+p.montant+',\''+p.mode+'\')" style="background:#EFF8FF;color:#0099E6;border:none;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:2px;">Facture</button></div></div>';}).join('')+'</div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// RÉSERVATIONS
+// ═══════════════════════════════════════════════════════════
+var resaAdminSaison='ete',resaFilter='all',_adminResas=[];
+function setResaAdminSaison(s){resaAdminSaison=s;['ete','automne','printemps'].forEach(function(x){var b=document.getElementById('rs-admin-'+x);if(b){b.classList.toggle('active',x===s);b.classList.toggle('btn-ghost',x!==s);}});renderAdminResas();}
+function setResaFilter(f){resaFilter=f;['all','attente','valide'].forEach(function(x){var b=document.getElementById('rf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});renderAdminResas();}
+function renderAdminResas(){
+  var el=document.getElementById('admin-resa-content');if(!el)return;
+  var all=[].concat(DEMO_RESAS,ST.reservations);
+  var sLabel=resaAdminSaison==='ete'?'Été':resaAdminSaison==='automne'?'Automne':'Printemps';
+  all=all.filter(function(r){return!r.saisonLabel||r.saisonLabel.indexOf(sLabel)>=0||r.saisonLabel.indexOf('Ete')>=0;});
+  if(resaFilter==='attente')all=all.filter(function(r){return r.statut==='en attente';});
+  if(resaFilter==='valide') all=all.filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  _adminResas=all;
+  if(!all.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation</p></div><button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:12px;">+ Nouvelle réservation</button>';return;}
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">'
+    +all.map(function(r,i){
+      var val=r.statut==='valide'||r.statut==='validé';
+      var col=val?'#00C48C':'#FF6B35';
+      var ch=(r.children||[]).map(function(c){return '<span class="badge badge-blue">'+c.name+'</span>';}).join('');
+      return '<div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:4px solid '+col+';">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
+        +'<div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+r.nom+'</div>'
+        +'<span class="badge '+(val?'badge-green':'badge-orange')+'">'+(val?'✅ Validé':'⏳ Attente')+'</span></div>'
+        +'<div style="font-size:11px;color:#374151;font-weight:600;margin-bottom:4px;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
+        +(ch?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">'+ch+'</div>':'')
+        +(r.saisonLabel?'<div style="font-size:10px;color:#9CA3AF;margin-bottom:6px;">'+r.saisonLabel+'</div>':'')
+        +(!val?'<button onclick="ouvrirValidationResa('+i+')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00C48C,#00A86B);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin-bottom:6px;">✅ Valider</button>'
+          :'<div style="background:#DCFCE7;color:#166534;border-radius:9px;padding:7px;font-size:10px;font-weight:700;text-align:center;margin-bottom:6px;">'+(r.modePaiement?'Validé · '+r.modePaiement:'Validé')+'</div>')
+        +'<div style="display:flex;gap:5px;">'
+        +'<button onclick="modResa('+i+')" style="flex:1;padding:6px;background:#FFF4F0;color:#FF6B35;border:1px solid #FED7AA;border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">✏️</button>'
+        +'<button onclick="delResa('+i+')" style="flex:1;padding:6px;background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">🗑️</button>'
+        +'<button onclick="relanceResa(\''+r.nom.replace(/'/g,"\\'")+'\',\''+r.email+'\',\''+(r.slot?r.slot.time+' '+r.slot.date:'')+'\')" style="flex:1;padding:6px;background:#F0F4FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">📧</button>'
+        +'</div></div>';
+    }).join('')+'</div>'
+    +'<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:12px;">+ Nouvelle réservation</button>';
+}
+function modResa(i){var r=_adminResas[i];if(!r)return;var nom=prompt('Nom:',r.nom);if(!nom)return;r.nom=nom;toast('Modifiée','ok');renderAdminResas();}
+function delResa(i){if(!confirm('Supprimer ?'))return;var r=_adminResas[i];DEMO_RESAS=DEMO_RESAS.filter(function(x){return x!==r;});ST.reservations=ST.reservations.filter(function(x){return x!==r;});toast('Supprimée','ok');renderAdminResas();}
+function relanceResa(nom,email,slot){var subj=encodeURIComponent('Relance - Club des Léopards');var body=encodeURIComponent('Bonjour '+nom+',\n\nNous n\'avons pas reçu votre paiement pour : '+slot+'.\n\nCordialement,\nClub des Léopards');window.location.href='mailto:'+email+'?subject='+subj+'&body='+body;}
+function nouvelleResaManuelle(){var nom=prompt('Nom famille :');if(!nom)return;var email=prompt('Email :');var periode=prompt('Matin ou aprem :','matin');var semaine=prompt('Semaine :','Semaine 1');ST.reservations.push({id:Date.now(),nom:nom,email:email||'',tel:'',slot:{time:periode==='matin'?'Matin':'Après-midi',date:semaine},saisonLabel:'Été 2026',children:[],paid:0,statut:'en attente',date:new Date().toLocaleDateString('fr-FR')});toast('Créée','ok');renderAdminResas();}
+
+// ═══════════════════════════════════════════════════════════
+// COMPTABILITÉ
+// ═══════════════════════════════════════════════════════════
 function setComptaTab(t){var b=document.getElementById('compta-bilan-content');var s=document.getElementById('compta-suivi-content');var bB=document.getElementById('ct-bilan');var bS=document.getElementById('ct-suivi');if(b)b.style.display=t==='bilan'?'block':'none';if(s)s.style.display=t==='suivi'?'block':'none';if(bB){bB.classList.toggle('active',t==='bilan');bB.classList.toggle('btn-ghost',t!=='bilan');}if(bS){bS.classList.toggle('active',t==='suivi');bS.classList.toggle('btn-ghost',t!=='suivi');}if(t==='suivi')renderSuiviQuotidien();else renderComptabilite();}
-
-function renderComptabilite() {
+function renderComptabilite(){
   var el=document.getElementById('comptabilite-content');if(!el)return;
-  var saisons=[{key:'ete',label:'Été 2026',emoji:'☀️',color:'#FF8C00'},{key:'automne',label:'Automne 2026',emoji:'🍂',color:'#F59E0B'},{key:'printemps',label:'Printemps 2027',emoji:'🌸',color:'#10B981'}];
-  el.innerHTML=saisons.map(function(s){
-    var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='paye'||p.statut==='payé';}).reduce(function(a,p){return a+p.montant;},0);
-    var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='paye'&&p.statut!=='payé';}).reduce(function(a,p){return a+p.montant;},0);
-    return '<div class="wcard" style="margin-bottom:12px;border-left:4px solid '+s.color+';">'
-      +'<div class="wcard-title"><span>'+s.emoji+'</span> '+s.label+'</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-      +'<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#065F46;text-transform:uppercase;">Encaissé</div><div style="font-size:22px;font-weight:800;color:#065F46;">'+enc+'€</div></div>'
-      +'<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:22px;font-weight:800;color:#92400E;">'+(enc+att)+'€</div></div>'
-      +'</div></div>';
-  }).join('');
+  var saisons=[{key:'ete',label:'Été 2026',emoji:'☀️',color:'#FF6B35'},{key:'automne',label:'Automne 2026',emoji:'🍂',color:'#FF8C00'},{key:'printemps',label:'Printemps 2027',emoji:'🌸',color:'#00C48C'}];
+  var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='payé'||p.statut==='paye';}).reduce(function(a,p){return a+p.montant;},0);
+  var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='payé'&&p.statut!=='paye';}).reduce(function(a,p){return a+p.montant;},0);
+  el.innerHTML=saisons.map(function(s){return '<div class="wcard" style="margin-bottom:12px;border-left:4px solid '+s.color+';">'
+    +'<div class="wcard-title"><span>'+s.emoji+'</span> '+s.label+'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    +'<div style="background:#DCFCE7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#166534;text-transform:uppercase;">Encaissé</div><div style="font-size:19px;font-weight:800;color:#166534;">'+enc+'€</div></div>'
+    +'<div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:19px;font-weight:800;color:#92400E;">'+(enc+att)+'€</div></div>'
+    +'</div></div>';}).join('');
 }
-
-function renderSuiviQuotidien() {
+function renderSuiviQuotidien(){
   var el=document.getElementById('suivi-quotidien-content');if(!el)return;
   var sorted=[].concat(SUIVI_QUOTIDIEN).sort(function(a,b){return a.date.split('/').reverse().join('').localeCompare(b.date.split('/').reverse().join(''));});
   var cols=['CB/CD','Virement','Chèque','Chq Vac.','Espèces','Avoir 2025','Remb.'];
   var keys=['cb','vir','chq','chqvac','esp','avoir24','remb25'];
-  var totals={};keys.forEach(function(k){totals[k]=0;});
-  sorted.forEach(function(r){keys.forEach(function(k){totals[k]+=(r[k]||0);});});
+  var totals={};keys.forEach(function(k){totals[k]=0;});sorted.forEach(function(r){keys.forEach(function(k){totals[k]+=(r[k]||0);});});
   var gT=keys.reduce(function(s,k){return s+totals[k];},0);
-  el.innerHTML='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:580px;font-size:12px;font-family:var(--adm-font);">'
-    +'<thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;">'
-    +'<th style="padding:10px 8px;text-align:left;border-radius:10px 0 0 0;">Date</th><th style="padding:10px 8px;text-align:left;">Référence</th>'
-    +cols.map(function(c){return '<th style="padding:10px 6px;text-align:right;">'+c+'</th>';}).join('')
-    +'<th style="border-radius:0 10px 0 0;"></th></tr></thead><tbody>'
-    +sorted.map(function(r,i){return '<tr style="background:'+(i%2===0?'#fff':'#F8FAFC')+';border-bottom:1px solid #F1F5F9;">'
-      +'<td style="padding:8px;color:#94A3B8;white-space:nowrap;font-size:11px;">'+r.date+'</td>'
-      +'<td style="padding:8px;font-weight:600;color:#1E293B;">'+r.ref+'</td>'
-      +keys.map(function(k){return '<td style="padding:8px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(r[k]?'#0077C8':'#CBD5E1')+';">'+(r[k]?r[k]+'€':'—')+'</td>';}).join('')
-      +'<td></td></tr>';}).join('')
-    +'<tr style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);font-weight:700;border-top:2px solid #0099E6;">'
-    +'<td style="padding:9px 8px;color:#1565C0;font-weight:700;" colspan="2">TOTAL</td>'
-    +keys.map(function(k){return '<td style="padding:9px 6px;text-align:right;color:#0077C8;font-weight:800;">'+(totals[k]?totals[k]+'€':'—')+'</td>';}).join('')
-    +'<td></td></tr></tbody></table></div>'
-    +'<div style="text-align:right;margin-top:12px;font-size:15px;font-weight:800;color:#0B1437;">Total général : '+gT+'€</div>';
+  el.innerHTML='<div style="overflow-x:auto;"><table style="min-width:550px;font-size:12px;">'
+    +'<thead><tr style="background:linear-gradient(135deg,#0A0F2C,#0077C8);color:#fff;">'
+    +'<th>Date</th><th>Référence</th>'+cols.map(function(c){return '<th style="text-align:right;">'+c+'</th>';}).join('')+'</tr></thead><tbody>'
+    +sorted.map(function(r,i){return '<tr style="background:'+(i%2===0?'#fff':'#F9FAFB')+';"><td style="color:#9CA3AF;white-space:nowrap;">'+r.date+'</td><td style="font-weight:600;">'+r.ref+'</td>'+keys.map(function(k){return '<td style="text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(r[k]?'#0099E6':'#D1D5DB')+';">'+(r[k]?r[k]+'€':'-')+'</td>';}).join('')+'</tr>';}).join('')
+    +'<tr style="background:#F0F4FF;font-weight:700;border-top:2px solid #0099E6;"><td colspan="2">TOTAL</td>'+keys.map(function(k){return '<td style="text-align:right;color:#0099E6;">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')+'</tr>'
+    +'</tbody></table></div><div style="text-align:right;margin-top:10px;font-size:15px;font-weight:800;color:#0A0F2C;">Total : '+gT+'€</div>';
 }
 
-// ═══ FACTURE ════════════════════════════════════════════
-function renderFactureTab() {
-  var d=document.getElementById('fac-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
-  var wrap=document.getElementById('fac-from-paiement-wrap');
-  if(wrap){
-    var pays=DEMO_PAYMENTS.filter(function(p){return p.statut==='paye'||p.statut==='payé';});
-    wrap.innerHTML='<div class="wcard-title"><span>💳</span> Depuis un paiement validé</div>'
-      +'<select id="fac-paiement-sel" onchange="chargerDepuisPaiement(this.value)" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E2E8F0;font-family:var(--adm-font);font-size:13px;background:#fff;">'
-      +'<option value="">— Choisir un paiement encaissé —</option>'
-      +pays.map(function(p,i){return '<option value="'+i+'">'+p.nom+' · '+p.formule+' · '+p.montant+'€ · '+(p.mode||'?')+'</option>';}).join('')
-      +'</select>';
-  }
-}
-function chargerDepuisPaiement(idx){var pays=DEMO_PAYMENTS.filter(function(p){return p.statut==='paye'||p.statut==='payé';});var p=pays[parseInt(idx)];if(!p)return;var f=function(id,v){var el=document.getElementById(id);if(el)el.value=v;};f('fac-famille',p.nom.replace('Fam. ',''));f('fac-prestation',p.formule);f('fac-montant',p.montant);f('fac-mode',p.mode);f('fac-date',new Date().toISOString().slice(0,10));}
+// ═══════════════════════════════════════════════════════════
+// FACTURE
+// ═══════════════════════════════════════════════════════════
+function renderFactureTab(){var d=document.getElementById('fac-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);}
 function ouvrirFactureDepuisPaiement(nom,montant,mode){setAdminTab('facture');setTimeout(function(){var f=function(id,v){var el=document.getElementById(id);if(el)el.value=v;};f('fac-famille',nom.replace('Fam. ',''));f('fac-montant',montant);f('fac-mode',mode);f('fac-date',new Date().toISOString().slice(0,10));},150);}
 function genererFacture(){
   var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
@@ -3470,76 +3323,256 @@ function genererFacture(){
   var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
   var dateF=date?new Date(date).toLocaleDateString('fr-FR'):new Date().toLocaleDateString('fr-FR');
   var el=document.getElementById('facture-preview');if(!el)return;
-  el.innerHTML='<div style="background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:22px;margin-top:12px;font-family:var(--adm-font);">'
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">'
-    +'<div><div style="font-size:18px;font-weight:800;color:#0B1437;">🐆 Club des Léopards</div><div style="font-size:11px;color:#94A3B8;margin-top:2px;">clubdesleopards@free.fr · SIRET 50237123000025</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#0099E6;">FACTURE</div><div style="font-size:11px;color:#94A3B8;">'+ref+'</div><div style="font-size:11px;color:#94A3B8;">'+dateF+'</div></div></div>'
-    +'<div style="background:#F8FAFC;border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid #E2E8F0;">'
-    +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#94A3B8;letter-spacing:.5px;margin-bottom:5px;">Facturé à</div>'
-    +'<div style="font-size:15px;font-weight:700;color:#1E293B;">Famille '+famille+'</div>'
-    +(enfant?'<div style="font-size:12px;color:#64748B;margin-top:2px;">Enfant : '+enfant+'</div>':'')
-    +(email?'<div style="font-size:12px;color:#94A3B8;margin-top:2px;">'+email+'</div>':'')
+  el.innerHTML='<div style="background:#fff;border:2px solid #E5E7EB;border-radius:18px;padding:22px;margin-top:12px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">'
+    +'<div><div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;color:#0A0F2C;">🐆 Club des Léopards</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">clubdesleopards@free.fr · SIRET 50237123000025</div></div>'
+    +'<div style="text-align:right;"><div style="font-family:Syne,sans-serif;font-size:15px;font-weight:800;color:#0099E6;">FACTURE</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">'+ref+'</div><div style="font-size:11px;color:#9CA3AF;">'+dateF+'</div></div></div>'
+    +'<div style="background:#F9FAFB;border-radius:10px;padding:12px;margin-bottom:14px;">'
+    +'<div style="font-size:9px;text-transform:uppercase;font-weight:700;color:#9CA3AF;margin-bottom:5px;">Facturé à</div>'
+    +'<div style="font-size:14px;font-weight:700;color:#0A0F2C;">Famille '+famille+'</div>'
+    +(enfant?'<div style="font-size:12px;">Enfant : '+enfant+'</div>':'')
+    +(email?'<div style="font-size:12px;color:#6B7280;">'+email+'</div>':'')
     +'</div>'
-    +'<table style="width:100%;border-collapse:collapse;margin-bottom:14px;border-radius:10px;overflow:hidden;">'
-    +'<tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;"><th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;">Prestation</th><th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;">Montant</th></tr>'
-    +'<tr style="border:1px solid #E2E8F0;"><td style="padding:12px;font-size:13px;font-weight:600;color:#1E293B;">'+prest+(dates?'<br><span style="font-size:11px;color:#94A3B8;">'+dates+'</span>':'')+'</td><td style="padding:12px;text-align:right;font-size:15px;font-weight:800;color:#1E293B;">'+montant+'€</td></tr>'
-    +'<tr style="background:#F0F9FF;border:1px solid #BFDBFE;"><td style="padding:10px 12px;font-weight:700;color:#1565C0;">Total TTC</td><td style="padding:10px 12px;text-align:right;font-size:16px;font-weight:800;color:#0099E6;">'+montant+'€</td></tr>'
-    +'</table>'
-    +'<div style="font-size:12px;color:#64748B;margin-bottom:14px;">Mode de paiement : <strong style="color:#1E293B;">'+mode+'</strong></div>'
+    +'<table style="margin-bottom:12px;"><thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;"><th style="border-radius:8px 0 0 0;font-size:11px;">Prestation</th><th style="text-align:right;border-radius:0 8px 0 0;font-size:11px;">Montant</th></tr></thead>'
+    +'<tbody><tr><td style="font-size:13px;font-weight:600;">'+prest+(dates?'<br><span style="font-size:10px;color:#9CA3AF;">'+dates+'</span>':'')+'</td><td style="text-align:right;font-size:15px;font-weight:800;">'+montant+'€</td></tr>'
+    +'<tr style="background:#F9FAFB;"><td style="font-weight:700;">Total TTC</td><td style="text-align:right;font-size:16px;font-weight:800;color:#0099E6;">'+montant+'€</td></tr></tbody></table>'
+    +'<div style="font-size:12px;color:#6B7280;margin-bottom:12px;">Mode : '+mode+'</div>'
     +'<div style="display:flex;gap:8px;">'
-    +'<button onclick="window.print()" style="flex:1;padding:11px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--adm-font);box-shadow:0 4px 14px rgba(0,153,230,.3);">🖨️ Imprimer</button>'
-    +(email?'<button onclick="envoyerFactureMail(\''+email+'\',\''+ref+'\',\''+famille+'\',\''+prest+'\',\''+montant+'\')" style="flex:1;padding:11px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--adm-font);box-shadow:0 4px 14px rgba(16,185,129,.3);">📧 Envoyer</button>':'')
+    +'<button onclick="window.print()" style="flex:1;padding:10px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🖨️ Imprimer</button>'
+    +(email?'<button onclick="envoyerFactureMail(\''+email+'\',\''+ref+'\',\''+famille+'\',\''+prest+'\',\''+montant+'\')" style="flex:1;padding:10px;background:linear-gradient(135deg,#00C48C,#00A86B);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">📧 Envoyer</button>':'')
     +'</div></div>';
   el.scrollIntoView({behavior:'smooth'});
 }
-function envoyerFactureMail(email,ref,famille,prest,montant){var s=encodeURIComponent('Facture '+ref+' – Club des Léopards');var b=encodeURIComponent('Bonjour Famille '+famille+',\n\nVotre facture '+ref+' pour : '+prest+'\nMontant : '+montant+'€\n\nCordialement,\nClub des Léopards');window.location.href='mailto:'+email+'?subject='+s+'&body='+b;}
+function envoyerFactureMail(email,ref,famille,prest,montant){var subj=encodeURIComponent('Facture '+ref+' - Club des Léopards');var body=encodeURIComponent('Bonjour Famille '+famille+',\n\nFacture '+ref+'\nPrestation : '+prest+'\nMontant : '+montant+'€\n\nCordialement,\nClub des Léopards');window.location.href='mailto:'+email+'?subject='+subj+'&body='+body;}
 
-// ═══ AVOIRS ═══════════════════════════════════════════════
-function renderAvoirs() {
+// ═══════════════════════════════════════════════════════════
+// AVOIRS
+// ═══════════════════════════════════════════════════════════
+function renderAvoirs(){
   var el=document.getElementById('admin-avoirs-content');if(!el)return;
   function makeTable(items,ni){
     var real=items.filter(function(a){return a.membre;});
-    var restant=real.filter(function(a){return!a.solde;}).reduce(function(s,a){return s+a.somme;},0);
-    var rows=real.length?real.map(function(a,i){return '<tr style="border-bottom:1px solid #F1F5F9;">'
-      +'<td style="padding:9px 8px;font-size:13px;font-weight:600;color:#1E293B;">'+a.membre+'</td>'
-      +'<td style="padding:9px 8px;font-size:13px;text-align:right;font-weight:700;color:#0099E6;">'+a.somme+'€</td>'
-      +'<td style="padding:9px 8px;font-size:11px;color:#64748B;">'+a.motif+'</td>'
-      +'<td style="padding:9px 8px;text-align:center;">'+(a.solde?'<span style="background:#D1FAE5;color:#065F46;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">✅ '+a.dateSolde+'</span>':'<button onclick="solderAvoir('+ni+','+i+')" style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--adm-font);">Solder</button>')+'</td>'
-      +'<td style="padding:9px 8px;text-align:center;"><button onclick="genererDocAvoir(\''+a.membre.replace(/'/g,"\\'")+'\','+a.somme+',\''+a.motif.replace(/'/g,"\\'")+'\','+ni+')" style="background:#EFF6FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:7px;padding:4px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--adm-font);">🧾 Doc</button></td>'
-      +'</tr>';}).join(''):'<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:20px;font-style:italic;font-size:13px;">Aucun avoir</td></tr>';
-    return '<div style="overflow-x:auto;margin-bottom:10px;"><table style="width:100%;border-collapse:collapse;min-width:400px;font-family:var(--adm-font);">'
-      +'<thead><tr style="background:#F8FAFC;"><th style="padding:8px;text-align:left;font-size:10px;text-transform:uppercase;color:#94A3B8;letter-spacing:.5px;">Membre</th><th style="padding:8px;text-align:right;font-size:10px;text-transform:uppercase;color:#94A3B8;letter-spacing:.5px;">Somme</th><th style="padding:8px;font-size:10px;text-transform:uppercase;color:#94A3B8;letter-spacing:.5px;">Motif</th><th style="padding:8px;text-align:center;font-size:10px;text-transform:uppercase;color:#94A3B8;letter-spacing:.5px;">Soldé</th><th style="padding:8px;text-align:center;font-size:10px;text-transform:uppercase;color:#94A3B8;letter-spacing:.5px;">Doc</th></tr></thead>'
+    var restant=real.filter(function(a){return !a.solde;}).reduce(function(s,a){return s+a.somme;},0);
+    var rows=real.length?real.map(function(a,i){return '<tr><td style="font-weight:600;">'+a.membre+'</td><td style="text-align:right;font-weight:700;color:#0099E6;">'+a.somme+'€</td><td>'+a.motif+'</td>'
+      +'<td style="text-align:center;">'+(a.solde?'<span class="badge badge-green">'+a.dateSolde+'</span>':'<button onclick="solderAvoir('+ni+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')+'</td>'
+      +'<td style="text-align:center;"><button onclick="genererDocAvoir(\''+a.membre.replace(/'/g,"\\'")+'\','+a.somme+',\''+a.motif.replace(/'/g,"\\'")+'\','+ni+')" style="background:#F0F4FF;color:#0099E6;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Doc</button></td></tr>';}).join('')
+    :'<tr><td colspan="5" style="text-align:center;color:#9CA3AF;padding:16px;font-style:italic;">Aucun avoir</td></tr>';
+    return '<div style="overflow-x:auto;margin-bottom:10px;">'
+      +'<table style="min-width:380px;"><thead><tr><th>Membre</th><th style="text-align:right;">Somme</th><th>Motif</th><th style="text-align:center;">Soldé</th><th style="text-align:center;">Doc</th></tr></thead>'
       +'<tbody>'+rows+'</tbody>'
-      +(restant>0?'<tfoot><tr style="background:#EFF6FF;"><td colspan="2" style="padding:8px;font-size:12px;color:#0099E6;font-weight:700;">Restant : '+restant+'€</td><td colspan="3"></td></tr></tfoot>':'')
+      +(restant>0?'<tfoot><tr style="background:#F0F4FF;"><td colspan="2" style="font-weight:700;color:#0099E6;">Restant : '+restant+'€</td><td colspan="3"></td></tr></tfoot>':'')
       +'</table></div>'
-      +'<button onclick="ajouterAvoir('+ni+')" style="padding:9px 16px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--adm-font);box-shadow:0 3px 10px rgba(0,153,230,.25);">+ Ajouter avoir</button>';
+      +'<button onclick="ajouterAvoir('+ni+')" style="padding:8px 14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Ajouter avoir</button>';
   }
   el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">'
-    +'<div class="wcard"><div class="wcard-title"><span>📂</span> N−1 (2025)</div>'+makeTable(AVOIRS.nMoins1,0)+'</div>'
+    +'<div class="wcard"><div class="wcard-title"><span>📂</span> N-1 (2025)</div>'+makeTable(AVOIRS.nMoins1,0)+'</div>'
     +'<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'+makeTable(AVOIRS.n,1)+'</div>'
     +'</div>';
 }
-function solderAvoir(ti,ri){var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;var real=tab.filter(function(a){return a.membre;})[ri];if(!real)return;real.solde=true;real.dateSolde=new Date().toLocaleDateString('fr-FR');if(typeof solderAvoirSB==='function'&&real._id)solderAvoirSB(real._id).catch(function(){});toast('Avoir soldé','ok');renderAvoirs();}
-function ajouterAvoir(ti){var m=prompt('Nom famille :');if(!m)return;var s=parseInt(prompt('Montant :','120')||'0');var mo=prompt('Motif :')||'';var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;tab.push({id:Date.now(),membre:m,somme:s,motif:mo,solde:false,dateSolde:''});if(typeof ajouterAvoirSB==='function')ajouterAvoirSB(m,s,mo).catch(function(){});toast('Avoir ajouté','ok');renderAvoirs();}
-function genererDocAvoir(membre,somme,motif,ni){var partiel=confirm('Total ('+somme+'€) ? Annuler = montant partiel');var montantAvoir=partiel?somme:parseInt(prompt('Montant partiel :',somme)||somme);var ref='AV-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);var win=window.open('','_blank','width=700,height=500');if(!win)return;win.document.write('<html><head><title>Avoir '+ref+'</title><style>body{font-family:Arial,sans-serif;padding:32px;}table{width:100%;border-collapse:collapse;}th{padding:9px;text-align:left;background:#FF8C00;color:#fff;}td{padding:9px;border-bottom:1px solid #E2E8F0;}.btn{padding:10px 20px;background:#0099E6;color:#fff;border:none;border-radius:8px;cursor:pointer;}@media print{.btn{display:none;}}</style></head><body><div style="display:flex;justify-content:space-between;margin-bottom:24px;"><div><div style="font-size:20px;font-weight:800;">🐆 Club des Léopards</div><div style="font-size:11px;color:#94A3B8;">SIRET 50237123000025</div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#FF8C00;">AVOIR</div><div style="font-size:11px;color:#94A3B8;">'+ref+'</div><div style="font-size:11px;color:#94A3B8;">'+new Date().toLocaleDateString('fr-FR')+'</div></div></div><div style="background:#FFF3E0;border:1px solid #FDE68A;border-radius:8px;padding:14px;margin-bottom:16px;"><div style="font-size:9px;text-transform:uppercase;color:#92400E;font-weight:700;margin-bottom:4px;">Bénéficiaire</div><div style="font-size:15px;font-weight:700;">'+membre+'</div></div><table><tr><th>Motif</th><th style="text-align:right;">Montant</th></tr><tr><td>'+motif+'</td><td style="text-align:right;font-size:16px;font-weight:800;">'+montantAvoir+'€</td></tr><tr style="background:#FFF3E0;"><td style="font-weight:700;">Total avoir</td><td style="text-align:right;font-size:16px;font-weight:800;color:#FF8C00;">'+montantAvoir+'€</td></tr></table><p style="font-size:12px;color:#94A3B8;margin-top:16px;">Cet avoir est valable pour toute réservation au Club des Léopards.</p><button onclick="window.print()" class="btn">Imprimer</button></body></html>');win.document.close();}
+function solderAvoir(ti,ri){var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;var real=tab.filter(function(a){return a.membre;})[ri];if(!real)return;real.solde=true;real.dateSolde=new Date().toLocaleDateString('fr-FR');if(typeof solderAvoirSB==='function'&&real._id)solderAvoirSB(real._id).catch(function(){});toast('Soldé','ok');renderAvoirs();}
+function ajouterAvoir(ti){var m=prompt('Nom famille :');if(!m)return;var s=parseInt(prompt('Montant :','120')||'0');var mo=prompt('Motif :')||'';var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;tab.push({id:Date.now(),membre:m,somme:s,motif:mo,solde:false,dateSolde:''});if(typeof ajouterAvoirSB==='function')ajouterAvoirSB(m,s,mo).catch(function(){});toast('Ajouté','ok');renderAvoirs();}
+function genererDocAvoir(membre,somme,motif,ni){
+  var partiel=confirm('Total ('+somme+'€) ? Annuler = montant partiel');
+  var montantAvoir=partiel?somme:parseInt(prompt('Montant partiel :',somme)||somme);
+  var ref='AV-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
+  var win=window.open('','_blank','width=700,height=500');if(!win)return;
+  win.document.write('<html><head><title>Avoir '+ref+'</title><style>body{font-family:system-ui,sans-serif;padding:32px;}table{width:100%;border-collapse:collapse;}th{padding:9px;text-align:left;background:#FF6B35;color:#fff;}td{padding:9px;border-bottom:1px solid #E5E7EB;}.btn{padding:10px 20px;background:#0099E6;color:#fff;border:none;border-radius:8px;cursor:pointer;}@media print{.btn{display:none;}}</style></head><body>'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:24px;"><div><div style="font-size:20px;font-weight:800;color:#0A0F2C;">Club des Léopards</div><div style="font-size:11px;color:#9CA3AF;">SIRET 50237123000025</div></div>'
+    +'<div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:#FF6B35;">AVOIR</div><div style="font-size:11px;color:#9CA3AF;">'+ref+'</div><div style="font-size:11px;color:#9CA3AF;">'+new Date().toLocaleDateString('fr-FR')+'</div></div></div>'
+    +'<div style="background:#FFF4F0;border:1px solid #FED7AA;border-radius:8px;padding:14px;margin-bottom:16px;"><div style="font-size:9px;text-transform:uppercase;color:#FF6B35;font-weight:700;margin-bottom:4px;">Bénéficiaire</div><div style="font-size:15px;font-weight:700;">'+membre+'</div></div>'
+    +'<table><tr><th>Motif</th><th style="text-align:right;">Montant</th></tr><tr><td>'+motif+'</td><td style="text-align:right;font-size:16px;font-weight:800;">'+montantAvoir+'€</td></tr><tr style="background:#FFF4F0;"><td style="font-weight:700;">Total avoir</td><td style="text-align:right;font-size:16px;font-weight:800;color:#FF6B35;">'+montantAvoir+'€</td></tr></table>'
+    +'<p style="font-size:12px;color:#9CA3AF;margin-top:16px;">Cet avoir est valable pour toute réservation au Club des Léopards.</p>'
+    +'<button onclick="window.print()" class="btn">🖨️ Imprimer</button></body></html>');
+  win.document.close();
+}
 
-// ═══ RECHERCHE ════════════════════════════════════════════
-var _searchResults = [];
-function globalSearch() {
+// ═══════════════════════════════════════════════════════════
+// RECHERCHE
+// ═══════════════════════════════════════════════════════════
+var _searchResults=[];
+function globalSearch(){
   var el=document.getElementById('search-results');if(!el)return;
   var q=(document.getElementById('global-search')||{value:''}).value.trim().toLowerCase();
-  if(!q||q.length<2){el.innerHTML='<div style="text-align:center;color:#94A3B8;padding:40px;font-size:14px;font-family:var(--adm-font);">Saisissez au moins 2 caractères</div>';return;}
+  if(!q||q.length<2){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px;font-size:14px;">Saisissez au moins 2 caractères</div>';return;}
   var results=[];
-  allKids().forEach(function(k){if((k.prenom+' '+k.nom+' '+k.parent).toLowerCase().indexOf(q)>=0)results.push({type:'enfant',icon:'🧒',title:k.prenom+' '+k.nom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#6366F1',kid:k});});
-  [].concat(DEMO_FAMS,ST.members).forEach(function(m){if((m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')).toLowerCase().indexOf(q)>=0)results.push({type:'famille',icon:'👥',title:m.prenom+' '+m.nom,sub:(m.email||'')+' · '+(m.tel||''),color:'#FF8C00'});});
-  [].concat(DEMO_RESAS,ST.reservations).forEach(function(r){if((r.nom+' '+(r.email||'')).toLowerCase().indexOf(q)>=0)results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+' · '+(r.saisonLabel||''),color:'#10B981'});});
+  allKids().forEach(function(k){if((k.prenom+' '+k.nom+' '+k.parent).toLowerCase().indexOf(q)>=0)results.push({type:'enfant',icon:'🧒',title:k.prenom+' '+k.nom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#7C3AED',kid:k});});
+  [].concat(DEMO_FAMS,ST.members).forEach(function(m){if((m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')).toLowerCase().indexOf(q)>=0)results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:(m.email||'')+' · '+(m.tel||''),color:'#FF6B35'});});
+  [].concat(DEMO_RESAS,ST.reservations).forEach(function(r){if((r.nom+' '+(r.email||'')).toLowerCase().indexOf(q)>=0)results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+' · '+(r.saisonLabel||''),color:'#00C48C'});});
   _searchResults=results;
-  if(!results.length){el.innerHTML='<div style="text-align:center;color:#94A3B8;padding:40px;font-size:14px;font-family:var(--adm-font);">Aucun résultat pour "'+q+'"</div>';return;}
-  el.innerHTML='<div style="font-size:12px;color:#94A3B8;margin-bottom:10px;font-family:var(--adm-font);">'+results.length+' résultat'+(results.length>1?'s':'')+'</div>'
-    +results.map(function(r,i){var click=r.type==='enfant'?'onclick="ouvrirFicheEnfant('+i+')" style="cursor:pointer;"':'';return '<div '+click+' style="background:#fff;border-radius:12px;padding:13px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;border:1px solid #E2E8F0;transition:box-shadow .15s;font-family:var(--adm-font);" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.06)\'">'+'<div style="width:38px;height:38px;border-radius:10px;background:'+r.color+'12;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid '+r.color+'20;">'+r.icon+'</div>'+'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#1E293B;">'+r.title+'</div><div style="font-size:11px;color:#94A3B8;">'+r.sub+'</div>'+(r.type==='enfant'?'<div style="font-size:10px;font-weight:700;color:'+r.color+';margin-top:2px;">Cliquer pour voir la fiche</div>':'')+'</div></div>';}).join('');
+  if(!results.length){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:32px;">Aucun résultat pour "'+q+'"</div>';return;}
+  el.innerHTML='<div style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+'</div>'
+    +results.map(function(r,i){
+      var click=r.type==='enfant'?'onclick="ouvrirFicheEnfant('+i+')" style="cursor:pointer;"':'';
+      return '<div '+click+' style="background:#fff;border-radius:14px;padding:13px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;transition:box-shadow .15s;border-left:3px solid '+r.color+';" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.1)\'" onmouseout="this.style.boxShadow=\'0 2px 10px rgba(0,0,0,.06)\'">'
+        +'<div style="width:38px;height:38px;border-radius:10px;background:'+r.color+'15;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+r.icon+'</div>'
+        +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+r.title+'</div><div style="font-size:11px;color:#9CA3AF;">'+r.sub+'</div>'
+        +(r.type==='enfant'?'<div style="font-size:10px;font-weight:700;color:'+r.color+';margin-top:2px;">Cliquer pour voir la fiche</div>':'')+'</div></div>';
+    }).join('');
 }
-function ouvrirFicheEnfant(i){var r=_searchResults[i];if(!r||!r.kid)return;ouvrirFicheEnfantGroupe(r.kid.prenom+' '+r.kid.nom);}
+function ouvrirFicheEnfant(i){
+  var r=_searchResults[i];if(!r||!r.kid)return;
+  var k=r.kid;var g=getGroupe(parseFloat(k.age)||0);
+  var ov=document.getElementById('fiche-enfant-overlay');
+  var body=document.getElementById('fiche-enfant-body');if(!ov||!body)return;
+  var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+  body.innerHTML='<div style="padding:20px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'
+    +'<div style="width:48px;height:48px;border-radius:14px;background:'+(g?g.color:'#0099E6')+'18;color:'+(g?g.color:'#0099E6')+';display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">'+(k.prenom||'?').charAt(0)+'</div>'
+    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F2C;">'+k.prenom+' '+k.nom+'</div>'
+    +(g?'<div style="font-size:12px;color:'+g.color+';font-weight:700;">'+g.emoji+' '+g.name+' · '+g.ages+'</div>':'')+'</div></div>'
+    +'<div>'+[['Âge (1er jour club)',ageLabel(age)],['Famille',k.parent],['Email',k.email||'-'],['Tél',k.tel||'-'],['Médical',k.medical||'RAS'],['Inscrit le',k.inscrit||'-']].map(function(row){return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#9CA3AF;">'+row[0]+'</span><span style="font-weight:600;color:'+(row[0]==='Médical'&&row[1]!=='RAS'?'#EF4444':'#0A0F2C')+';">'+row[1]+'</span></div>';}).join('')+'</div></div>';
+  ov.style.display='flex';
+}
 function fermerFicheEnfant(){var ov=document.getElementById('fiche-enfant-overlay');if(ov)ov.style.display='none';}
+
+// ═══════════════════════════════════════════════════════════
+// INSCRIPTION — Supabase
+// ═══════════════════════════════════════════════════════════
+function submitInscription(){
+  var ri=document.getElementById('i-accept-ri'),cgv=document.getElementById('i-accept-cgv'),resp=document.getElementById('i-accept-resp');
+  var ok=true;
+  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
+  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
+  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
+  if(!ok)return;
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var prenomEnfant=f('i-prenom'),nomEnfant=f('i-nom'),dob=f('i-dob');
+  var membreData={prenom:f('i-resp-prenom'),nom:f('i-resp-nom'),email:f('i-email'),tel:f('i-tel'),adresse_vacances:f('i-adresse-vacances'),adresse_fixe:f('i-adresse'),urgence_nom:f('i-urgence').split('·')[0].trim(),urgence_tel:f('i-urgence').split('·')[1]?f('i-urgence').split('·')[1].trim():'',droit_image:inscDroit==='oui'};
+  var enfantData={prenom:prenomEnfant,nom:membreData.nom,date_naissance:dob,age:parseAge(dob),medical:f('i-medical')||'RAS'};
+  function reset(){inscDroit=null;['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});var ad=document.getElementById('i-age-display');if(ad)ad.textContent='— ans';if(ri)ri.checked=false;if(cgv)cgv.checked=false;if(resp)resp.checked=false;inscGoStep(1);}
+  if(typeof SB!=='undefined'&&SB_ON){
+    toast('Enregistrement...');
+    sauvegarderInscription(membreData,enfantData).then(function(){toast('✅ Inscription enregistrée !','ok');reset();setTimeout(function(){navigate('home');},1200);}).catch(function(err){console.error(err);ST.members.push({prenom:membreData.prenom,nom:membreData.nom,email:membreData.email,tel:membreData.tel,adresse:membreData.adresse_vacances,droit_image:membreData.droit_image,children:[{name:prenomEnfant+' '+membreData.nom,age:parseAge(dob),dob:dob,medical:enfantData.medical}],date:new Date().toLocaleDateString('fr-FR')});toast('Inscription enregistrée (local)','ok');reset();setTimeout(function(){navigate('home');},1200);});
+  } else {
+    ST.members.push({prenom:membreData.prenom,nom:membreData.nom,email:membreData.email,tel:membreData.tel,adresse:membreData.adresse_vacances,droit_image:membreData.droit_image,children:[{name:prenomEnfant+' '+membreData.nom,age:parseAge(dob),dob:dob,medical:enfantData.medical}],date:new Date().toLocaleDateString('fr-FR')});
+    toast('Inscription enregistrée','ok');reset();setTimeout(function(){navigate('home');},1200);
+  }
+}
+
+var AVOIRS = {
+  nMoins1: [
+    {id:1, membre:'Fam. Mouthet',  somme:120, motif:'Annulation météo – Été 2025', solde:false, dateSolde:''},
+    {id:2, membre:'Fam. Lecoeur',  somme:60,  motif:'Absence médicale – Printemps 2025', solde:true, dateSolde:'15/09/2025'},
+  ],
+  n: [
+    {id:3, membre:'',  somme:0, motif:'', solde:false, dateSolde:''},
+  ],
+};
+
+function renderAvoirs() {
+  var el = document.getElementById('admin-avoirs-content'); if(!el) return;
+
+  function renderTable(items, year, nIdx) {
+    var addBtn = '<button onclick="ajouterAvoir('+nIdx+')" style="margin-top:10px;padding:9px 16px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un avoir</button>';
+    if (!items.length || (items.length===1&&!items[0].membre)) {
+      return '<div style="text-align:center;color:#9CA3AF;padding:20px 0;font-size:13px;">Aucun avoir</div>' + addBtn;
+    }
+    var rows = items.filter(function(a){return a.membre;}).map(function(a,i){
+      return '<tr style="border-bottom:1px solid #F3F4F6;">'
+        +'<td style="padding:10px 8px;font-size:13px;font-weight:600;">'+a.membre+'</td>'
+        +'<td style="padding:10px 8px;font-size:13px;text-align:right;font-weight:700;color:#1A6FD4;">'+a.somme+'€</td>'
+        +'<td style="padding:10px 8px;font-size:12px;color:#374151;">'+a.motif+'</td>'
+        +'<td style="padding:10px 8px;text-align:center;">'
+        +(a.solde
+          ? '<span style="background:#D1FAE5;color:#065F46;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;">✅ Soldé<br><span style="font-weight:400;">'+a.dateSolde+'</span></span>'
+          : '<button onclick="solderAvoir('+nIdx+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')
+        +'</td></tr>';
+    }).join('');
+    return '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="background:#F9FAFB;"><th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:left;">Membre</th>'
+      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:right;">Somme</th>'
+      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;">Motif</th>'
+      +'<th style="padding:8px;font-size:11px;text-transform:uppercase;color:#9CA3AF;text-align:center;">Soldé</th>'
+      +'</tr></thead><tbody>'+rows+'</tbody></table></div>' + addBtn;
+  }
+
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N−1 (2025)</div>'
+    + renderTable(AVOIRS.nMoins1, 'N-1', 0)
+    + '</div>'
+    + '<div class="wcard"><div class="wcard-title"><span>📂</span> N (2026)</div>'
+    + renderTable(AVOIRS.n, 'N', 1)
+    + '</div></div>';
+}
+
+function solderAvoir(tableIdx, rowIdx) {
+  var table = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
+  var real = table.filter(function(a){return a.membre;})[rowIdx];
+  if (!real) return;
+  real.solde = true;
+  real.dateSolde = new Date().toLocaleDateString('fr-FR');
+  toast('✅ Avoir soldé','ok');
+  renderAvoirs();
+}
+
+function ajouterAvoir(tableIdx) {
+  var membre = prompt('Nom de la famille :');
+  if (!membre) return;
+  var somme  = parseInt(prompt('Montant (€) :') || '0');
+  var motif  = prompt('Motif :') || '';
+  var table  = tableIdx === 0 ? AVOIRS.nMoins1 : AVOIRS.n;
+  table.push({id:Date.now(), membre:membre, somme:somme, motif:motif, solde:false, dateSolde:''});
+  toast('Avoir ajouté ✅','ok');
+  renderAvoirs();
+}
+
+var SUIVI_QUOTIDIEN = [
+  {date:'01/06/2025', ref:'Fam. Bousin',    cb:240,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'02/06/2025', ref:'Fam. Ammanet',   cb:0,    vir:120, chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'03/06/2025', ref:'Fam. Mouthet',   cb:0,    vir:0,   chq:120,chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'03/06/2025', ref:'Fam. de Robalis',cb:120,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
+  {date:'04/06/2025', ref:'Fam. Lecoeur',   cb:0,    vir:0,   chq:0,  chqvac:120,esp:0, avoir24:0,  remb25:0},
+];
+
+function renderSuiviQuotidien() {
+  var el = document.getElementById('suivi-quotidien-content'); if(!el) return;
+  var cols = ['CB/CD','Virement','Chèque','Chq Vac.','Espèces','Avoir 2024','Remb. 2025'];
+  var keys = ['cb','vir','chq','chqvac','esp','avoir24','remb25'];
+  var totals = {}; keys.forEach(function(k){totals[k]=0;});
+  SUIVI_QUOTIDIEN.forEach(function(r){keys.forEach(function(k){totals[k]+=(r[k]||0);});});
+  var grandTotal = keys.reduce(function(s,k){return s+totals[k];},0);
+
+  el.innerHTML = '<div style="overflow-x:auto;">'
+    +'<table style="width:100%;border-collapse:collapse;min-width:600px;font-size:12px;">'
+    +'<thead><tr style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;">'
+    +'<th style="padding:10px 8px;text-align:left;">Date</th>'
+    +'<th style="padding:10px 8px;text-align:left;">Ref.</th>'
+    +cols.map(function(col){return '<th style="padding:10px 6px;text-align:right;">'+col+'</th>';}).join('')
+    +'</tr></thead>'
+    +'<tbody>'
+    +SUIVI_QUOTIDIEN.map(function(r,i){
+      var bg = i%2===0 ? '#fff' : '#F9FAFB';
+      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'
+        +'<td style="padding:9px 8px;white-space:nowrap;color:#9CA3AF;">'+r.date+'</td>'
+        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;">'+r.ref+'</td>'
+        +keys.map(function(k){
+          return '<td style="padding:9px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(r[k]?'#1A6FD4':'#D1D5DB')+';">'+(r[k]?r[k]+'€':'-')+'</td>';
+        }).join('')
+        +'</tr>';
+    }).join('')
+    +'<tr style="background:linear-gradient(135deg,#1E1B4B18,#1A6FD418);font-weight:700;border-top:2px solid #1A6FD4;">'
+    +'<td style="padding:10px 8px;" colspan="2">TOTAL</td>'
+    +keys.map(function(k){return '<td style="padding:10px 6px;text-align:right;color:#1A6FD4;">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')
+    +'</tr>'
+    +'</tbody></table></div>'
+    +'<div style="text-align:right;margin-top:12px;font-size:16px;font-weight:800;color:#1E1B4B;">Total général : '+grandTotal+'€</div>';
+}
+
+
+function setComptaTab(tab) {
+  var bilan = document.getElementById('compta-bilan-content');
+  var suivi = document.getElementById('compta-suivi-content');
+  var btnB  = document.getElementById('ct-bilan');
+  var btnS  = document.getElementById('ct-suivi');
+  if (bilan) bilan.style.display = tab === 'bilan' ? 'block' : 'none';
+  if (suivi) suivi.style.display = tab === 'suivi' ? 'block' : 'none';
+  if (btnB) { btnB.classList.toggle('active', tab==='bilan'); btnB.classList.toggle('btn-ghost', tab!=='bilan'); }
+  if (btnS) { btnS.classList.toggle('active', tab==='suivi'); btnS.classList.toggle('btn-ghost', tab!=='suivi'); }
+  if (tab === 'suivi') renderSuiviQuotidien();
+  else renderComptabilite();
+}
 
 function ouvrirValidationResa(idx) {
   window._validatingResaIdx=idx;
@@ -3550,9 +3583,11 @@ function ouvrirValidationResa(idx) {
   document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el)el.checked=false;});
   var err=document.getElementById('err-mode-paiement'); if(err) err.textContent='';
 }
+
 function fermerValidationResa() {
   var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='none';
 }
+
 function confirmerValidationResa() {
   var checked=null;
   document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el&&el.checked) checked=el.value;});
@@ -3564,19 +3599,39 @@ function confirmerValidationResa() {
   renderAdminResas(); renderAdmin();
 }
 
+
+// ═══ NAVIGATION ═══
+function navigate(name){
+  if(name==='admin'&&!adminUnlocked){openAdminLogin();return;}
+  _navigateTo(name);
+}
+function _navigateTo(name){
+  document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
+  document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
+  var pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active');
+  var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
+  if(name==='reservation') renderReservation();
+  if(name==='mes-resa') renderMesResa();
+  if(name==='admin') renderAdmin();
+  window.scrollTo(0,0);
+}
+
 var _fns=[
-  'renderDashboard','setDashFreq','renderEquipe','ajouterAnimateur','editEquipe','delEquipe',
-  'filterMembreAlpha','renderMembres','editMembre','ajouterMembre','supprimerMembre',
-  'ouvrirMembreEdit','fermerMembreEdit','sauvegarderMembreEdit','supprimerEnfantEdit','ajouterEnfantEdit',
-  'ajouterEnfantMembre','supprimerEnfantMembre',
-  'setGPeriod','adminPrevWeek','adminNextWeek','renderAdminGroupes','imprimerGroupes',
-  'ouvrirFicheEnfantGroupe','ageAuClub','ageLabel',
+  'ouvrirValidationResa','fermerValidationResa','confirmerValidationResa',
+
+  'setAdminTab','renderAdmin','renderDashboard','buildDashFreq','setDashFreq',
+  'renderMembres','filterMembreAlpha','ouvrirMembreEdit','fermerMembreEdit','sauvegarderMembreEdit',
+  'supprimerEnfantEdit','ajouterEnfantEdit','ajouterMembreModal','supprimerMembre','ajouterEnfantMembre','supprimerEnfantMembre',
+  'setGPeriod','adminPrevWeek','adminNextWeek','renderAdminGroupes','ouvrirFicheEnfantGroupe','fermerFicheEnfant','imprimerGroupes',
+  'renderEquipe','ajouterAnimateur','editEquipe','delEquipe',
+  'renderFrequentation','setFreqPeriod',
+  'renderPaiements','setPaiPeriod','ouvrirFactureDepuisPaiement',
   'setResaAdminSaison','setResaFilter','renderAdminResas','modResa','delResa','relanceResa','nouvelleResaManuelle',
-  'setPaiPeriod','renderPaiements','setFreqPeriod','renderFrequentation',
-  'setComptaTab','renderComptabilite','renderSuiviQuotidien',
-  'renderFactureTab','genererFacture','chargerDepuisPaiement','ouvrirFactureDepuisPaiement','envoyerFactureMail',
+  'renderComptabilite','setComptaTab','renderSuiviQuotidien',
+  'renderFactureTab','genererFacture','envoyerFactureMail',
   'renderAvoirs','solderAvoir','ajouterAvoir','genererDocAvoir',
-  'globalSearch','ouvrirFicheEnfant','fermerFicheEnfant',
+  'globalSearch','ouvrirFicheEnfant',
+  'submitInscription','ageAuClub','ageLabel',
   'navigate','_navigateTo','openAdminLogin','closeAdminLogin','checkAdminCode',
   'onAdminCodeInput','toggleAdminEye','updateAlDots','setAdminTab','setGPeriod',
   'adminPrevWeek','adminNextWeek','toggleG','renderFiches','renderAdmin','renderAdminGroupes',
@@ -3605,79 +3660,6 @@ renderReservation();
 
 
 
-function renderDashboard(){
-  var el=document.getElementById('admin-dashboard-content');if(!el)return;
-  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
-  var allResas=[].concat(DEMO_RESAS,ST.reservations);
-  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='payé'?p.montant:0);},0);
-  var att=allResas.filter(function(r){return r.statut==='en attente';}).length;
-  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
-  var today=new Date();
-  var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-  var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  var dateStr=jours[today.getDay()]+' '+today.getDate()+' '+mois[today.getMonth()]+' '+today.getFullYear();
-
-  el.innerHTML=
-    // Bandeau bienvenue
-    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:20px 24px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">'
-    +'<div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(255,107,53,.2) 0%,transparent 70%);pointer-events:none;"></div>'
-    +'<div><div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">'+dateStr+'</div>'
-    +'<div style="font-size:20px;font-weight:800;color:#fff;font-family:\'Syne\',sans-serif;">Bonjour 👋 Dashboard</div>'
-    +'<div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px;">Club des Léopards · Saison 2026</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:28px;font-weight:800;color:#FF6B35;font-family:\'Syne\',sans-serif;">'+kids.length+'</div>'
-    +'<div style="font-size:11px;color:rgba(255,255,255,.4);">enfants inscrits</div></div>'
-    +'</div>'
-
-    // 4 KPI cards colorées
-    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">'
-    +[
-      {icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',sub:'membres actifs'},
-      {icon:'📅',val:allResas.length,lbl:'Réservations',color:'#F97316',bg:'#FFF7ED',sub:att+' en attente'},
-      {icon:'✅',val:val,lbl:'Validées',color:'#10B981',bg:'#F0FDF4',sub:'confirmations'},
-      {icon:'💰',val:enc+'€',lbl:'Encaissé',color:'#8B5CF6',bg:'#F5F3FF',sub:'paiements reçus'},
-    ].map(function(k){
-      return '<div onclick="setAdminTab(\''+( k.lbl==='Familles'?'membres':k.lbl==='Réservations'||k.lbl==='Validées'?'reservations':'paiements')+'\')" style="background:'+k.bg+';border-radius:14px;padding:16px;cursor:pointer;border:1.5px solid '+k.color+'18;transition:all .2s;position:relative;overflow:hidden;">'
-        +'<div style="position:absolute;top:-8px;right:-8px;width:60px;height:60px;background:'+k.color+'12;border-radius:50%;"></div>'
-        +'<div style="font-size:22px;margin-bottom:6px;">'+k.icon+'</div>'
-        +'<div style="font-size:24px;font-weight:800;color:'+k.color+';line-height:1;font-family:\'Syne\',sans-serif;">'+k.val+'</div>'
-        +'<div style="font-size:12px;font-weight:700;color:#374151;margin-top:3px;">'+k.lbl+'</div>'
-        +'<div style="font-size:10px;color:#9CA3AF;margin-top:1px;">'+k.sub+'</div>'
-        +'</div>';
-    }).join('')
-    +'</div>'
-
-    // Alertes si réservations en attente
-    +(att>0?'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">'
-      +'<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">⏳</span><div><div style="font-size:13px;font-weight:700;color:#92400E;">'+att+' réservation'+(att>1?'s':'')+' en attente</div><div style="font-size:11px;color:#B45309;">À valider rapidement</div></div></div>'
-      +'<button onclick="setAdminTab(\'reservations\')" style="padding:7px 14px;background:#F97316;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Voir →</button>'
-      +'</div>':'')
-
-    // Fréquentation par groupe d'âge
-    +'<div class="wcard"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>👶</span> Fréquentation par âge</div>'
-    +'<div style="display:flex;gap:4px;">'
-    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;padding:4px 10px;">Saison</button>'
-    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;padding:4px 10px;">Semaine</button>'
-    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;padding:4px 10px;">Jour</button>'
-    +'</div></div>'
-    +'<div id="dash-freq-content">'+buildDashFreq('saison',kids)+'</div>'
-    +'</div>'
-
-    // Activité récente
-    +'<div class="wcard"><div class="wcard-title"><span>🕐</span> Activité récente</div>'
-    +'<div style="display:flex;flex-direction:column;gap:0;">'
-    +[].concat(DEMO_RESAS,ST.reservations).slice(-4).reverse().map(function(r){
-      var isPending=r.statut==='en attente';
-      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F3F4F6;">'
-        +'<div style="width:34px;height:34px;border-radius:10px;background:'+(isPending?'#FFF7ED':'#F0FDF4')+';display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">'+(isPending?'📥':'✅')+'</div>'
-        +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1A1A2E;">'+r.nom+'</div>'
-        +'<div style="font-size:11px;color:#9CA3AF;">'+(r.saisonLabel||'')+(r.slot?' · '+r.slot.time:'')+'</div></div>'
-        +'<div style="font-size:11px;font-weight:700;color:'+(isPending?'#F97316':'#10B981')+';background:'+(isPending?'#FFF7ED':'#F0FDF4')+';padding:3px 8px;border-radius:20px;">'+(isPending?'En attente':'Validé')+'</div>'
-        +'</div>';
-    }).join('')
-    +(([].concat(DEMO_RESAS,ST.reservations)).length===0?'<div style="text-align:center;color:#9CA3AF;padding:20px;font-size:13px;">Aucune activité récente</div>':'')
-    +'</div></div>';
-}
 
 </script>
 </body>
