@@ -2254,6 +2254,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 // ═══ ÉTAT GLOBAL ═══
 var ST = {
   adminTab:'dashboard', gPeriod:'matin',
@@ -2544,21 +2546,19 @@ var SAISONS = {
   },
 }
 
-function goSaison(saison) {
-  currentSaison = saison;
-  _semData = [];
-  navigate('reservation');
-}
+
 
 function renderReservation() {
-  // Show season choice page (default view)
   var choix   = document.getElementById('rv-choix');
   var semaines = document.getElementById('rv-semaines');
+  var enfants  = document.getElementById('rv-enfants');
   if (choix)    choix.style.display = '';
   if (semaines) semaines.style.display = 'none';
+  if (enfants)  enfants.style.display = 'none';
   var t = document.getElementById('resa-season-title');
-  if (t) t.textContent = '🏖️ Réserver';
-  currentSaison = null;
+  if (t) t.textContent = 'Réserver';
+  currentSaison = null; _resaSaison = null;
+  _resaEnfantsSelectionnes = [];
   _semData = [];
   renderClientPanierBar();
 }
@@ -2572,19 +2572,9 @@ function resaBack() {
   }
 }
 
-function goSaison(saison) {
-  // Called from home page big-cards
-  currentSaison = saison;
-  _semData = [];
-  navigate('reservation');
-  // After navigate sets the page active, show detail
-  setTimeout(function(){ renderSaisonDetail(saison); }, 0);
-}
 
-function goSaisonDirect(saison) {
-  // Called from reservation choice page
-  renderSaisonDetail(saison);
-}
+
+
 
 
 
@@ -4242,15 +4232,8 @@ function _navigateTo(name){document.querySelectorAll('.page').forEach(function(p
 var TARIFS_BASE=[120,220,330,430],TARIFS_SEM2=[110,210,310,410],TARIFS_SEM3P=[100,200,300,400];
 function calculerPrixSemaine(nbEnf,idx){var i=Math.min(Math.max(nbEnf,1),4)-1;if(idx===0)return TARIFS_BASE[i];if(idx===1)return TARIFS_SEM2[i];return TARIFS_SEM3P[i];}
 var _resaSaison=null,_resaEnfantsSelectionnes=[];
-function goSaison(s){goSaisonDirect(s);}
-function goSaisonDirect(saison){
-  _resaSaison=saison;_resaEnfantsSelectionnes=[];
-  var s=SAISONS[saison];if(!s)return;
-  var t=document.getElementById('resa-season-title');if(t)t.textContent=s.icon+' '+s.label;
-  ['rv-choix','rv-semaines'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-  var enf=document.getElementById('rv-enfants');if(enf)enf.style.display='';
-  renderResaEnfants();
-}
+
+
 function renderResaEnfants(){
   var el=document.getElementById('rv-enfants-content');if(!el)return;
   var s=SAISONS[_resaSaison]||{};
@@ -4521,8 +4504,7 @@ window.toggleResaEnfant=toggleResaEnfant;
 window.mettreAJourTarifResa=mettreAJourTarifResa;
 window.retourChoixSaison=retourChoixSaison;
 window.retourSelectionEnfants=retourSelectionEnfants;
-window.goSaison=goSaison;
-window.goSaisonDirect=goSaisonDirect;
+
 
 
 window.envoyerReservation=envoyerReservation;
@@ -4780,11 +4762,45 @@ window.setDashAgeFilter=setDashAgeFilter;
 
 
 
+function goSaison(saison){
+  // Depuis l'accueil : naviguer puis afficher étape enfants
+  navigate('reservation');
+  setTimeout(function(){
+    var choix=document.getElementById('rv-choix');
+    var enfants=document.getElementById('rv-enfants');
+    var semaines=document.getElementById('rv-semaines');
+    if(choix) choix.style.display='none';
+    if(enfants) enfants.style.display='none';
+    if(semaines) semaines.style.display='none';
+    goSaisonDirect(saison);
+  }, 80);
+}
+
+function goSaisonDirect(saison){
+  _resaSaison=saison;
+  _resaEnfantsSelectionnes=[];
+  var s=SAISONS[saison];if(!s)return;
+  var t=document.getElementById('resa-season-title');
+  if(t) t.textContent=s.icon+' '+s.label;
+  var choix=document.getElementById('rv-choix');
+  var semaines=document.getElementById('rv-semaines');
+  var enfants=document.getElementById('rv-enfants');
+  if(choix) choix.style.display='none';
+  if(semaines) semaines.style.display='none';
+  if(enfants) enfants.style.display='';
+  renderResaEnfants();
+}
+
 window.genererFacturePDF=genererFacturePDF;
 
 
 
 
+
+
+
+window.goSaison=goSaison;
+window.goSaisonDirect=goSaisonDirect;
 
 </script>
 </body>
