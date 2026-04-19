@@ -363,9 +363,12 @@ textarea{resize:vertical;}
 .stat-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.8px;}
 
 .admin-tabs{
-  display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;
-  margin-bottom:18px;justify-content:center;flex-wrap:wrap;
+  display:flex;gap:4px;overflow-x:auto;padding-bottom:0;
+  margin-bottom:0;flex-wrap:nowrap;
+  width:100%;box-sizing:border-box;
+  scrollbar-width:none;-ms-overflow-style:none;
 }
+.admin-tabs::-webkit-scrollbar{display:none;}
 .admin-tab{
   flex-shrink:0;
   padding:8px 16px;border-radius:20px;
@@ -382,10 +385,11 @@ textarea{resize:vertical;}
   color:#fff;
 }
 .admin-tab.active{
-  background:linear-gradient(135deg,#FFB800,#FF8C00);
-  border-color:transparent;
+  background:#FFB800;
+  border-color:#FFB800;
   color:#fff;
-  box-shadow:0 3px 12px rgba(255,184,0,.45);
+  box-shadow:0 2px 10px rgba(255,184,0,.5);
+  font-weight:800;
 }
 
 .g-card{background:#fff;border-radius:18px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);}
@@ -1756,7 +1760,7 @@ textarea{resize:vertical;}
       <!-- KPI cards -->
       <div id="admin-stats" style="display:none;"></div>
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
-      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:14px 12px 10px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100%;box-sizing:border-box;margin-top:6px;">
+      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:18px 10px 12px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100vw;margin-left:calc(-50vw + 50%);box-sizing:border-box;margin-top:10px;justify-content:center;flex-wrap:wrap;">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
         <button class="admin-tab"        id="an-equipe"        onclick="setAdminTab('equipe')">👥 Équipe</button>
         <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
@@ -2199,6 +2203,9 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
+
 
 
 
@@ -4649,6 +4656,9 @@ window.toggleFacKid=toggleFacKid;
 window.toutDecocherFac=toutDecocherFac;
 window.genererFacturePDF=genererFacturePDF;
 window.envoyerFactureEmail=envoyerFactureEmail;
+
+
+
 
 
 
