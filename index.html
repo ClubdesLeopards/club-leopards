@@ -1319,6 +1319,11 @@ textarea{resize:vertical;}
         <button class="btn-coral" onclick="navigate('inscription')">📋 S'inscrire maintenant</button>
       </div>
       <div class="big-grid">
+        <div class="big-card bc-green" onclick="goSaison('printemps')">
+          <div class="bc-icon">🌸</div>
+          <div class="bc-title">Printemps</div>
+          <div class="bc-sub">5 avr. → 30 avr. 2027 · 120€ / sem.</div>
+        </div>
         <div class="big-card bc-coral" onclick="goSaison('ete')">
           <div class="bc-icon">☀️</div>
           <div class="bc-title">Été</div>
@@ -1328,11 +1333,6 @@ textarea{resize:vertical;}
           <div class="bc-icon">🍂</div>
           <div class="bc-title">Automne</div>
           <div class="bc-sub">19 oct. → 30 oct. · 120€ / sem.</div>
-        </div>
-        <div class="big-card bc-green" onclick="goSaison('printemps')">
-          <div class="bc-icon">🌸</div>
-          <div class="bc-title">Printemps</div>
-          <div class="bc-sub">5 avr. → 30 avr. 2027 · 120€ / sem.</div>
         </div>
         <div class="big-card bc-blue" onclick="navigate('mes-resa')">
           <div class="bc-icon">📅</div>
@@ -1583,6 +1583,30 @@ textarea{resize:vertical;}
           </div>
         </div>
 
+        <!-- Section enfants supplémentaires -->
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#EC4899,#DB2777);display:flex;align-items:center;justify-content:center;font-size:16px;">👶</div>
+              <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">Enfants supplémentaires</div>
+            </div>
+            <button onclick="inscAjouterEnfant()" style="padding:7px 14px;background:#EFF6FF;color:#0099E6;border:1px dashed #BFDBFE;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Ajouter</button>
+          </div>
+          <div id="insc-enfants-extra" style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:12px;color:#9CA3AF;font-style:italic;">L'enfant principal est saisi ci-dessus. Ajoutez ici les frères et sœurs si nécessaire.</div>
+          </div>
+        </div>
+
+        <!-- Section ajout enfants supplémentaires -->
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#0099E6,#00C4FF);display:flex;align-items:center;justify-content:center;font-size:16px;">👶</div>
+            <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">Autres enfants à inscrire</div>
+          </div>
+          <div id="extra-enfants-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <button onclick="ajouterEnfantInscription()" style="width:100%;padding:10px;background:#EFF6FF;color:#0099E6;border:1.5px dashed #BFDBFE;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un autre enfant</button>
+        </div>
+
         <button class="btn btn-blue btn-full" style="padding:15px;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#0077C8,#0099E6);" onclick="inscNext(1)">
           Suivant → Autorisations
         </button>
@@ -1757,7 +1781,7 @@ textarea{resize:vertical;}
         <button class="admin-tab"        id="an-reservations"  onclick="setAdminTab('reservations')">📅 Réservations</button>
         <button class="admin-tab"        id="an-paiements"     onclick="setAdminTab('paiements')">💳 Paiements</button>
         <button class="admin-tab"        id="an-frequentation" onclick="setAdminTab('frequentation')">📊 Fréquentation</button>
-        <button class="admin-tab"        id="an-comptabilite"  onclick="setAdminTab('comptabilite')">🧾 Compta</button>
+        <button class="admin-tab"        id="an-comptabilite"  onclick="setAdminTab('comptabilite')">🧾 Comptabilité</button>
         <button class="admin-tab"        id="an-facture"       onclick="setAdminTab('facture')">📄 Facture</button>
         <button class="admin-tab"        id="an-avoirs"        onclick="setAdminTab('avoirs')">🎫 Avoirs</button>
         <button class="admin-tab"        id="an-recherche"     onclick="setAdminTab('recherche')">🔍 Recherche</button>
@@ -1794,7 +1818,7 @@ textarea{resize:vertical;}
 
       <!-- RESERVATIONS -->
       <div id="at-reservations" style="display:none;">
-        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:center;">
           <button class="btn btn-sm active"   id="rs-admin-ete"       onclick="setResaAdminSaison('ete')">☀️ Été</button>
           <button class="btn btn-sm btn-ghost" id="rs-admin-printemps" onclick="setResaAdminSaison('printemps')">🌸 Printemps</button>
           <button class="btn btn-sm btn-ghost" id="rs-admin-automne"   onclick="setResaAdminSaison('automne')">🍂 Automne</button>
@@ -2058,7 +2082,12 @@ textarea{resize:vertical;}
       </div>
 
       <div id="at-recherche" style="display:none;">
-        <input id="global-search" placeholder="🔍 Nom, prénom, email, téléphone..." style="width:100%;padding:14px 16px;border-radius:16px;border:2px solid #E5E7EB;font-size:15px;font-family:inherit;margin-bottom:16px;box-sizing:border-box;" oninput="globalSearch()">
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <button onclick="setSearchFilter('tout')" id="sf-tout" class="btn btn-sm active" style="flex:1;">Tout</button>
+          <button onclick="setSearchFilter('membres')" id="sf-membres" class="btn btn-sm btn-ghost" style="flex:1;">👨‍👩‍👧 Membres</button>
+          <button onclick="setSearchFilter('enfants')" id="sf-enfants" class="btn btn-sm btn-ghost" style="flex:1;">🧒 Enfants</button>
+        </div>
+        <input id="global-search"
         <div id="search-results"></div>
       </div>
 
@@ -2066,161 +2095,64 @@ textarea{resize:vertical;}
   </div>
 
   <!-- ══════════ BOTTOM NAV ══════════ -->
-  <nav class="bottom-nav">
-    <button class="bnav-item active" id="bn-home" onclick="navigate('home')">
-      <div class="bnav-icon">🏠</div>
-      <div class="bnav-label">Accueil</div>
-    </button>
-    <button class="bnav-item" id="bn-inscription" onclick="navigate('inscription')">
-      <div class="bnav-icon">📋</div>
-      <div class="bnav-label">Inscription</div>
-    </button>
-    <button class="bnav-item" id="bn-reservation" onclick="navigate('reservation')">
-      <div class="bnav-icon">🏖️</div>
-      <div class="bnav-label">Réserver</div>
-    </button>
-    <button class="bnav-item" id="bn-mes-resa" onclick="navigate('mes-resa')">
-      <div class="bnav-icon">📅</div>
-      <div class="bnav-label">Mes résa</div>
-      <div class="bnav-dot" id="resa-dot"></div>
-    </button>
-    <button class="bnav-item" id="bn-admin" onclick="navigate('admin')">
-      <div class="bnav-icon">⚙️</div>
-      <div class="bnav-label">Admin</div>
-    </button>
-    <a class="desktop-brand" onclick="navigate('home')" style="cursor:pointer;">
-    <span class="desktop-brand-icon">🐆</span>
-    Club des Léopards
-  </a>
-</nav>
-
-<!-- ADMIN LOGIN OVERLAY -->
-<div class="admin-login-overlay" id="admin-login-overlay">
-  <div class="admin-login-card">
-    <div class="al-logo">🐆</div>
-    <div class="al-title">Espace Administrateur</div>
-    <div class="al-sub">Entrez le code d'accès pour continuer</div>
-    <div class="al-dots">
-      <div class="al-dot" id="al-d1"></div>
-      <div class="al-dot" id="al-d2"></div>
-      <div class="al-dot" id="al-d3"></div>
-      <div class="al-dot" id="al-d4"></div>
-    </div>
-    <div class="al-input-wrap">
-      <input class="al-input" id="al-code" type="password" maxlength="4"
-        placeholder="••••" oninput="onAdminCodeInput(this)" onkeydown="if(event.key==='Enter')checkAdminCode()">
-      <button class="al-eye" onclick="toggleAdminEye()" id="al-eye-btn">👁</button>
-    </div>
-    <div class="al-err" id="al-err"></div>
-    <button class="al-btn" onclick="checkAdminCode()">Accéder au Dashboard</button>
-    <button class="al-cancel" onclick="closeAdminLogin()">Annuler</button>
-  </div>
-</div>
-
-</div><!-- /app -->
-
-<!-- ══════════ BOOKING MODAL ══════════ -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-head">
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title" id="m-title">Réserver</div>
-      <div class="modal-sub" id="m-sub"></div>
+  <!-- ══ PAGE PROFIL ══ -->
+  <div class="page" id="page-profil">
+    <div style="background:linear-gradient(135deg,#0A0F1E 0%,#0D1B3E 50%,#0A2E5C 100%);padding:32px 20px 60px;position:relative;overflow:hidden;text-align:center;">
+      <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;background:rgba(255,107,53,.1);border-radius:50%;"></div>
+      <div style="font-size:40px;margin-bottom:10px;">🐆</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:4px;">Mon Profil</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);">Club des Léopards · Saison 2026</div>
     </div>
 
-    <div class="steps" id="m-steps">
-      <div class="step-c active" id="sd-1">1</div>
-      <div class="step-line" id="sl-1"></div>
-      <div class="step-c" id="sd-2">2</div>
-      <div class="step-line" id="sl-2"></div>
-      <div class="step-c" id="sd-3">3</div>
-      <div class="step-line" id="sl-3"></div>
-      <div class="step-c" id="sd-4">✓</div>
-    </div>
-
-    <div class="seance-pill" id="m-seance-pill">
-      <div><div class="sp-time" id="m-pill-time">09:30</div><div class="sp-date" id="m-pill-date">Mercredi 9 Juillet</div></div>
-      <div class="sp-price" id="m-pill-price">8€ / enfant</div>
-    </div>
-
-    <div class="modal-body">
-      <!-- Step 1 -->
-      <div id="ms-1">
-        <div style="font-size:13px;font-weight:700;color:#9CA3AF;margin-bottom:12px;">👤 Vos coordonnées</div>
-        <div class="fg"><label>Nom complet *</label><input id="m-nom" placeholder="Jean Dupont"></div>
-        <div class="form-row" style="margin-bottom:0;">
-          <div class="fg"><label>Email *</label><input id="m-email" type="email" placeholder="jean@email.com"></div>
-          <div class="fg"><label>Téléphone *</label><input id="m-tel" type="tel" placeholder="06 00 00 00"></div>
-        </div>
-        <button class="btn btn-blue btn-full" style="margin-top:16px;padding:14px;" onclick="mGoStep(2)">Suivant → Enfants</button>
-      </div>
-      <!-- Step 2 -->
-      <div id="ms-2" style="display:none;">
-        <div style="font-size:13px;font-weight:700;color:#9CA3AF;margin-bottom:10px;">🧒 Enfants participants</div>
-        <div class="chip-list" id="m-children-tags"></div>
-        <div class="add-row" style="margin-bottom:10px;">
-          <input id="mc-name" placeholder="Prénom de l'enfant" style="flex:1;">
-          <input id="mc-age" type="number" placeholder="Âge" style="width:70px;" min="3" max="13">
-          <button class="btn btn-blue btn-sm" onclick="addModalChild()">+</button>
-        </div>
-        <div class="price-box" id="price-box" style="display:none;">
-          <div class="pb-row"><span>Enfants</span><span id="pb-count">0</span></div>
-          <div class="pb-row"><span>Tarif unitaire</span><span id="pb-unit">8€</span></div>
-          <div class="pb-row total"><span>Total</span><span id="pb-total">0€</span></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button class="btn btn-ghost" onclick="mGoStep(1)">← Retour</button>
-          <button class="btn btn-blue" style="flex:1;" onclick="mGoStep(3)">Suivant → Paiement</button>
-        </div>
-      </div>
-      <!-- Step 3 -->
-      <div id="ms-3" style="display:none;">
-        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:14px;padding:14px;margin-bottom:14px;">
-          <div style="font-size:10px;font-weight:700;color:#D1D5DB;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Récapitulatif</div>
-          <div id="m-recap"></div>
-        </div>
-        <div style="font-size:10px;font-weight:700;color:#D1D5DB;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Mode de paiement</div>
-        <div class="pay-methods">
-          <div class="pm active" id="pm-card" onclick="selPayMethod('card')"><div class="pm-icon">💳</div><div class="pm-lbl">Carte bancaire</div></div>
-          <div class="pm" id="pm-paypal" onclick="selPayMethod('paypal')"><div class="pm-icon">🅿️</div><div class="pm-lbl">PayPal</div></div>
-        </div>
-        <div id="card-form">
-          <div class="fg" style="margin-bottom:10px;"><label>Numéro de carte *</label>
-            <div class="card-wrap"><input id="p-card" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"><span class="card-ico" id="card-ico">💳</span></div>
+    <div class="content" style="margin-top:-20px;position:relative;z-index:5;">
+      <div id="profil-non-connecte">
+        <!-- Connexion par code -->
+        <div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:18px;">🔑</div>
+            <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">Connexion par code</div>
           </div>
-          <div class="form-row" style="margin-bottom:10px;">
-            <div class="fg"><label>Expiration *</label><input id="p-exp" placeholder="MM/AA" maxlength="5" oninput="fmtExp(this)"></div>
-            <div class="fg"><label>CVV *</label><input id="p-cvv" placeholder="123" maxlength="3" type="password"></div>
+          <div style="font-size:13px;color:#6B7280;margin-bottom:12px;line-height:1.6;">Entrez votre code famille reçu par email lors de votre inscription.</div>
+          <input id="profil-code" placeholder="Code famille (ex: LEO-2026-XXXX)" maxlength="14"
+            style="width:100%;padding:12px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px;"
+            oninput="this.value=this.value.toUpperCase()">
+          <button onclick="connecterParCode()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">Se connecter</button>
+        </div>
+
+        <!-- Connexion par lien magique -->
+        <div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;font-size:18px;">✨</div>
+            <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:'Syne',sans-serif;">Lien magique</div>
           </div>
-          <div class="fg" style="margin-bottom:14px;"><input id="p-name" placeholder="NOM PRÉNOM (sur la carte)"></div>
+          <div style="font-size:13px;color:#6B7280;margin-bottom:12px;line-height:1.6;">Recevez un lien de connexion directement sur votre email.</div>
+          <input id="profil-magic-email" type="email" placeholder="votre@email.com"
+            style="width:100%;padding:12px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+          <button onclick="envoyerLienMagique()" style="width:100%;padding:12px;background:linear-gradient(135deg,#FF6B35,#FF8C00);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">✉️ Envoyer le lien</button>
         </div>
-        <div id="paypal-form" style="display:none;padding:16px;text-align:center;">
-          <div style="font-size:36px;margin-bottom:12px;">🅿️</div>
-          <p style="font-size:14px;color:#9CA3AF;">Redirection vers PayPal...</p>
-        </div>
-        <div class="secure">🔒 Paiement 100% sécurisé</div>
-        <button class="btn btn-amber btn-full" id="pay-btn" onclick="processPayment()" style="padding:15px;font-size:15px;margin-top:8px;">🔒 Payer <span id="pay-amt">0€</span></button>
       </div>
-      <div id="ms-4" style="display:none;padding:0 20px 20px;">
-        <div class="confirm-view">
-          <div class="conf-icon">🎉</div>
-          <div class="conf-title">Réservation confirmée !</div>
-          <div class="conf-sub">Confirmation envoyée à<br><strong id="conf-email"></strong></div>
-          <div class="conf-ref">🎫 Réf. <span id="conf-ref"></span></div>
-          <div class="sum-box" id="conf-summary"></div>
-        </div>
-        <button class="btn btn-blue btn-full" style="margin-top:16px;" onclick="closeModal()">Fermer</button>
+
+      <!-- Profil connecté -->
+      <div id="profil-connecte" style="display:none;">
+        <div id="profil-content"></div>
+        <button onclick="deconnecterProfil()" style="width:100%;padding:12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:8px;">Se déconnecter</button>
       </div>
     </div>
   </div>
-  <div class="toast" id="toast"></div>
 
-
-
-
-
+  <div 
 <script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3036,49 +2968,6 @@ function setGPeriod(p){
 }
 
 
-function renderAdminGroupes(){
-  var el=document.getElementById('groupes-grid');if(!el)return;
-  var wi=Math.max(0,Math.min(8,ST.adminWeekOffset||0));
-  var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
-  var awl=document.getElementById('admin-week-lbl');
-  if(awl)awl.textContent=wk.label+' · '+wk.debut+' → '+wk.fin;
-  var kids=allKids();
-  var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
-
-  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">'
-    +active.map(function(g){
-      var enf=kids.filter(function(k){
-        var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
-        return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
-      });
-      var pct=Math.round(enf.length/MAX_G*100);
-      var isFull=enf.length>=MAX_G;
-      return '<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid '+g.color+';">'
-        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-        +'<div style="display:flex;align-items:center;gap:8px;">'
-        +'<span style="font-size:22px;">'+g.emoji+'</span>'
-        +'<div><div style="font-size:14px;font-weight:700;color:#0A0F1E;font-family:\'Syne\',sans-serif;">'+g.name+'</div>'
-        +'<div style="font-size:11px;color:'+g.color+';font-weight:600;">'+g.ages+'</div></div></div>'
-        +'<div style="display:flex;align-items:center;gap:6px;">'
-        +(isFull?'<span style="background:#FEF2F2;color:#EF4444;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">COMPLET</span>':'')
-        +'<button onclick="imprimerGroupe(\''+g.id+'\')" title="Imprimer ce groupe" style="background:#F3F4F6;border:none;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:14px;">🖨️</button>'
-        +'</div></div>'
-        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
-        +'<div style="flex:1;background:#F3F4F6;border-radius:5px;height:6px;overflow:hidden;">'
-        +'<div style="background:'+g.color+';height:100%;width:'+pct+'%;transition:width .3s;"></div></div>'
-        +'<div style="font-size:12px;font-weight:700;color:'+g.color+';white-space:nowrap;">'+enf.length+'/'+MAX_G+'</div>'
-        +'</div>'
-        +(enf.length
-          ?'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
-            +enf.map(function(k){
-              var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
-              var hasMed=k.medical&&k.medical!=='RAS';
-              return '<span onclick="ouvrirFicheEnfantGroupe(\''+k.prenom+' '+k.nom+'\')" style="background:'+g.color+'12;color:'+g.color+';font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:3px;" title="'+ageLabel(age)+(hasMed?' ⚠️ '+k.medical:'')+'">'+(hasMed?'⚠️ ':'')+'<span>'+k.prenom+'</span><span style="font-size:9px;opacity:.7;">'+ageLabel(age)+'</span></span>';
-            }).join('')+'</div>'
-          :'<div style="text-align:center;color:#D1D5DB;font-size:12px;padding:10px 0;font-style:italic;">Aucun enfant inscrit</div>')
-        +'</div>';
-    }).join('')+'</div>';
-}
 
 function imprimerGroupe(gid){
   var wi=Math.max(0,Math.min(8,ST.adminWeekOffset||0));
@@ -3207,49 +3096,7 @@ var freqPeriod='semaine';
 
 
 function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
-function renderPaiements(){
-  var el=document.getElementById('paiements-content');if(!el)return;
-  var paies=[].concat(DEMO_PAYMENTS);
-  var payees=paies.filter(function(p){return p.statut==='payé'||p.statut==='paye';});
-  var attente=paies.filter(function(p){return p.statut!=='payé'&&p.statut!=='paye';});
-  var enc=payees.reduce(function(s,p){return s+p.montant;},0);
-  var att=attente.reduce(function(s,p){return s+p.montant;},0);
-  var total=enc+att;var pct=total>0?Math.round(enc/total*100):0;
-  var byMode={};payees.forEach(function(p){if(p.mode){if(!byMode[p.mode])byMode[p.mode]={cnt:0,amt:0};byMode[p.mode].cnt++;byMode[p.mode].amt+=p.montant;}});
-  var mC={'Virement':'#0099E6','Carte bleue':'#0077C8','Chèque':'#7C3AED','Chèques vacances':'#FF8C00','Espèces':'#FF6B35','Avoirs':'#EC4899','Offert':'#6B7280'};
-  var modes=Object.keys(byMode).sort(function(a,b){return byMode[b].amt-byMode[a].amt;});
-  var donut='',ang=-90,r=44,cx=60,cy=60,sw=18;
-  modes.forEach(function(m){var sw2=enc>0?byMode[m].amt/enc*360:0;if(sw2<2)return;var a1=ang*Math.PI/180,a2=(ang+sw2)*Math.PI/180;var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);donut+='<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' A'+r+','+r+' 0 '+(sw2>180?1:0)+',1 '+x2.toFixed(1)+','+y2.toFixed(1)+'" fill="none" stroke="'+(mC[m]||'#9CA3AF')+'" stroke-width="'+sw+'"/>';ang+=sw2;});
-  el.innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">'
-    +'<div style="background:#fff;border-radius:14px;padding:13px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #FF6B35;"><div style="font-size:20px;font-weight:800;color:#FF6B35;">'+attente.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;margin-top:2px;">En attente</div></div>'
-    +'<div style="background:#fff;border-radius:14px;padding:13px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #00C48C;"><div style="font-size:20px;font-weight:800;color:#00C48C;">'+payees.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;margin-top:2px;">Confirmées</div></div>'
-    +'<div style="background:#fff;border-radius:14px;padding:13px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #0099E6;"><div style="font-size:20px;font-weight:800;color:#0099E6;">'+paies.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;margin-top:2px;">Total</div></div>'
-    +'</div>'
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div style="display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center;">'
-    +'<div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">'
-    +'<div style="background:#DCFCE7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#166534;text-transform:uppercase;">Encaissé</div><div style="font-size:20px;font-weight:800;color:#166534;">'+enc+'€</div></div>'
-    +'<div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:20px;font-weight:800;color:#92400E;">'+att+'€</div></div>'
-    +'</div>'
-    +'<div style="background:#F3F4F6;border-radius:6px;height:7px;overflow:hidden;"><div style="background:linear-gradient(90deg,#0099E6,#00C48C);height:100%;width:'+pct+'%;transition:width .6s;"></div></div>'
-    +'<div style="font-size:10px;color:#9CA3AF;margin-top:3px;text-align:right;">'+pct+'% · '+total+'€ total</div></div>'
-    +'<svg width="110" height="110" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#F3F4F6" stroke-width="18"/>'+donut
-    +'<text x="60" y="54" text-anchor="middle" font-size="16" font-weight="800" fill="#0A0F2C">'+pct+'%</text>'
-    +'<text x="60" y="68" text-anchor="middle" font-size="9" fill="#9CA3AF">encaissé</text></svg></div>'
-    +(modes.length?'<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;border-top:1px solid #F3F4F6;padding-top:10px;">'
-    +modes.map(function(m){var p=enc>0?Math.round(byMode[m].amt/enc*100):0;return '<div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:'+(mC[m]||'#9CA3AF')+';flex-shrink:0;"></div><div style="flex:1;font-size:12px;font-weight:500;color:#374151;">'+m+'</div><div style="font-size:12px;font-weight:700;color:'+(mC[m]||'#9CA3AF')+';">'+byMode[m].amt+'€</div><div style="width:50px;"><div style="background:#F3F4F6;border-radius:3px;height:4px;"><div style="background:'+(mC[m]||'#9CA3AF')+';height:4px;border-radius:3px;width:'+p+'%;"></div></div></div></div>';}).join('')+'</div>':'')+'</div>'
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>⏳</span> En attente</div>'
-    +attente.map(function(p){return '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #F9FAFB;"><div style="width:34px;height:34px;border-radius:10px;background:'+p.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+p.initiale+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+p.nom+'</div><div style="font-size:11px;color:#9CA3AF;">'+p.formule+'</div></div><div style="font-size:14px;font-weight:800;color:#FF6B35;">'+p.montant+'€</div></div>';}).join('')+'</div>'
-    +'<div class="wcard"><div class="wcard-title"><span>✅</span> Encaissés</div>'
-    +payees.map(function(p){return '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #F9FAFB;"><div style="width:34px;height:34px;border-radius:10px;background:'+p.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+p.initiale+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F2C;">'+p.nom+'</div><div style="font-size:11px;color:#9CA3AF;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:800;color:#00C48C;">'+p.montant+'€</div><button onclick="ouvrirFactureDepuisPaiement(\''+p.nom.replace(/'/g,"\\'")+'\','+p.montant+',\''+p.mode+'\')" style="background:#EFF8FF;color:#0099E6;border:none;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:2px;">Facture</button></div></div>';}).join('')+'</div>';
-}
 
-// ═══════════════════════════════════════════════════════════
-// RÉSERVATIONS
-// ═══════════════════════════════════════════════════════════
-var resaAdminSaison='ete',resaFilter='all',_adminResas=[];
 function setResaAdminSaison(s){resaAdminSaison=s;['ete','automne','printemps'].forEach(function(x){var b=document.getElementById('rs-admin-'+x);if(b){b.classList.toggle('active',x===s);b.classList.toggle('btn-ghost',x!==s);}});renderAdminResas();}
 function setResaFilter(f){resaFilter=f;['all','attente','valide'].forEach(function(x){var b=document.getElementById('rf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});renderAdminResas();}
 function renderAdminResas(){
@@ -3510,85 +3357,7 @@ function _navigateTo(name){
 // (sera injecté dans var ST = {...})
 
 // ═══ DASHBOARD — 5 derniers membres + dernières réservations ═══
-function renderDashboard(){
-  var el=document.getElementById('admin-dashboard-content');if(!el)return;
-  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
-  var allResas=[].concat(DEMO_RESAS,ST.reservations);
-  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='payé'?p.montant:0);},0);
-  var att=allResas.filter(function(r){return r.statut==='en attente';}).length;
-  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
-  var today=new Date();
-  var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-  var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  var dateStr=jours[today.getDay()]+' '+today.getDate()+' '+mois[today.getMonth()]+' '+today.getFullYear();
 
-  // 5 derniers membres inscrits
-  var derniersMembres=fams.slice(-5).reverse();
-  var membresHTML=derniersMembres.length
-    ?derniersMembres.map(function(m){
-        var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
-        var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'];
-        var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
-        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6;">'
-          +'<div style="width:34px;height:34px;border-radius:10px;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
-          +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+m.prenom+' '+m.nom+'</div>'
-          +'<div style="font-size:11px;color:#9CA3AF;">'+(m.children||[]).length+' enfant'+(((m.children||[]).length)>1?'s':'')+' · '+( m.date||'')+'</div></div>'
-          +'<div style="font-size:11px;font-weight:700;color:'+col+';background:'+col+'10;padding:2px 8px;border-radius:20px;">Nouveau</div>'
-          +'</div>';
-      }).join('')
-    :'<div style="text-align:center;color:#9CA3AF;padding:16px;font-size:13px;">Aucun membre</div>';
-
-  el.innerHTML=
-    // Bandeau bienvenue
-    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;">'
-    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,107,53,.2) 0%,transparent 70%);"></div>'
-    +'<div><div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">'+dateStr+'</div>'
-    +'<div style="font-size:18px;font-weight:800;color:#fff;font-family:\'Syne\',sans-serif;">Bonjour 👋</div>'
-    +'<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Club des Léopards · Saison 2026</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:26px;font-weight:800;color:#FF6B35;font-family:\'Syne\',sans-serif;">'+kids.length+'</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.4);">enfants inscrits</div></div></div>'
-
-    // 4 KPIs colorées
-    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;">'
-    +[
-      {icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',tab:'membres'},
-      {icon:'📅',val:allResas.length,lbl:'Réservations',color:'#F97316',bg:'#FFF7ED',tab:'reservations'},
-      {icon:'✅',val:val,lbl:'Validées',color:'#10B981',bg:'#F0FDF4',tab:'reservations'},
-      {icon:'💰',val:enc+'€',lbl:'Encaissé',color:'#8B5CF6',bg:'#F5F3FF',tab:'paiements'},
-    ].map(function(k){
-      return '<div onclick="setAdminTab(\''+k.tab+'\')" style="background:'+k.bg+';border-radius:12px;padding:14px;cursor:pointer;border:1.5px solid '+k.color+'15;">'
-        +'<div style="font-size:20px;margin-bottom:4px;">'+k.icon+'</div>'
-        +'<div style="font-size:22px;font-weight:800;color:'+k.color+';line-height:1;font-family:\'Syne\',sans-serif;">'+k.val+'</div>'
-        +'<div style="font-size:11px;font-weight:600;color:#374151;margin-top:2px;">'+k.lbl+'</div>'
-        +'</div>';
-    }).join('')+'</div>'
-
-    // Alerte réservations en attente
-    +(att>0?'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">'
-      +'<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">⏳</span><div><div style="font-size:13px;font-weight:700;color:#92400E;">'+att+' en attente</div></div></div>'
-      +'<button onclick="setAdminTab(\'reservations\')" style="padding:6px 12px;background:#F97316;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">Voir →</button></div>':'')
-
-    // 5 derniers membres inscrits
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>👤</span> Derniers inscrits</div>'
-    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#0099E6;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button>'
-    +'</div>'+membresHTML+'</div>'
-
-    // Fréquentation par âge
-    +'<div class="wcard">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>👶</span> Répartition par âge</div>'
-    +'<div style="display:flex;gap:4px;">'
-    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;padding:3px 8px;">Saison</button>'
-    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;padding:3px 8px;">Semaine</button>'
-    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;padding:3px 8px;">Jour</button>'
-    +'</div></div>'
-    +'<div id="dash-freq-content">'+buildDashFreq('saison',kids)+'</div>'
-    +'</div>';
-}
-
-// ═══ ÉQUIPE — formulaire complet ═══
 function ajouterAnimateur(){
   var ov=document.getElementById('ajouter-animateur-overlay');
   if(ov){
@@ -3658,46 +3427,7 @@ function renderMembres(){
   el.innerHTML=bar+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">'+cards+'</div>';
 }
 
-function voirFicheMembre(i){
-  var all=[].concat(DEMO_FAMS,ST.members);
-  var m=all[i];if(!m)return;
-  window._editMembreIdx=i;
-  var ov=document.getElementById('membre-fiche-overlay');
-  var body=document.getElementById('membre-fiche-body');
-  if(!ov||!body)return;
-  var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899','#F59E0B'];
-  var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
-  var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
-  var kidsHTML=(m.children||[]).map(function(ch,ci){
-    var g=getGroupe(parseFloat(ch.age)||0);
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F3F4F6;">'
-      +'<div style="display:flex;align-items:center;gap:8px;">'
-      +'<span style="font-size:16px;">'+(g?g.emoji:'🧒')+'</span>'
-      +'<div><div style="font-size:13px;font-weight:600;">'+ch.name+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+ch.age+' ans'+(g?' · '+g.name:'')+'</div></div></div>'
-      +'<button onclick="supprimerEnfantMembre('+i+',\''+ch.name+'\')" style="background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px;">🗑️</button>'
-      +'</div>';
-  }).join('');
-  body.innerHTML='<div style="padding:20px;">'
-    +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">'
-    +'<div style="width:52px;height:52px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">'+ini+'</div>'
-    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;">'+m.prenom+' '+m.nom.toUpperCase()+'</div>'
-    +'<div style="font-size:12px;color:#9CA3AF;">Inscrit le '+(m.date||'—')+'</div></div></div>'
-    +'<div style="display:flex;flex-direction:column;gap:0;margin-bottom:14px;">'
-    +[['📧 Email',m.email||'—'],['📞 Téléphone',m.tel||'—'],['🏠 Adresse',m.adresse||'—'],['🆘 Urgence',m.urgence||'—'],['📸 Droit image',m.droit_image!==false?'Autorisé':'Non autorisé']].map(function(r){
-      return '<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #F3F4F6;font-size:13px;">'
-        +'<span style="color:#9CA3AF;min-width:110px;">'+r[0]+'</span>'
-        +'<span style="font-weight:600;color:#0A0F1E;flex:1;">'+r[1]+'</span></div>';
-    }).join('')+'</div>'
-    +'<div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Enfants</div>'
-    +(kidsHTML||'<div style="color:#9CA3AF;font-size:13px;padding:8px 0;">Aucun enfant enregistré</div>')
-    +'<div style="display:flex;gap:8px;margin-top:14px;">'
-    +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:10px;background:#EFF6FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
-    +'<button onclick="ajouterEnfantMembre('+i+')" style="flex:1;padding:10px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Enfant</button>'
-    +'<button onclick="supprimerMembre('+i+')" style="padding:10px 14px;background:#FEF2F2;color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-family:inherit;">🗑️</button>'
-    +'</div></div>';
-  ov.style.display='flex';
-}
+
 function fermerFicheMembre(){var ov=document.getElementById('membre-fiche-overlay');if(ov)ov.style.display='none';}
 
 // ═══ GROUPES — fix semaine ═══
@@ -3854,7 +3584,18 @@ function renderFrequentation(){
     +'</div>'
     +'<div class="wcard"><div class="wcard-title"><span>👶</span> Par groupe d\'âge</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">'
-    +TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;var pct=Math.round(cnt/totalK*100);return '<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:3px;"><span style="color:'+t.color+';">'+t.label+'</span><span>'+cnt+' ('+pct+'%)</span></div><div style="background:#F3F4F6;border-radius:5px;height:6px;"><div style="background:'+t.color+';height:6px;border-radius:5px;width:'+pct+'%;"></div></div></div>';}).join('')
+    +TR.map(function(t){
+      var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;
+      var pct=Math.round(cnt/totalK*100);
+      // Simulated weekly attendance = % of inscribed kids
+      var weekCnt=freqPeriod==='semaine'?Math.round(cnt*0.8):cnt;
+      var weekLabel=freqPeriod==='semaine'?' · '+weekCnt+' présents':'';
+      return '<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:3px;">'
+        +'<span style="color:'+t.color+';">'+t.label+'</span>'
+        +'<span style="color:#374151;">'+cnt+' inscrits'+weekLabel+'</span></div>'
+        +'<div style="background:#F3F4F6;border-radius:5px;height:7px;overflow:hidden;">'
+        +'<div style="background:'+t.color+';height:7px;border-radius:5px;width:'+pct+'%;"></div></div></div>';
+    }).join('')
     +'</div></div>';
 }
 
@@ -3907,47 +3648,740 @@ function solderAvoir(ti,ri){
 }
 
 // ═══ RECHERCHE — par prénom, nom, email, tel ═══
+
+function submitInscription() {
+  var ri=document.getElementById('i-accept-ri'), cgv=document.getElementById('i-accept-cgv'), resp=document.getElementById('i-accept-resp');
+  var ok=true;
+  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
+  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
+  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
+  if(!ok) return;
+  var nom=(document.getElementById('i-nom')||{value:''}).value;
+  var prenom=(document.getElementById('i-prenom')||{value:''}).value;
+  var dob=(document.getElementById('i-dob')||{value:''}).value;
+  ST.members.push({
+    prenom:(document.getElementById('i-resp-prenom')||{value:''}).value, nom:(document.getElementById('i-resp-nom')||{value:''}).value,
+    email:(document.getElementById('i-email')||{value:''}).value, tel:(document.getElementById('i-tel')||{value:''}).value,
+    adresse:(document.getElementById('i-adresse-vacances')||{value:''}).value, medical:(document.getElementById('i-medical')||{value:''}).value,
+    urgence:(document.getElementById('i-urgence')||{value:''}).value, droitImage:inscDroit,
+    children:[{name:nom+' '+prenom, age:parseAge(dob), dob:dob, periode:'matin'}],
+    date:new Date().toLocaleDateString('fr-FR'),
+  });
+  toast('✅ Inscription enregistrée !','ok');
+  inscDroit=null;
+  ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var ad=document.getElementById('i-age-display'); if(ad) ad.textContent='— ans';
+  if(ri)ri.checked=false; if(cgv)cgv.checked=false; if(resp)resp.checked=false;
+  inscGoStep(1);
+  setTimeout(function(){ navigate('home'); }, 1200);
+}
+
+function ouvrirValidationResa(idx) {
+  window._validatingResaIdx=idx;
+  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='flex';
+  var r=_adminResas[idx];
+  var info=document.getElementById('validation-resa-info');
+  if(info&&r) info.innerHTML='<strong>'+r.nom+'</strong><br>'+(r.slot?r.slot.time+' · '+r.slot.date:'');
+  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el)el.checked=false;});
+  var err=document.getElementById('err-mode-paiement'); if(err) err.textContent='';
+}
+function fermerValidationResa() {
+  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='none';
+}
+function confirmerValidationResa() {
+  var checked=null;
+  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el&&el.checked) checked=el.value;});
+  if(!checked){var e=document.getElementById('err-mode-paiement');if(e) e.textContent='Veuillez choisir un mode de paiement';return;}
+  var r=_adminResas[window._validatingResaIdx];
+  if(r){r.statut='validé';r.modePaiement=checked;r.paid=r.paid||120;}
+  fermerValidationResa();
+  toast('✅ Réservation validée · '+checked,'ok');
+  renderAdminResas(); renderAdmin();
+}
+function submitInscription() {
+  var ri=document.getElementById('i-accept-ri'), cgv=document.getElementById('i-accept-cgv'), resp=document.getElementById('i-accept-resp');
+  var ok=true;
+  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
+  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
+  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
+  if(!ok) return;
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var membreData={prenom:f('i-resp-prenom'),nom:f('i-resp-nom'),email:f('i-email'),tel:f('i-tel'),adresse_vacances:f('i-adresse-vacances'),adresse_fixe:f('i-adresse'),urgence_nom:f('i-urgence').split('·')[0].trim(),urgence_tel:f('i-urgence').split('·')[1]?f('i-urgence').split('·')[1].trim():'',droit_image:inscDroit==='oui'};
+  var enfantData={prenom:f('i-prenom'),nom:f('i-resp-nom'),date_naissance:f('i-dob'),age:parseAge(f('i-dob')),medical:f('i-medical')||'RAS'};
+  function resetForm(){
+    inscDroit=null;
+    ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    var ad=document.getElementById('i-age-display');if(ad)ad.textContent='— ans';
+    if(ri)ri.checked=false;if(cgv)cgv.checked=false;if(resp)resp.checked=false;
+    inscGoStep(1);
+  }
+  if(typeof SB!=='undefined'&&SB_ON){
+    toast('Enregistrement…');
+    SB.post('membres',membreData).then(function(membre){enfantData.membre_id=membre.id;return SB.post('enfants',enfantData);}).then(function(){return chargerDonnees();}).then(function(){toast('✅ Inscription enregistrée !','ok');resetForm();setTimeout(function(){navigate('home');},1200);}).catch(function(err){toast('❌ Erreur : '+err.message,'ko');});
+  } else {
+    ST.members.push({prenom:membreData.prenom,nom:membreData.nom,email:membreData.email,tel:membreData.tel,adresse:membreData.adresse_vacances,droit_image:membreData.droit_image,children:[{name:f('i-prenom')+' '+f('i-resp-nom'),age:parseAge(f('i-dob')),dob:f('i-dob'),medical:enfantData.medical}],date:new Date().toLocaleDateString('fr-FR')});
+    toast('✅ Inscription enregistrée !','ok');resetForm();setTimeout(function(){navigate('home');},1200);
+  }
+}
+
+function ouvrirSaisieQuotidienne(){
+  var ov=document.getElementById('saisie-quotidienne-overlay');
+  if(ov){var d=document.getElementById('sq-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);ov.style.display='flex';}
+}
+function fermerSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov)ov.style.display='none';}
+function confirmerSaisieQuotidienne(){
+  var f=function(id){return parseFloat((document.getElementById(id)||{value:'0'}).value)||0;};
+  var s=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var ref=s('sq-ref');if(!ref){toast('Référence requise','ko');return;}
+  var date=s('sq-date');var d=date?new Date(date).toLocaleDateString('fr-FR'):new Date().toLocaleDateString('fr-FR');
+  SUIVI_QUOTIDIEN.push({date:d,ref:ref,cb:f('sq-cb'),vir:f('sq-vir'),chq:f('sq-chq'),chqvac:f('sq-chqvac'),esp:f('sq-esp'),avoir24:f('sq-avoir24'),remb25:f('sq-remb25')});
+  fermerSaisieQuotidienne();toast('Entrée ajoutée ✅','ok');setComptaTab('suivi');
+}
+
+
+function showInfos(){
+  var p=document.getElementById('infos-panel');
+  if(!p)return;
+  var isOpen=p.style.display!=='none'&&p.style.display!=='';
+  p.style.display=isOpen?'none':'block';
+  var btn=null; // querySelector not available in all contexts
+  
+  
+}
+
+function inscAjouterEnfant(){
+  var cont=document.getElementById('insc-enfants-extra');if(!cont)return;
+  // skip placeholder removal
+  var idx=cont.querySelectorAll('.insc-extra-enfant').length;
+  var div=document.createElement('div');
+  div.className='insc-extra-enfant';
+  div.style.cssText='background:#F9FAFB;border-radius:12px;padding:12px;border:1.5px solid #E5E7EB;margin-bottom:8px;';
+  div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    +'<div style="font-size:12px;font-weight:700;color:#374151;">Enfant '+(idx+2)+'</div>'
+    +'<button type="button" class="insc-rm-btn" style="background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;">✕</button>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">'
+    +'<input placeholder="Nom" class="insc-extra-nom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+    +'<input placeholder="Prénom" class="insc-extra-prenom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    +'<input type="date" class="insc-extra-dob" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+    +'<input placeholder="Médical" class="insc-extra-med" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+    +'</div>';
+  div.querySelector('.insc-rm-btn').addEventListener('click',function(){div.remove();});
+  cont.appendChild(div);
+}
+
+function connexionParCode(){
+  var code=(document.getElementById('profil-code')||{value:''}).value.trim();
+  if(!code||code.length<4){toast('Code invalide','ko');return;}
+  // Demo: code 1234 = connexion
+  var fams=[].concat(DEMO_FAMS,ST.members);
+  var m=fams[0]; // Demo - first family
+  if(code==='1234'||code.length>=4){
+    profilUser=m;
+    afficherProfilConnecte();
+    toast('Connexion réussie ✅','ok');
+  } else {
+    toast('Code incorrect','ko');
+  }
+}
+
+function envoyerMagicLink(){
+  var email=(document.getElementById('profil-email-magic')||{value:''}).value.trim();
+  if(!email||!email.includes('@')){toast('Email invalide','ko');return;}
+  var subj=encodeURIComponent('Votre lien de connexion – Club des Léopards');
+  var body=encodeURIComponent('Bonjour,\n\nVoici votre lien magique pour accéder à votre espace : fncp-club.vercel.app\n\nVotre code de connexion : 1234\n\nCordialement,\nClub des Léopards');
+  window.location.href='mailto:'+email+'?subject='+subj+'&body='+body;
+  toast('Email envoyé ✅','ok');
+}
+
+function afficherProfilConnecte(){
+  var m=profilUser;if(!m)return;
+  document.getElementById('profil-login').style.display='none';
+  document.getElementById('profil-connected').style.display='block';
+  var card=document.getElementById('profil-info-card');if(!card)return;
+  var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+  var resas=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.nom==='Fam. '+m.nom||r.nom===m.prenom+' '+m.nom;});
+  card.innerHTML='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">'
+    +'<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">'+ini+'</div>'
+    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">'+m.prenom+' '+m.nom+'</div>'
+    +'<div style="font-size:12px;color:#9CA3AF;">'+m.email+'</div></div></div>'
+    +'<div style="display:flex;flex-direction:column;gap:0;">'
+    +[['📞',m.tel||'—'],['🏠',m.adresse||'—']].map(function(r){return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6;font-size:13px;"><span>'+r[0]+'</span><span style="color:#374151;">'+r[1]+'</span></div>';}).join('')
+    +'</div>'
+    +(m.children&&m.children.length?'<div style="margin-top:12px;"><div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Enfants inscrits</div>'
+      +m.children.map(function(ch){var g=getGroupe(parseFloat(ch.age)||0);return '<div style="background:#F9FAFB;border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">'+(g?g.emoji:'🧒')+'</span><div><div style="font-size:13px;font-weight:700;">'+ch.name+'</div><div style="font-size:11px;color:#9CA3AF;">'+ch.age+' ans'+(g?' · '+g.name:'')+'</div></div></div>';}).join('')
+      +'</div>':'')
+    +(resas.length?'<div style="margin-top:12px;"><div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Mes réservations</div>'
+      +resas.map(function(r){return '<div style="background:#F9FAFB;border-radius:10px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:13px;font-weight:600;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div><div style="font-size:11px;color:#9CA3AF;">'+(r.saisonLabel||'')+'</div></div><span style="font-size:11px;font-weight:700;color:'+(r.statut==='valide'||r.statut==='validé'?'#10B981':'#F97316')+';background:'+(r.statut==='valide'||r.statut==='validé'?'#D1FAE5':'#FEF3C7')+';padding:3px 8px;border-radius:20px;">'+(r.statut==='valide'||r.statut==='validé'?'✅ Validé':'⏳ Attente')+'</span></div>';}).join('')
+      +'</div>':'');
+}
+
+function deconnecterProfil(){
+  profilUser=null;
+  document.getElementById('profil-login').style.display='block';
+  document.getElementById('profil-connected').style.display='none';
+  var code=document.getElementById('profil-code');if(code)code.value='';
+  toast('Déconnecté','ok');
+}
+
+function ouvrirFicheEnfantDepuisMembre(mi,ci){
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[mi];if(!m)return;
+  var ch=(m.children||[])[ci];if(!ch)return;
+  var k={prenom:(ch.name||'').split(' ')[0],nom:(ch.name||'').split(' ').slice(1).join(' ')||m.nom,age:ch.age,parent:m.prenom+' '+m.nom,email:m.email||'',tel:m.tel||'',medical:ch.medical||'RAS',inscrit:m.date||''};
+  var g=getGroupe(parseFloat(ch.age)||0);
+  var ov=document.getElementById('fiche-enfant-overlay');
+  var body=document.getElementById('fiche-enfant-body');
+  if(!ov||!body)return;
+  body.innerHTML='<div style="padding:20px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'
+    +'<div style="width:48px;height:48px;border-radius:13px;background:'+(g?g.color:'#0099E6')+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">'+(k.prenom||'?').charAt(0)+'</div>'
+    +'<div><div style="font-size:17px;font-weight:800;color:#0A0F1E;">'+ch.name+'</div>'
+    +(g?'<div style="font-size:12px;color:'+g.color+';font-weight:700;">'+g.emoji+' '+g.name+'</div>':'')+'</div></div>'
+    +'<div style="display:flex;flex-direction:column;gap:0;">'
+    +[['Âge',k.age+' ans'],['Famille',k.parent],['Email',k.email||'—'],['Tél',k.tel||'—'],['Médical',k.medical]].map(function(r){
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F3F4F6;font-size:13px;">'
+        +'<span style="color:#9CA3AF;">'+r[0]+'</span>'
+        +'<span style="font-weight:600;color:'+(r[0]==='Médical'&&r[1]!=='RAS'?'#EF4444':'#0A0F1E')+';">'+r[1]+'</span></div>';
+    }).join('')
+    +'</div></div>';
+  ov.style.display='flex';ov.style.zIndex='700';
+}
+
+function ouvrirFormulaireAjoutEnfant(mi){
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[mi];if(!m)return;
+  window._ajoutEnfantMembreIdx=mi;
+  // Fermer fiche membre, ouvrir formulaire ajout
+  var ov=document.getElementById('ajout-enfant-overlay');
+  if(ov){
+    ['ae-prenom','ae-nom','ae-dob','ae-medical'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    var lbl=document.getElementById('ae-famille-lbl');
+    if(lbl)lbl.textContent='Ajouter un enfant – '+m.prenom+' '+m.nom;
+    ov.style.display='flex';
+  }
+}
+function fermerAjoutEnfant(){var ov=document.getElementById('ajout-enfant-overlay');if(ov)ov.style.display='none';}
+function confirmerAjoutEnfant(){
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var prenom=f('ae-prenom'),nom=f('ae-nom'),dob=f('ae-dob'),med=f('ae-medical')||'RAS';
+  if(!prenom){toast('Prénom requis','ko');return;}
+  var mi=window._ajoutEnfantMembreIdx||0;
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[mi];if(!m)return;
+  var age=dob?Math.floor((new Date()-new Date(dob))/(365.25*24*3600*1000)):0;
+  if(!m.children)m.children=[];
+  m.children.push({name:prenom+' '+nom,age:age,dob:dob,medical:med});
+  fermerAjoutEnfant();
+  toast('Enfant ajouté ✅','ok');
+  voirFicheMembre(mi);
+}
+
+// ═══ PROFIL ═══
+function connecterParCode(){
+  var code=(document.getElementById('profil-code')||{value:''}).value.trim();
+  if(!code){toast('Entrez votre code famille','ko');return;}
+  // Cherche dans les membres
+  var fams=[].concat(DEMO_FAMS,ST.members);
+  var m=fams.find(function(f){return('LEO-2026-'+(f.nom||'').substring(0,4).toUpperCase())===code||(f.code&&f.code===code);});
+  if(!m){toast('Code incorrect','ko');return;}
+  afficherProfilMembre(m);
+}
+function envoyerLienMagique(){
+  var email=(document.getElementById('profil-magic-email')||{value:''}).value.trim();
+  if(!email){toast('Entrez votre email','ko');return;}
+  var subj=encodeURIComponent('Votre lien de connexion – Club des Léopards');
+  var body=encodeURIComponent('Bonjour,\n\nCliquez sur ce lien pour accéder à votre profil :\nhttps://fncp-club.vercel.app?email='+email+'\n\nCordialement,\nClub des Léopards');
+  window.location.href='mailto:clubdesleopards@free.fr?subject='+subj+'&body='+body;
+  toast('Email envoyé ✅','ok');
+}
+function afficherProfilMembre(m){
+  var nonC=document.getElementById('profil-non-connecte');
+  var conn=document.getElementById('profil-connecte');
+  var cont=document.getElementById('profil-content');
+  if(!cont)return;
+  if(nonC)nonC.style.display='none';
+  if(conn)conn.style.display='block';
+  var kidsHTML=(m.children||[]).map(function(ch){
+    var g=getGroupe(parseFloat(ch.age)||0);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:'+(g?g.color+'10':'#F9FAFB')+';border-radius:10px;margin-bottom:6px;">'
+      +'<span style="font-size:20px;">'+(g?g.emoji:'🧒')+'</span>'
+      +'<div><div style="font-size:13px;font-weight:700;">'+ch.name+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+ch.age+' ans'+(g?' · '+g.name:'')+'</div></div></div>';
+  }).join('');
+  cont.innerHTML='<div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
+    +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:10px;font-family:\'Syne\',sans-serif;">'+m.prenom+' '+m.nom+'</div>'
+    +'<div style="font-size:12px;color:#6B7280;margin-bottom:4px;">📧 '+m.email+'</div>'
+    +'<div style="font-size:12px;color:#6B7280;">📞 '+m.tel+'</div>'
+    +'</div>'
+    +(kidsHTML?'<div style="background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);"><div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Mes enfants</div>'+kidsHTML+'</div>':'');
+}
+function deconnecterProfil(){
+  var nonC=document.getElementById('profil-non-connecte');
+  var conn=document.getElementById('profil-connecte');
+  if(nonC)nonC.style.display='block';
+  if(conn)conn.style.display='none';
+  var ci=document.getElementById('profil-code');if(ci)ci.value='';
+}
+
+// ═══ INSCRIPTION — enfants multiples ═══
+var _extraEnfants = [];
+function ajouterEnfantInscription(){
+  _extraEnfants=_extraEnfants||[];
+  var idx=_extraEnfants.length;
+  _extraEnfants.push({});
+  var cont=document.getElementById('extra-enfants-list');if(!cont)return;
+  var div=document.createElement('div');
+  div.style.cssText='background:#F9FAFB;border-radius:12px;padding:12px;position:relative;';
+  div.id='extra-enfant-'+idx;
+  div.innerHTML='<button onclick="supprimerEnfantInscription('+idx+')" style="position:absolute;top:8px;right:8px;background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;width:24px;height:24px;cursor:pointer;font-size:12px;line-height:24px;text-align:center;">✕</button>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom *</label>'
+    +'<input id="ei-prenom-'+idx+'" placeholder="Emma" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>'
+    +'<input id="ei-nom-'+idx+'" placeholder="DUPONT" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance</label>'
+    +'<input id="ei-dob-'+idx+'" type="date" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Médical</label>'
+    +'<input id="ei-medical-'+idx+'" placeholder="RAS" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'</div>';
+  cont.appendChild(div);
+}
+function supprimerEnfantInscription(idx){
+  var div=document.getElementById('extra-enfant-'+idx);if(div)div.remove();
+}
+
+// ═══ DASHBOARD — date grande + centrée, taux remplissage, réservations attente ═══
+function renderDashboard(){
+  var el=document.getElementById('admin-dashboard-content');if(!el)return;
+  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
+  var allResas=[].concat(DEMO_RESAS,ST.reservations);
+  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='payé'?p.montant:0);},0);
+  var attResas=allResas.filter(function(r){return r.statut==='en attente';});
+  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
+  var today=new Date();
+  var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var dateStr=jours[today.getDay()]+' '+today.getDate()+' '+mois[today.getMonth()]+' '+today.getFullYear();
+
+  // Taux remplissage par saison
+  var maxParSaison=GROUPES_MATIN.length*MAX_G+GROUPES_APREM.length*MAX_G;
+  var saisonsTaux=[
+    {label:'☀️ Été',color:'#FF6B35',inscrits:Math.min(kids.length,maxParSaison),max:maxParSaison},
+    {label:'🍂 Automne',color:'#F59E0B',inscrits:Math.round(kids.length*0.3),max:maxParSaison},
+    {label:'🌸 Printemps',color:'#10B981',inscrits:Math.round(kids.length*0.5),max:maxParSaison},
+  ];
+
+  // 5 derniers membres
+  var derniersMembres=fams.slice(-5).reverse();
+
+  el.innerHTML=
+    // Date grande et centrée
+    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:20px;margin-bottom:12px;text-align:center;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,107,53,.15) 0%,transparent 70%);"></div>'
+    +'<div style="font-size:13px;font-weight:700;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">'+jours[today.getDay()]+'</div>'
+    +'<div style="font-size:32px;font-weight:800;color:#fff;font-family:\'Syne\',sans-serif;line-height:1;">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
+    +'<div style="font-size:14px;color:rgba(255,255,255,.4);margin-top:4px;">'+today.getFullYear()+' · Club des Léopards</div>'
+    +'</div>'
+
+    // 4 KPIs
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;">'
+    +[
+      {icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',tab:'membres'},
+      {icon:'📅',val:allResas.length,lbl:'Réservations',color:'#F97316',bg:'#FFF7ED',tab:'reservations'},
+      {icon:'✅',val:val,lbl:'Validées',color:'#10B981',bg:'#F0FDF4',tab:'reservations'},
+      {icon:'💰',val:enc+'€',lbl:'Encaissé',color:'#8B5CF6',bg:'#F5F3FF',tab:'paiements'},
+    ].map(function(k){
+      return '<div onclick="setAdminTab(\''+k.tab+'\')" style="background:'+k.bg+';border-radius:12px;padding:14px;cursor:pointer;border:1.5px solid '+k.color+'15;">'
+        +'<div style="font-size:20px;margin-bottom:4px;">'+k.icon+'</div>'
+        +'<div style="font-size:22px;font-weight:800;color:'+k.color+';font-family:\'Syne\',sans-serif;line-height:1;">'+k.val+'</div>'
+        +'<div style="font-size:11px;font-weight:600;color:#374151;margin-top:2px;">'+k.lbl+'</div>'
+        +'</div>';
+    }).join('')+'</div>'
+
+    // Taux de remplissage par saison
+    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>📊</span> Taux de remplissage</div>'
+    +saisonsTaux.map(function(s){
+      var pct=maxParSaison>0?Math.min(100,Math.round(s.inscrits/s.max*100)):0;
+      return '<div style="margin-bottom:10px;">'
+        +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;">'
+        +'<span>'+s.label+'</span>'
+        +'<span style="color:'+s.color+';">'+s.inscrits+' / '+s.max+' · '+pct+'%</span></div>'
+        +'<div style="background:#F3F4F6;border-radius:6px;height:8px;overflow:hidden;">'
+        +'<div style="background:'+s.color+';height:100%;width:'+pct+'%;border-radius:6px;transition:width .5s;"></div></div></div>';
+    }).join('')+'</div>'
+
+    // Réservations en attente
+    +(attResas.length>0?'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>⏳</span> En attente de validation</div>'
+    +'<button onclick="setAdminTab(\'reservations\')" style="font-size:11px;color:#F97316;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
+    +attResas.slice(0,4).map(function(r){
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F9FAFB;">'
+        +'<div style="width:32px;height:32px;border-radius:9px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📥</div>'
+        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#0A0F1E;">'+r.nom+'</div>'
+        +'<div style="font-size:10px;color:#9CA3AF;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+(r.saisonLabel?' · '+r.saisonLabel:'')+'</div></div>'
+        +'<button onclick="ouvrirValidationResa(0)" style="padding:4px 10px;background:#10B981;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider</button>'
+        +'</div>';
+    }).join('')
+    +(attResas.length>4?'<div style="text-align:center;font-size:11px;color:#9CA3AF;padding-top:6px;">+ '+(attResas.length-4)+' autres</div>':'')
+    +'</div>':'')
+
+    // 5 derniers inscrits
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>👤</span> Derniers inscrits</div>'
+    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#0099E6;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
+    +(derniersMembres.length
+      ?derniersMembres.map(function(m){
+          var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+          var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'];
+          var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+          return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F9FAFB;">'
+            +'<div style="width:32px;height:32px;border-radius:9px;background:'+col+'18;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">'+ini+'</div>'
+            +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#0A0F1E;">'+m.prenom+' '+m.nom+'</div>'
+            +'<div style="font-size:10px;color:#9CA3AF;">'+(m.children||[]).length+' enfant'+(((m.children||[]).length)>1?'s':'')+'</div></div>'
+            +'</div>';
+        }).join('')
+      :'<div style="text-align:center;color:#9CA3AF;padding:12px;font-size:13px;">Aucun membre</div>')
+    +'</div>'
+
+    // Fréquentation par âge
+    +'<div class="wcard">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>👶</span> Répartition par âge</div>'
+    +'<div style="display:flex;gap:4px;">'
+    +'<button onclick="setDashFreq(\'saison\')" id="df-saison" class="btn btn-sm active" style="font-size:10px;padding:3px 8px;">Saison</button>'
+    +'<button onclick="setDashFreq(\'semaine\')" id="df-semaine" class="btn btn-sm btn-ghost" style="font-size:10px;padding:3px 8px;">Semaine</button>'
+    +'<button onclick="setDashFreq(\'jour\')" id="df-jour" class="btn btn-sm btn-ghost" style="font-size:10px;padding:3px 8px;">Jour</button>'
+    +'</div></div>'
+    +'<div id="dash-freq-content">'+buildDashFreq('saison',kids)+'</div>'
+    +'</div>';
+}
+
+// ═══ MEMBRES — enfant cliquable dans fiche + modale modifier devant + formulaire enfant ═══
+function voirFicheMembre(i){
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[i];if(!m)return;
+  window._editMembreIdx=i;
+  var ov=document.getElementById('membre-fiche-overlay');
+  var body=document.getElementById('membre-fiche-body');
+  if(!ov||!body)return;
+  var colors=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899','#F59E0B'];
+  var col=colors[(m.nom||'').charCodeAt(0)%colors.length];
+  var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+  var kidsHTML=(m.children||[]).map(function(ch,ci){
+    var g=getGroupe(parseFloat(ch.age)||0);
+    return '<div onclick="voirFicheEnfantDepuisMembre('+i+','+ci+')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:10px;background:'+(g?g.color+'10':'#F9FAFB')+';margin-bottom:6px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background=\''+(g?g.color+'20':'#F3F4F6')+'\'" onmouseout="this.style.background=\''+(g?g.color+'10':'#F9FAFB')+'\'">'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+      +'<span style="font-size:18px;">'+(g?g.emoji:'🧒')+'</span>'
+      +'<div><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+ch.name+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+ch.age+' ans'+(g?' · '+g.name:'')+'</div></div></div>'
+      +'<span style="font-size:12px;color:#9CA3AF;">›</span></div>';
+  }).join('');
+  body.innerHTML='<div style="padding:18px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'
+    +'<div style="width:48px;height:48px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;">'+ini+'</div>'
+    +'<div><div style="font-size:16px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;">'+m.prenom+' '+m.nom.toUpperCase()+'</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">Inscrit le '+(m.date||'—')+'</div></div></div>'
+    +'<div style="display:flex;flex-direction:column;margin-bottom:14px;">'
+    +[['📧',m.email||'—'],['📞',m.tel||'—'],['🏠',m.adresse||'—'],['🆘',m.urgence||'—']].map(function(r){
+      return '<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #F3F4F6;font-size:13px;">'
+        +'<span style="width:20px;text-align:center;">'+r[0]+'</span>'
+        +'<span style="font-weight:600;color:#0A0F1E;flex:1;">'+r[1]+'</span></div>';
+    }).join('')+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Enfants — cliquer pour voir la fiche</div>'
+    +(kidsHTML||'<div style="color:#9CA3AF;font-size:13px;padding:8px 0;">Aucun enfant</div>')
+    +'<div style="display:flex;gap:8px;margin-top:12px;">'
+    +'<button onclick="ouvrirMembreEdit('+i+')" style="flex:1;padding:9px;background:#EFF6FF;color:#0099E6;border:1px solid #BFDBFE;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">✏️ Modifier</button>'
+    +'<button onclick="ouvrirAjoutEnfantMembre('+i+')" style="flex:1;padding:9px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Enfant</button>'
+    +'<button onclick="supprimerMembre('+i+')" style="padding:9px 12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;">🗑️</button>'
+    +'</div></div>';
+  ov.style.display='flex';
+  ov.style.zIndex='600';
+}
+
+function voirFicheEnfantDepuisMembre(mi,ci){
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[mi];if(!m)return;
+  var ch=m.children&&m.children[ci];if(!ch)return;
+  var g=getGroupe(parseFloat(ch.age)||0);
+  var ov=document.getElementById('fiche-enfant-overlay');
+  var body=document.getElementById('fiche-enfant-body');
+  if(!ov||!body)return;
+  body.innerHTML='<div style="padding:18px;">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'
+    +'<div style="width:44px;height:44px;border-radius:12px;background:'+(g?g.color:'#0099E6')+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;">'+(ch.name||'?').charAt(0)+'</div>'
+    +'<div><div style="font-size:15px;font-weight:800;color:#0A0F1E;">'+ch.name+'</div>'
+    +(g?'<div style="font-size:12px;color:'+g.color+';font-weight:700;">'+g.emoji+' '+g.name+' · '+g.ages+'</div>':'')+'</div></div>'
+    +'<div style="display:flex;flex-direction:column;">'
+    +[['Âge',ch.age+' ans'],['Famille',m.prenom+' '+m.nom],['Email',m.email||'—'],['Tél',m.tel||'—'],['Médical',(ch.medical||'RAS')]].map(function(r){
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F3F4F6;font-size:13px;">'
+        +'<span style="color:#9CA3AF;">'+r[0]+'</span>'
+        +'<span style="font-weight:600;color:'+(r[0]==='Médical'&&r[1]!=='RAS'?'#EF4444':'#0A0F1E')+';">'+r[1]+'</span></div>';
+    }).join('')
+    +'</div>'
+    +'<button onclick="fermerFicheEnfant()" style="width:100%;padding:10px;background:#F3F4F6;color:#374151;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:12px;">Fermer</button>'
+    +'</div>';
+  ov.style.display='flex';
+  ov.style.zIndex='700';
+}
+
+function ouvrirAjoutEnfantMembre(i){
+  var ov=document.getElementById('ajout-enfant-membre-overlay');
+  if(!ov){
+    // Create on the fly
+    var div=document.createElement('div');
+    div.id='ajout-enfant-membre-overlay';
+    div.style.cssText='display:flex;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:650;align-items:center;justify-content:center;';
+    div.innerHTML='<div style="background:#fff;border-radius:18px;max-width:400px;width:92%;">'
+      +'<div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;">'
+      +'<div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:\'Syne\',sans-serif;">👶 Ajouter un enfant</div>'
+      +'<button onclick="document.getElementById(\'ajout-enfant-membre-overlay\').style.display=\'none\'" style="background:#F3F4F6;border:none;border-radius:7px;width:28px;height:28px;cursor:pointer;">✕</button></div>'
+      +'<div style="padding:18px;display:flex;flex-direction:column;gap:10px;">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom *</label>'
+      +'<input id="ae-prenom" placeholder="Emma" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>'
+      +'<input id="ae-nom" placeholder="DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance</label>'
+      +'<input id="ae-dob" type="date" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Âge</label>'
+      +'<input id="ae-age" type="number" min="0" max="13" placeholder="7" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+      +'</div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Allergies / Médical</label>'
+      +'<input id="ae-medical" placeholder="RAS" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+      +'<button id="ae-confirm-btn" style="padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">✅ Ajouter l\'enfant</button>'
+      +'</div></div>';
+    document.body.appendChild(div);
+    ov=div;
+  }
+  ov.style.display='flex';
+  window._ajoutEnfantIdx=i;
+  var btn=document.getElementById('ae-confirm-btn');
+  if(btn) btn.onclick=function(){confirmerAjoutEnfantMembre();};
+}
+
+function confirmerAjoutEnfantMembre(){
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var prenom=f('ae-prenom');if(!prenom){toast('Prénom requis','ko');return;}
+  var nom=f('ae-nom');
+  var age=parseInt(f('ae-age')||'0');
+  var dob=f('ae-dob');
+  var medical=f('ae-medical')||'RAS';
+  var i=window._ajoutEnfantIdx||0;
+  var all=[].concat(DEMO_FAMS,ST.members);
+  var m=all[i];if(!m)return;
+  if(!m.children)m.children=[];
+  m.children.push({name:prenom+' '+nom,age:age,dob:dob,medical:medical});
+  var ov=document.getElementById('ajout-enfant-membre-overlay');
+  if(ov)ov.style.display='none';
+  toast('Enfant ajouté ✅','ok');
+  voirFicheMembre(i);
+  renderMembres();
+}
+
+// Fix ouvrirMembreEdit z-index
+function ouvrirMembreEditFix(i){
+  ouvrirMembreEdit(i);
+  var ov=document.getElementById('membre-edit-overlay');
+  if(ov){ov.style.zIndex='650';fermerFicheMembre();}
+}
+
+// ═══ GROUPES — afficher prénom ET nom ═══
+function renderAdminGroupes(){
+  var el=document.getElementById('groupes-grid');if(!el)return;
+  if(!ST.adminWeekOffset)ST.adminWeekOffset=0;
+  var wi=Math.max(0,Math.min((SAISONS.ete.semaines.length||9)-1,ST.adminWeekOffset));
+  var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
+  var awl=document.getElementById('admin-week-lbl');
+  if(awl)awl.textContent=wk.label+' · '+wk.debut+' → '+wk.fin;
+  var kids=allKids();
+  var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
+
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">'
+    +active.map(function(g){
+      var enf=kids.filter(function(k){
+        var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+        return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;
+      });
+      var pct=Math.round(enf.length/MAX_G*100);
+      var isFull=enf.length>=MAX_G;
+      return '<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid '+g.color+';">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+        +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<span style="font-size:22px;">'+g.emoji+'</span>'
+        +'<div><div style="font-size:14px;font-weight:700;color:#0A0F1E;font-family:\'Syne\',sans-serif;">'+g.name+'</div>'
+        +'<div style="font-size:11px;color:'+g.color+';font-weight:600;">'+g.ages+'</div></div></div>'
+        +'<div style="display:flex;align-items:center;gap:6px;">'
+        +(isFull?'<span style="background:#FEF2F2;color:#EF4444;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">COMPLET</span>':'')
+        +'<button onclick="imprimerGroupe(\''+g.id+'\')" style="background:#F3F4F6;border:none;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:14px;">🖨️</button>'
+        +'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+        +'<div style="flex:1;background:#F3F4F6;border-radius:5px;height:5px;overflow:hidden;">'
+        +'<div style="background:'+g.color+';height:100%;width:'+pct+'%;"></div></div>'
+        +'<div style="font-size:11px;font-weight:700;color:'+g.color+';">'+enf.length+'/'+MAX_G+'</div></div>'
+        +(enf.length
+          ?'<div style="display:flex;flex-wrap:wrap;gap:4px;">'
+            +enf.map(function(k){
+              var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+              var hasMed=k.medical&&k.medical!=='RAS';
+              // Afficher PRÉNOM + NOM
+              var fullName=k.prenom+' '+k.nom;
+              return '<span onclick="ouvrirFicheEnfantGroupe(\''+k.prenom+' '+k.nom+'\')" style="background:'+g.color+'12;color:'+g.color+';font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;cursor:pointer;" title="'+ageLabel(age)+(hasMed?' ⚠️ '+k.medical:'')+'">'+fullName+(hasMed?' ⚠️':'')+'</span>';
+            }).join('')+'</div>'
+          :'<div style="text-align:center;color:#D1D5DB;font-size:12px;padding:8px 0;font-style:italic;">Aucun enfant</div>')
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+// ═══ PAIEMENTS — graphique répartition ═══
+function renderPaiements(){
+  var el=document.getElementById('paiements-content');if(!el)return;
+  var paies=[].concat(DEMO_PAYMENTS);
+  var payees=paies.filter(function(p){return p.statut==='paye'||p.statut==='payé';});
+  var attente=paies.filter(function(p){return p.statut!=='paye'&&p.statut!=='payé';});
+  var enc=payees.reduce(function(s,p){return s+p.montant;},0);
+  var att=attente.reduce(function(s,p){return s+p.montant;},0);
+  var total=enc+att;
+  var byMode={};
+  payees.forEach(function(p){if(p.mode){byMode[p.mode]=(byMode[p.mode]||{cnt:0,amt:0});byMode[p.mode].cnt++;byMode[p.mode].amt+=p.montant;}});
+  var mC={'Virement':'#10B981','Carte bleue':'#3B82F6','Chèque':'#8B5CF6','Chèques vacances':'#F97316','Espèces':'#E9B10D','Avoirs':'#EC4899','Offert':'#6B7280','Compte fin de saison':'#6366F1'};
+  var modes=Object.keys(byMode).sort(function(a,b){return byMode[b].amt-byMode[a].amt;});
+
+  // Donut SVG
+  var donut='',ang=-90,r=44,cx=60,cy=60;
+  modes.forEach(function(m){
+    var sw2=enc>0?byMode[m].amt/enc*360:0;if(sw2<2)return;
+    var a1=ang*Math.PI/180,a2=(ang+sw2)*Math.PI/180;
+    var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    donut+='<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' A'+r+','+r+' 0 '+(sw2>180?1:0)+',1 '+x2.toFixed(1)+','+y2.toFixed(1)+'" fill="none" stroke="'+(mC[m]||'#9CA3AF')+'" stroke-width="18" stroke-linecap="round"/>';
+    ang+=sw2;
+  });
+
+  // Barre de progression multicolore
+  var barParts=modes.map(function(m){
+    var pct=enc>0?Math.round(byMode[m].amt/enc*100):0;
+    return '<div style="flex:'+pct+';background:'+(mC[m]||'#9CA3AF')+';height:100%;min-width:'+(byMode[m].cnt?'4px':'0')+';"></div>';
+  }).join('');
+
+  el.innerHTML=
+    // KPI cards
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">'
+    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #F97316;">'
+    +'<div style="font-size:20px;font-weight:800;color:#F97316;">'+attente.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;">En attente</div></div>'
+    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #10B981;">'
+    +'<div style="font-size:20px;font-weight:800;color:#10B981;">'+payees.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;">Confirmées</div></div>'
+    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #0099E6;">'
+    +'<div style="font-size:20px;font-weight:800;color:#0099E6;">'+paies.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;">Total</div></div>'
+    +'</div>'
+
+    // Graphique donut + barre
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div class="wcard-title"><span>📊</span> Répartition des paiements</div>'
+    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">'
+    +'<svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#F3F4F6" stroke-width="18"/>'+donut
+    +'<text x="60" y="55" text-anchor="middle" font-size="16" font-weight="800" fill="#0A0F1E">'+(total>0?Math.round(enc/total*100):0)+'%</text>'
+    +'<text x="60" y="70" text-anchor="middle" font-size="10" fill="#9CA3AF">encaissé</text></svg>'
+    +'<div style="flex:1;display:flex;flex-direction:column;gap:6px;">'
+    +modes.map(function(m){
+      var pct=enc>0?Math.round(byMode[m].amt/enc*100):0;
+      return '<div style="display:flex;align-items:center;gap:6px;">'
+        +'<div style="width:8px;height:8px;border-radius:50%;background:'+(mC[m]||'#9CA3AF')+';flex-shrink:0;"></div>'
+        +'<div style="flex:1;font-size:11px;color:#374151;">'+m+'</div>'
+        +'<div style="font-size:12px;font-weight:700;color:'+(mC[m]||'#9CA3AF')+';">'+byMode[m].amt+'€</div>'
+        +'<div style="font-size:10px;color:#9CA3AF;">'+pct+'%</div></div>';
+    }).join('')+'</div></div>'
+    +'<div style="height:8px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:4px;">'+barParts+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+    +modes.map(function(m){return '<div style="font-size:10px;color:#9CA3AF;">■ <span style="color:'+(mC[m]||'#9CA3AF')+';">'+m+'</span> '+byMode[m].cnt+'</div>';}).join('')
+    +'</div></div>'
+
+    // Filtres
+    +'<div style="display:flex;gap:8px;margin-bottom:10px;">'
+    +'<button onclick="setPaiFilter(\'toutes\')" id="pf-toutes" class="btn btn-sm active" style="flex:1;">Toutes</button>'
+    +'<button onclick="setPaiFilter(\'attente\')" id="pf-attente" class="btn btn-sm btn-ghost" style="flex:1;">⏳ Attente</button>'
+    +'<button onclick="setPaiFilter(\'payees\')" id="pf-payees" class="btn btn-sm btn-ghost" style="flex:1;">✅ Payées</button>'
+    +'</div>'
+
+    // Liste
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;">'
+    +paies.map(function(p){
+      var isPaye=p.statut==='paye'||p.statut==='payé';
+      var bc=isPaye?'#10B981':'#F97316';
+      return '<div style="background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:3px solid '+bc+';">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+        +'<div style="font-size:12px;font-weight:800;color:#0A0F1E;">'+p.nom+'</div>'
+        +'<div style="font-size:14px;font-weight:800;color:'+bc+';">'+p.montant+'€</div></div>'
+        +'<div style="font-size:11px;color:#9CA3AF;margin-bottom:6px;">'+p.formule+(p.mode?' · '+p.mode:'')+'</div>'
+        +'<span style="background:'+(isPaye?'#D1FAE5':'#FEF3C7')+';color:'+(isPaye?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">'+(isPaye?'✅ Payé':'⏳ En attente')+'</span>'
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+// ═══ RECHERCHE — critères + fiches cliquables ═══
+var _searchFilter='tout';
+var _searchResults=[];
+function setSearchFilter(f){
+  _searchFilter=f;
+  ['tout','membres','enfants'].forEach(function(x){
+    var b=document.getElementById('sf-'+x);
+    if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}
+  });
+  globalSearch();
+}
 function globalSearch(){
   var el=document.getElementById('search-results');if(!el)return;
   var q=(document.getElementById('global-search')||{value:''}).value.trim().toLowerCase();
   if(!q||q.length<2){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:30px;font-size:14px;">Saisissez au moins 2 caractères</div>';return;}
-
   var results=[];
-  allKids().forEach(function(k){
-    var txt=(k.prenom+' '+k.nom+' '+k.parent+' '+(k.email||'')+' '+(k.tel||'')+' '+(k.medical||'')).toLowerCase();
-    if(txt.indexOf(q)>=0)results.push({type:'enfant',icon:'🧒',title:k.prenom+' '+k.nom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#6366F1',kid:k});
-  });
-  [].concat(DEMO_FAMS,ST.members).forEach(function(m){
-    var txt=(m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')+' '+(m.adresse||'')).toLowerCase();
-    if(txt.indexOf(q)>=0)results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:(m.email||'')+(m.tel?' · '+m.tel:''),color:'#F97316'});
-  });
-  [].concat(DEMO_RESAS,ST.reservations).forEach(function(r){
-    var txt=(r.nom+' '+(r.email||'')+' '+(r.saisonLabel||'')).toLowerCase();
-    if(txt.indexOf(q)>=0)results.push({type:'résa',icon:'📅',title:r.nom,sub:(r.slot?r.slot.time+' · '+r.slot.date:'')+' · '+(r.saisonLabel||''),color:'#10B981'});
-  });
-  DEMO_PAYMENTS.forEach(function(p){
-    var txt=(p.nom+' '+(p.formule||'')+' '+(p.mode||'')).toLowerCase();
-    if(txt.indexOf(q)>=0)results.push({type:'paiement',icon:'💰',title:p.nom,sub:p.formule+' · '+p.montant+'€'+(p.mode?' · '+p.mode:''),color:'#8B5CF6'});
-  });
-
+  // Enfants
+  if(_searchFilter==='tout'||_searchFilter==='enfants'){
+    allKids().forEach(function(k){
+      var txt=(k.prenom+' '+k.nom+' '+k.parent+' '+(k.email||'')+' '+(k.tel||'')+' '+(k.medical||'')).toLowerCase();
+      if(txt.indexOf(q)>=0)results.push({type:'enfant',icon:'🧒',title:k.prenom+' '+k.nom,sub:k.parent+' · '+k.age+' ans'+(k.medical&&k.medical!=='RAS'?' · ⚠️ '+k.medical:''),color:'#6366F1',kid:k});
+    });
+  }
+  // Membres / familles
+  if(_searchFilter==='tout'||_searchFilter==='membres'){
+    [].concat(DEMO_FAMS,ST.members).forEach(function(m,mi){
+      var txt=(m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')+' '+(m.adresse||'')).toLowerCase();
+      if(txt.indexOf(q)>=0)results.push({type:'famille',icon:'👨‍👩‍👧',title:m.prenom+' '+m.nom,sub:(m.email||'')+(m.tel?' · '+m.tel:''),color:'#F97316',memberIdx:mi});
+    });
+  }
   _searchResults=results;
   if(!results.length){el.innerHTML='<div style="text-align:center;color:#9CA3AF;padding:30px;">Aucun résultat pour "'+q+'"</div>';return;}
-
-  el.innerHTML='<div style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+' pour "'+q+'"</div>'
+  el.innerHTML='<div style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">'+results.length+' résultat'+(results.length>1?'s':'')+' · <span style="font-weight:700;color:#0A0F1E;">'+q+'"</span></div>'
     +results.map(function(r,i){
-      var click=r.type==='enfant'?'onclick="ouvrirFicheEnfant('+i+')" style="cursor:pointer;"':'';
-      return '<div '+click+' style="background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;gap:12px;border-left:3px solid '+r.color+';">'
-        +'<div style="width:36px;height:36px;border-radius:10px;background:'+r.color+'15;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+r.icon+'</div>'
+      var isEnf=r.type==='enfant';
+      return '<div onclick="ouvrirResultatRecherche('+i+')" style="background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;gap:12px;border-left:3px solid '+r.color+';cursor:pointer;transition:box-shadow .15s;" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(0,0,0,.12)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.05)\'">'
+        +'<div style="width:38px;height:38px;border-radius:10px;background:'+r.color+'15;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+r.icon+'</div>'
         +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+r.title+'</div>'
         +'<div style="font-size:11px;color:#9CA3AF;">'+r.sub+'</div>'
-        +'<div style="font-size:10px;font-weight:700;color:'+r.color+';text-transform:uppercase;margin-top:2px;">'+r.type+(r.type==='enfant'?' · cliquer pour voir':'')+'</div></div>'
+        +'<div style="font-size:10px;font-weight:700;color:'+r.color+';text-transform:uppercase;margin-top:2px;">'+r.type+' · voir la fiche</div></div>'
+        +'<div style="font-size:16px;color:#D1D5DB;">›</div>'
         +'</div>';
     }).join('');
+}
+function ouvrirResultatRecherche(i){
+  var r=_searchResults[i];if(!r)return;
+  if(r.type==='enfant'&&r.kid){
+    ouvrirFicheEnfant(i);
+  } else if(r.type==='famille'&&r.memberIdx!==undefined){
+    fermerFicheMembre&&fermerFicheMembre();
+    voirFicheMembre(r.memberIdx);
+  }
 }
 
 // ═══ WINDOW BINDINGS ═══
 (function(){
-  var fns = ['navigate','_navigateTo','voirFicheMembre','fermerFicheMembre','fermerAjouterAnimateur','confirmerAjouterAnimateur','updateResaSemaines','ajouterEnfantResa','freqWeekOffset','freqMonthOffset','freqSaisonIdx','openAdminLogin','closeAdminLogin','checkAdminCode',
+  var fns = ['navigate','_navigateTo','connecterParCode','envoyerLienMagique','deconnecterProfil','ajouterEnfantInscription','supprimerEnfantInscription','ouvrirAjoutEnfantMembre','confirmerAjoutEnfantMembre','voirFicheEnfantDepuisMembre','ouvrirResultatRecherche','setSearchFilter','ouvrirMembreEditFix','showInfos','inscAjouterEnfant','connexionParCode','envoyerMagicLink','deconnecterProfil','ouvrirFicheEnfantDepuisMembre','ouvrirFormulaireAjoutEnfant','fermerAjoutEnfant','confirmerAjoutEnfant','voirFicheMembre','fermerFicheMembre','fermerAjouterAnimateur','confirmerAjouterAnimateur','updateResaSemaines','ajouterEnfantResa','freqWeekOffset','freqMonthOffset','freqSaisonIdx','openAdminLogin','closeAdminLogin','checkAdminCode',
     'onAdminCodeInput','toggleAdminEye','setAdminTab','setGPeriod','adminPrevWeek','adminNextWeek',
     'renderAdmin','renderDashboard','renderMembres','renderAdminGroupes','renderAdminResas',
     'renderPaiements','renderFrequentation','renderComptabilite','renderSuiviQuotidien',
@@ -3974,9 +4408,9 @@ function globalSearch(){
     'inscGoStep','inscBack','inscNext','calcAge','selectDroit','toggleDroit',
     'submitInscription','buildInscRecap',
     'ouvrirDocModal','fermerDocModal','toggleDocItem','toggleIA',
-    'showInfos','toast','navigate',
+    'showInfos','inscAjouterEnfant','connexionParCode','envoyerMagicLink','deconnecterProfil','ouvrirFicheEnfantDepuisMembre','ouvrirFormulaireAjoutEnfant','fermerAjoutEnfant','confirmerAjoutEnfant','toast','navigate',
     'setPaiFilter','setPaiMode',
-    'chargerDonnees','sauvegarderInscription','validerResaSB','ajouterAvoirSB','solderAvoirSB'
+    'submitInscription','ouvrirSaisieQuotidienne','fermerSaisieQuotidienne','confirmerSaisieQuotidienne','ouvrirValidationResa','fermerValidationResa','confirmerValidationResa','chargerDonnees','sauvegarderInscription','validerResaSB','ajouterAvoirSB','solderAvoirSB'
   ];
   fns.forEach(function(name){
     try{
