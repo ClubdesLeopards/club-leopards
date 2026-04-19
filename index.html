@@ -2231,7 +2231,12 @@ textarea{resize:vertical;}
 
 
 
+
 <script>
+
+
+
+
 
 
 
@@ -3086,65 +3091,83 @@ function fermerDocModal() {
 
 
 // ═══ DASHBOARD ═══
-function renderDashboard() {
-  var el = document.getElementById('admin-dashboard-content');
-  if (!el) return;
-  var kids = allKids();
-  var allResas = [].concat(DEMO_RESAS, ST.reservations);
-  var enc = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  var att = DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut!=='payé'?p.montant:0);},0);
-  var validees = allResas.filter(function(r){return r.statut==='validé';}).length;
-  var attente  = allResas.filter(function(r){return r.statut==='en attente';}).length;
 
-  // Activity feed
-  var feed = [].concat(
-    DEMO_RESAS.slice(0,2).map(function(r){return {icon:'📅',txt:r.nom+' – '+r.slot.time,sub:r.date,color:'#1A6FD4'};}),
-    DEMO_PAYMENTS.filter(function(p){return p.statut==='payé';}).slice(0,2).map(function(p){return {icon:'💳',txt:p.nom+' '+p.montant+'€',sub:p.date+' · '+p.mode,color:'#10B981'};})
-  );
-
-  el.innerHTML = ''
-    // Quick actions
-    + '<div class="wcard" style="margin-bottom:12px;">'
-    + '<div class="wcard-title"><span>⚡</span> Actions rapides</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    + '<button data-tab="membres" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#6366F1,#4F46E5);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">👨‍👩‍👧<br>Membres<br><span style="font-size:20px;font-weight:800;">'+kids.length+'</span></button>'
-    + '<button data-tab="reservations" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">📅<br>Réservations<br><span style="font-size:20px;font-weight:800;">'+allResas.length+'</span></button>'
-    + '<button data-tab="paiements" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">💰<br>Encaissé<br><span style="font-size:20px;font-weight:800;">'+enc+'€</span></button>'
-    + '<button data-tab="groupes" onclick="window.setAdminTab(this.dataset.tab)" style="padding:14px;background:linear-gradient(135deg,#E9B10D,#F57F17);color:#1A1A2E;border:none;border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">🏖️<br>Groupes<br><span style="font-size:20px;font-weight:800;">'+GROUPES.length+'</span></button>'
-    + '</div></div>'
-
-    // Réservations recap
-    + '<div class="wcard" style="margin-bottom:12px;">'
-    + '<div class="wcard-title"><span>📅</span> Réservations</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-    + '<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#065F46;">'+validees+'</div><div style="font-size:11px;color:#6EE7B7;font-weight:700;">Validées</div></div>'
-    + '<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#92400E;">'+attente+'</div><div style="font-size:11px;color:#FCD34D;font-weight:700;">En attente</div></div>'
-    + '</div>'
-    + (attente>0 ? '<button data-tab="reservations" onclick="window.setAdminTab(this.dataset.tab)" class="btn btn-full" style="background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;padding:11px;">Voir les '+attente+' demande'+(attente>1?'s':'')+' en attente →</button>' : '')
-    + '</div>'
-
-    // Paiements
-    + '<div class="wcard" style="margin-bottom:12px;">'
-    + '<div class="wcard-title"><span>💳</span> Trésorerie</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    + '<div style="background:#D1FAE5;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#065F46;">'+enc+'€</div><div style="font-size:11px;color:#6EE7B7;font-weight:700;">Encaissé</div></div>'
-    + '<div style="background:#FEF3C7;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:#92400E;">'+att+'€</div><div style="font-size:11px;color:#FCD34D;font-weight:700;">En attente</div></div>'
-    + '</div></div>'
-
-    // Activity feed
-    + '<div class="wcard">'
-    + '<div class="wcard-title"><span>🕐</span> Activité récente</div>'
-    + feed.map(function(item){
-        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F9FAFB;">'
-          +'<div style="width:36px;height:36px;border-radius:10px;background:'+item.color+'18;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+item.icon+'</div>'
-          +'<div><div style="font-size:13px;font-weight:600;color:#1A1A2E;">'+item.txt+'</div>'
-          +'<div style="font-size:11px;color:#9CA3AF;">'+item.sub+'</div></div>'
-          +'</div>';
-      }).join('')
-    + '</div>';
+function buildDashFreqNew(kids){
+  var groups=[
+    {id:'g35',label:'3–5 ans',min:3,max:5.9,color:'#F97316',bg:'#FFF7ED',emoji:'🐥'},
+    {id:'g68',label:'6–8 ans',min:6,max:8.9,color:'#0099E6',bg:'#EFF6FF',emoji:'🐬'},
+    {id:'g912',label:'9–12 ans',min:9,max:12.9,color:'#8B5CF6',bg:'#F5F3FF',emoji:'🏅'},
+  ];
+  var total=kids.length;
+  var cardsHTML=groups.map(function(g){
+    var cnt=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
+    var pct=total>0?Math.round(cnt/total*100):0;
+    return '<div onclick="setDashAgeFilter(\''+g.id+'\')" id="dash-age-'+g.id+'" style="background:'+g.bg+';border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;flex:1;min-width:0;transition:all .15s;">'
+      +'<div style="font-size:26px;margin-bottom:6px;">'+g.emoji+'</div>'
+      +'<div style="font-size:24px;font-weight:800;color:'+g.color+';font-family:Syne,sans-serif;line-height:1;">'+cnt+'</div>'
+      +'<div style="font-size:11px;font-weight:700;color:'+g.color+';margin-top:3px;">'+g.label+'</div>'
+      +'<div style="font-size:10px;color:#9CA3AF;">'+pct+'%</div>'
+      +'</div>';
+  }).join('');
+  var totalCard='<div onclick="setDashAgeFilter(\'tout\')" id="dash-age-tout" style="background:#1E2A3A;border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;flex:1;min-width:0;transition:all .15s;">'
+    +'<div style="font-size:26px;margin-bottom:6px;">👥</div>'
+    +'<div style="font-size:24px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+total+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:3px;">Total</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">100%</div>'
+    +'</div>';
+  var barParts=groups.map(function(g){
+    var cnt=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
+    var pct=total>0?Math.round(cnt/total*100):0;
+    return '<div style="flex:'+pct+';background:'+g.color+';height:100%;min-width:'+(cnt?'4px':'0')+';"></div>';
+  }).join('');
+  return '<div style="display:flex;gap:8px;margin-bottom:10px;">'+cardsHTML+totalCard+'</div>'
+    +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:12px;">'+barParts+'</div>'
+    +'<div id="dash-kids-list">'+buildDashKidsList('tout',kids)+'</div>';
 }
 
-// ═══ MEMBRES ═══
+function buildDashKidsList(filter,kids){
+  var groups=[
+    {id:'g35',label:'3–5 ans',min:3,max:5.9,color:'#F97316',emoji:'🐥'},
+    {id:'g68',label:'6–8 ans',min:6,max:8.9,color:'#0099E6',emoji:'🐬'},
+    {id:'g912',label:'9–12 ans',min:9,max:12.9,color:'#8B5CF6',emoji:'🏅'},
+  ];
+  var filtered=kids;
+  if(filter&&filter!=='tout'){
+    var g=groups.find(function(x){return x.id===filter;});
+    if(g) filtered=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;});
+  }
+  var grp=groups.find(function(x){return x.id===filter;})||{label:'Tous',color:'#374151',emoji:'👥'};
+  if(!filtered.length) return '<div style="text-align:center;color:#9CA3AF;font-size:12px;padding:10px 0;">Aucun enfant</div>';
+  return '<div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;"><span>'+(filter==='tout'?'Tous les enfants':grp.label)+'</span><span>'+filtered.length+' enfant'+(filtered.length>1?'s':'')+'</span></div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:5px;">'
+    +filtered.map(function(k){
+      var g=groups.find(function(x){return parseFloat(k.age)>=x.min&&parseFloat(k.age)<=x.max;})||{color:'#9CA3AF',emoji:'🧒'};
+      return '<span style="background:'+g.color+'15;color:'+g.color+';font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;">'+g.emoji+' '+(k.prenom||k.name||'?')+'</span>';
+    }).join('')
+    +'</div>';
+}
+
+function setDashAgeFilter(filter){
+  _dashAgeFilter=filter;
+  var kids=allKids();
+  var el=document.getElementById('dash-kids-list');
+  if(el) el.innerHTML=buildDashKidsList(filter,kids);
+  // Reset toutes les cartes
+  var groups=[{id:'g35',color:'#F97316',bg:'#FFF7ED'},{id:'g68',color:'#0099E6',bg:'#EFF6FF'},{id:'g912',color:'#8B5CF6',bg:'#F5F3FF'}];
+  groups.forEach(function(g){
+    var el2=document.getElementById('dash-age-'+g.id);if(!el2)return;
+    var active=g.id===filter;
+    el2.style.background=active?g.color+'25':g.bg;
+    el2.style.borderColor=active?g.color:'transparent';
+    el2.style.transform=active?'scale(1.03)':'scale(1)';
+  });
+  var tot=document.getElementById('dash-age-tout');if(tot){
+    tot.style.background=filter==='tout'?'#0A0F1E':'#1E2A3A';
+    tot.style.borderColor=filter==='tout'?'#FF6B35':'transparent';
+    tot.style.transform=filter==='tout'?'scale(1.03)':'scale(1)';
+  }
+}
+
 function renderMembres() {
   var el = document.getElementById('admin-membres-content');
   if (!el) return;
@@ -3636,84 +3659,7 @@ function editEquipe(id){
 function delEquipe(id){if(!confirm('Supprimer ?'))return;EQUIPE=EQUIPE.filter(function(x){return x.id!==id;});renderEquipe();}
 
 // ═══ DASHBOARD ═══
-function renderDashboard(){
-  var el=document.getElementById('admin-dashboard-content');if(!el)return;
-  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
-  var allResas=[].concat(DEMO_RESAS,ST.reservations);
-  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='payé'?p.montant:0);},0);
-  var attResas=allResas.filter(function(r){return r.statut==='en attente';});
-  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
-  var today=new Date();
-  var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-  var mois=['janvier','fevrier','mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre','decembre'];
-  var maxParSaison=(GROUPES_MATIN.length+GROUPES_APREM.length)*MAX_G;
-  var derniersMembres=fams.slice(-5).reverse();
-  var TR=[{label:'3-5 ans',min:3,max:5.9,color:'#F97316'},{label:'6-9 ans',min:6,max:9.9,color:'#0099E6'},{label:'10-13 ans',min:10,max:13.9,color:'#8B5CF6'}];
-  var totalK=kids.length||1;
 
-  el.innerHTML=
-    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:20px;margin-bottom:12px;text-align:center;position:relative;overflow:hidden;">'
-    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,107,53,.15) 0%,transparent 70%);"></div>'
-    +'<div style="font-size:13px;font-weight:700;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">'+jours[today.getDay()]+'</div>'
-    +'<div style="font-size:32px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
-    +'<div style="font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;">'+today.getFullYear()+' - Club des Leopards</div>'
-    +'</div>'
-
-    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;">'
-    +[{icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',tab:'membres'},
-      {icon:'📅',val:allResas.length,lbl:'Reservations',color:'#F97316',bg:'#FFF7ED',tab:'reservations'},
-      {icon:'✅',val:val,lbl:'Validees',color:'#10B981',bg:'#F0FDF4',tab:'reservations'},
-      {icon:'💰',val:enc+'€',lbl:'Encaisse',color:'#8B5CF6',bg:'#F5F3FF',tab:'paiements'},
-    ].map(function(k){
-      return '<div onclick="setAdminTab(\''+k.tab+'\')" style="background:'+k.bg+';border-radius:12px;padding:14px;cursor:pointer;border:1.5px solid '+k.color+'15;">'
-        +'<div style="font-size:20px;margin-bottom:4px;">'+k.icon+'</div>'
-        +'<div style="font-size:22px;font-weight:800;color:'+k.color+';font-family:Syne,sans-serif;line-height:1;">'+k.val+'</div>'
-        +'<div style="font-size:11px;font-weight:600;color:#374151;margin-top:2px;">'+k.lbl+'</div>'
-        +'</div>';
-    }).join('')+'</div>'
-
-    +'<div class="wcard" style="margin-bottom:12px;"><div class="wcard-title"><span>📊</span> Taux de remplissage</div>'
-    +[{label:'☀️ Ete',color:'#FF6B35',pct:Math.min(100,Math.round(kids.length/maxParSaison*100))},
-      {label:'🍂 Automne',color:'#F59E0B',pct:Math.round(kids.length*0.3/maxParSaison*100)},
-      {label:'🌸 Printemps',color:'#10B981',pct:Math.round(kids.length*0.5/maxParSaison*100)},
-    ].map(function(s){
-      return '<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;"><span>'+s.label+'</span><span style="color:'+s.color+';">'+s.pct+'%</span></div>'
-        +'<div style="background:#F3F4F6;border-radius:5px;height:7px;overflow:hidden;"><div style="background:'+s.color+';height:100%;width:'+s.pct+'%;"></div></div></div>';
-    }).join('')+'</div>'
-
-    +(attResas.length?'<div class="wcard" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>⏳</span> En attente</div>'
-    +'<button onclick="setAdminTab(\'reservations\')" style="font-size:11px;color:#F97316;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout</button></div>'
-    +attResas.slice(0,3).map(function(r){
-      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F9FAFB;">'
-        +'<div style="width:30px;height:30px;border-radius:8px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;font-size:14px;">📥</div>'
-        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+r.nom+'</div>'
-        +'<div style="font-size:10px;color:#9CA3AF;">'+(r.slot?r.slot.time+' - '+r.slot.date:'')+'</div></div>'
-        +'<button onclick="ouvrirValidationResa(0)" style="padding:4px 10px;background:#10B981;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider</button></div>';
-    }).join('')+'</div>':'')
-
-    +'<div class="wcard" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>👤</span> Derniers inscrits</div>'
-    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#0099E6;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout</button></div>'
-    +(derniersMembres.length?derniersMembres.map(function(m){
-      var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
-      var cols=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'];
-      var col=cols[(m.nom||'').charCodeAt(0)%cols.length];
-      return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F9FAFB;">'
-        +'<div style="width:32px;height:32px;border-radius:9px;background:'+col+'18;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">'+ini+'</div>'
-        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+m.prenom+' '+m.nom+'</div>'
-        +'<div style="font-size:10px;color:#9CA3AF;">'+(m.children||[]).length+' enfant'+((m.children||[]).length>1?'s':'')+'</div></div></div>';
-    }).join(''):'<div style="text-align:center;color:#9CA3AF;padding:12px;font-size:13px;">Aucun membre</div>')
-    +'</div>'
-
-    +'<div class="wcard"><div class="wcard-title"><span>👶</span> Repartition par age</div>'
-    +'<div style="display:flex;flex-direction:column;gap:8px;">'
-    +TR.map(function(t){var cnt=kids.filter(function(k){return parseFloat(k.age)>=t.min&&parseFloat(k.age)<=t.max;}).length;var pct=Math.round(cnt/totalK*100);return '<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:3px;"><span style="color:'+t.color+';">'+t.label+'</span><span>'+cnt+' ('+pct+'%)</span></div><div style="background:#F3F4F6;border-radius:5px;height:6px;"><div style="background:'+t.color+';height:6px;border-radius:5px;width:'+pct+'%;"></div></div></div>';}).join('')
-    +'</div></div>';
-}
-
-// ═══ MEMBRES ═══
-var _membreAlpha='';
 function filterMembreAlpha(l){_membreAlpha=_membreAlpha===l?'':l;renderMembres();}
 function renderMembres(){
   var el=document.getElementById('admin-membres-content');if(!el)return;
@@ -4498,7 +4444,7 @@ function ajouterAuPanier(idx) {
 }
 
 
-window.toggleSemaine=toggleSemaine;window.recalculerTotal=recalculerTotal;window.confirmerSelectionSemaines=confirmerSelectionSemaines;window.renderEtape3=renderEtape3;
+window.toggleSemaine=toggleSemaine;window.recalculerTotal=recalculerTotal;window.envoyerReservation=envoyerReservation;window.confirmerEnvoiReservation=confirmerEnvoiReservation;window.retourChoixSemaine=retourChoixSemaine;window.renderEtape3=renderEtape3;
 
 
 window.renderResaEnfants=renderResaEnfants;
@@ -4514,6 +4460,85 @@ window.goSaisonDirect=goSaisonDirect;
 window.envoyerReservation=envoyerReservation;
 window.confirmerEnvoiReservation=confirmerEnvoiReservation;
 window.retourChoixSemaine=retourChoixSemaine;
+
+
+window.buildDashFreqNew=buildDashFreqNew;
+window.buildDashKidsList=buildDashKidsList;
+function renderDashboard(){
+  var el=document.getElementById('admin-dashboard-content');if(!el)return;
+  var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
+  var allResas=[].concat(DEMO_RESAS,ST.reservations);
+  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='payé'?p.montant:0);},0);
+  var attResas=allResas.filter(function(r){return r.statut==='en attente';});
+  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
+  var today=new Date();
+  var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var maxParSaison=(GROUPES_MATIN.length+GROUPES_APREM.length)*MAX_G;
+  var derniersMembres=fams.slice(-5).reverse();
+
+  el.innerHTML=
+    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,107,53,.15) 0%,transparent 70%);"></div>'
+    +'<div style="font-size:13px;font-weight:700;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">'+jours[today.getDay()]+'</div>'
+    +'<div style="font-size:32px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;">'+today.getFullYear()+' · Club des Léopards</div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;">'
+    +[{icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',tab:'membres'},
+      {icon:'📅',val:allResas.length,lbl:'Réservations',color:'#F97316',bg:'#FFF7ED',tab:'reservations'},
+      {icon:'✅',val:val,lbl:'Validées',color:'#10B981',bg:'#F0FDF4',tab:'reservations'},
+      {icon:'💰',val:enc+'€',lbl:'Encaissé',color:'#8B5CF6',bg:'#F5F3FF',tab:'paiements'},
+    ].map(function(k){return '<div onclick="setAdminTab(\''+k.tab+'\')" style="background:'+k.bg+';border-radius:12px;padding:14px;cursor:pointer;border:1.5px solid '+k.color+'15;">'
+      +'<div style="font-size:20px;margin-bottom:4px;">'+k.icon+'</div>'
+      +'<div style="font-size:22px;font-weight:800;color:'+k.color+';font-family:Syne,sans-serif;line-height:1;">'+k.val+'</div>'
+      +'<div style="font-size:11px;font-weight:600;color:#374151;margin-top:2px;">'+k.lbl+'</div>'
+      +'</div>';}).join('')+'</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">'
+    // Colonne gauche
+    +'<div style="display:flex;flex-direction:column;gap:12px;">'
+    +'<div class="wcard"><div class="wcard-title"><span>📊</span> Taux de remplissage</div>'
+    +[{label:'🌸 Printemps',color:'#10B981',pct:Math.min(100,Math.round(kids.length*0.5/maxParSaison*100))},
+      {label:'☀️ Été',color:'#FF6B35',pct:Math.min(100,Math.round(kids.length/maxParSaison*100))},
+      {label:'🍂 Automne',color:'#F59E0B',pct:Math.min(100,Math.round(kids.length*0.3/maxParSaison*100))},
+    ].map(function(s){return '<div style="margin-bottom:9px;">'
+      +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;"><span>'+s.label+'</span><span style="color:'+s.color+';">'+s.pct+'%</span></div>'
+      +'<div style="background:#F3F4F6;border-radius:5px;height:7px;overflow:hidden;"><div style="background:'+s.color+';height:100%;width:'+s.pct+'%;border-radius:5px;"></div></div></div>';}).join('')+'</div>'
+    +(attResas.length?'<div class="wcard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+      +'<div class="wcard-title" style="margin-bottom:0;"><span>⏳</span> En attente</div>'
+      +'<button onclick="setAdminTab(\'reservations\')" style="font-size:11px;color:#F97316;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
+      +attResas.slice(0,3).map(function(r){return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F9FAFB;">'
+        +'<div style="width:30px;height:30px;border-radius:8px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;font-size:14px;">📥</div>'
+        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+r.nom+'</div>'
+        +'<div style="font-size:10px;color:#9CA3AF;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div></div>'
+        +'<button onclick="setAdminTab(\'reservations\')" style="padding:4px 10px;background:#10B981;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider</button></div>';}).join('')
+      +'</div>':'')
+    +'</div>'
+    // Colonne droite
+    +'<div style="display:flex;flex-direction:column;gap:12px;">'
+    +'<div class="wcard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>👤</span> Derniers inscrits</div>'
+    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#0099E6;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
+    +(derniersMembres.length?derniersMembres.map(function(m){
+      var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+      var col=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'][(m.nom||'').charCodeAt(0)%5];
+      return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F9FAFB;">'
+        +'<div style="width:32px;height:32px;border-radius:9px;background:'+col+'18;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">'+ini+'</div>'
+        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+m.prenom+' '+m.nom+'</div>'
+        +'<div style="font-size:10px;color:#9CA3AF;">'+(m.children||[]).length+' enfant'+((m.children||[]).length>1?'s':'')+'</div></div></div>';}).join('')
+      :'<div style="text-align:center;color:#9CA3AF;padding:12px;font-size:13px;">Aucun membre</div>')
+    +'</div>'
+    +'<div class="wcard"><div class="wcard-title"><span>👶</span> Répartition par âge</div>'
+    +buildDashFreqNew(kids)
+    +'</div>'
+    +'</div>'
+    +'</div>';
+}
+
+window.setDashAgeFilter=setDashAgeFilter;
+
+
+
 
 </script>
 </body>
