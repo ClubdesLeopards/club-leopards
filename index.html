@@ -2234,6 +2234,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
@@ -2719,12 +2722,31 @@ function buildInscRecap() {
   var grp    = getGroupe(parseAge(dob));
   var dtxt   = inscDroit==='oui'?'✅ Autorisé':'🚫 Refusé';
   var html   = '';
-  html+='<div class="recap-section"><div class="recap-section-head"><span>🧒</span><div class="recap-section-title">Enfant</div><span class="recap-edit" onclick="inscGoStep(1)">Modifier</span></div><div class="recap-body">';
-  html+='<div class="recap-row"><span>Nom</span><span>'+nom+'</span></div>';
-  html+='<div class="recap-row"><span>Prenom</span><span>'+prenom+'</span></div>';
+  // Enfant principal
+  html+='<div class="recap-section"><div class="recap-section-head"><span>🧒</span><div class="recap-section-title">Enfants</div><span class="recap-edit" onclick="inscGoStep(1)">Modifier</span></div><div class="recap-body">';
+  html+='<div style="font-size:11px;font-weight:700;color:#0099E6;margin-bottom:6px;">Enfant 1</div>';
+  html+='<div class="recap-row"><span>Nom</span><span>'+prenom+' '+nom+'</span></div>';
   html+='<div class="recap-row"><span>Naissance</span><span>'+dob+' · '+ageD+'</span></div>';
   if(grp) html+='<div class="recap-row"><span>Groupe</span><span style="color:'+grp.color+';">'+grp.emoji+' '+grp.name+'</span></div>';
-  html+='<div class="recap-row"><span>Medical</span><span>'+medical+'</span></div>';
+  if(medical&&medical!=='RAS') html+='<div class="recap-row"><span>Médical</span><span>'+medical+'</span></div>';
+  // Enfants supplémentaires
+  var extras=document.querySelectorAll('#extra-enfants-list [data-extra]');
+  for(var ei=0;ei<extras.length;ei++){
+    var ep=extras[ei].querySelector('.extra-enfant-prenom');
+    var en2=extras[ei].querySelector('.extra-enfant-nom');
+    var ed=extras[ei].querySelector('.extra-enfant-dob');
+    var eag=extras[ei].querySelector('.extra-enfant-age-display');
+    var em=extras[ei].querySelector('.extra-enfant-medical');
+    var epr=ep?ep.value.trim():'';
+    if(!epr)continue;
+    var eage=eag?eag.textContent:'—';
+    html+='<div style="border-top:1px solid #F3F4F6;margin-top:8px;padding-top:8px;">';
+    html+='<div style="font-size:11px;font-weight:700;color:#0099E6;margin-bottom:6px;">Enfant '+(ei+2)+'</div>';
+    html+='<div class="recap-row"><span>Nom</span><span>'+epr+' '+(en2?en2.value.trim():'')+'</span></div>';
+    if(ed&&ed.value) html+='<div class="recap-row"><span>Naissance</span><span>'+ed.value+' · '+eage+'</span></div>';
+    if(em&&em.value&&em.value!=='RAS') html+='<div class="recap-row"><span>Médical</span><span>'+em.value+'</span></div>';
+    html+='</div>';
+  }
   html+='</div></div>';
   html+='<div class="recap-section"><div class="recap-section-head"><span>📍</span><div class="recap-section-title">Coordonnées</div><span class="recap-edit" onclick="inscGoStep(1)">Modifier</span></div><div class="recap-body">';
   html+='<div class="recap-row"><span>Adresse vacances</span><span>'+addrV+'</span></div>';
@@ -2753,14 +2775,14 @@ function submitInscription() {
   var nom=(document.getElementById('i-nom')||{value:''}).value;
   var prenom=(document.getElementById('i-prenom')||{value:''}).value;
   var dob=(document.getElementById('i-dob')||{value:''}).value;
-  ST.members.push({
+  var membreData={
     prenom:(document.getElementById('i-resp-prenom')||{value:''}).value, nom:(document.getElementById('i-resp-nom')||{value:''}).value,
     email:(document.getElementById('i-email')||{value:''}).value, tel:(document.getElementById('i-tel')||{value:''}).value,
     adresse:(document.getElementById('i-adresse-vacances')||{value:''}).value, medical:(document.getElementById('i-medical')||{value:''}).value,
     urgence:(document.getElementById('i-urgence')||{value:''}).value, droitImage:inscDroit,
     children:(function(){
       var list=[{prenom:prenom,nom:nom,name:nom+' '+prenom,age:parseAge(dob),dob:dob,medical:medical,periode:'matin'}];
-      var extra=document.querySelectorAll('#extra-enfants-list > div');
+      var extra=document.querySelectorAll('#extra-enfants-list [data-extra]');
       for(var ei=0;ei<extra.length;ei++){
         var ep=extra[ei].querySelector('.extra-enfant-prenom');
         var en2=extra[ei].querySelector('.extra-enfant-nom');
@@ -2772,7 +2794,7 @@ function submitInscription() {
           prenom:epr,
           nom:en2?en2.value.trim():nom,
           name:(en2?en2.value.trim():nom)+' '+epr,
-          age:ea&&ea.value?parseFloat(ea.value):0,
+          age:ea&&ea.value?parseFloat(ea.value):parseAge(ed?ed.value:''),
           dob:ed?ed.value:'',
           medical:em?em.value.trim():'RAS',
           periode:'matin'
@@ -2781,7 +2803,9 @@ function submitInscription() {
       return list;
     })(),
     date:new Date().toLocaleDateString('fr-FR'),
-  });
+  };
+  ST.members.push(membreData);
+  ST.membreConnecte=membreData;
   toast('✅ Inscription enregistrée !','ok');
   inscDroit=null;
   ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
@@ -5006,11 +5030,11 @@ function ajouterEnfantInscription(){
   if(!list)return;
   var idx=list.children.length+2;
   var div=document.createElement('div');
-  div.style.cssText='background:#F8FAFF;border:1.5px solid #BFDBFE;border-radius:14px;padding:14px;position:relative;';
+  div.style.cssText='background:#F8FAFF;border:1.5px solid #BFDBFE;border-radius:14px;padding:14px;position:relative;margin-bottom:8px;';
   div.innerHTML=
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-    +'<div style="font-size:13px;font-weight:700;color:#0077C8;">'+String.fromCodePoint(0x1F476)+' Enfant '+idx+'</div>'
-    +'<button onclick="this.closest(\'div\').parentElement.remove()" style="background:#FEE2E2;border:none;border-radius:8px;padding:4px 10px;color:#EF4444;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Supprimer</button>'
+    +'<div style="font-size:13px;font-weight:700;color:#0077C8;">\uD83D\uDC76 Enfant '+idx+'</div>'
+    +'<button type="button" onclick="this.closest(\'[data-extra]\').remove()" style="background:#FEE2E2;border:none;border-radius:8px;padding:4px 10px;color:#EF4444;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Supprimer</button>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Pr\u00e9nom *</label>'
@@ -5018,18 +5042,38 @@ function ajouterEnfantInscription(){
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>'
     +'<input class="extra-enfant-nom" placeholder="Nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
     +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance</label>'
-    +'<input class="extra-enfant-dob" type="date" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">\u00c2ge au club</label>'
-    +'<input class="extra-enfant-age" type="number" min="3" max="13" placeholder="Ex: 7" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px;">'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance *</label>'
+    +'<input class="extra-enfant-dob" type="date" onchange="calcExtraAge(this)" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div style="background:#F0F9FF;border-radius:10px;padding:10px 14px;text-align:center;min-width:60px;">'
+    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">\u00c2ge</div>'
+    +'<div class="extra-enfant-age-display" style="font-size:18px;font-weight:800;color:#0099E6;">—</div>'
+    +'<input class="extra-enfant-age" type="hidden" value="0">'
+    +'</div></div>'
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Allergies / M\u00e9dical</label>'
     +'<input class="extra-enfant-medical" placeholder="RAS" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>';
+  div.dataset.extra='1';
   list.appendChild(div);
   div.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+
+function calcExtraAge(dobInput){
+  var container=dobInput.closest('[data-extra]');
+  if(!container)return;
+  var dob=dobInput.value;
+  var ageDisplay=container.querySelector('.extra-enfant-age-display');
+  var ageInput=container.querySelector('.extra-enfant-age');
+  if(!dob){if(ageDisplay)ageDisplay.textContent='\u2014';return;}
+  var age=parseAge(dob);
+  if(ageDisplay)ageDisplay.textContent=age>0?age+' ans':'\u2014';
+  if(ageInput)ageInput.value=age;
+}
 window.ajouterEnfantInscription=ajouterEnfantInscription;
+
+
+
+
+window.calcExtraAge=calcExtraAge;
 
 
 
