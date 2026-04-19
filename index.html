@@ -2262,6 +2262,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
@@ -2888,8 +2889,7 @@ function submitInscription() {
   var ri2=document.getElementById('i-accept-ri'); if(ri2) ri2.checked=false;
   var cgv2=document.getElementById('i-accept-cgv'); if(cgv2) cgv2.checked=false;
   var resp2=document.getElementById('i-accept-resp'); if(resp2) resp2.checked=false;
-  inscGoStep(1);
-  setTimeout(function(){ navigate('reservation'); }, 1200);
+  navigate('reservation');
 }
 
 function addInscChild(){}
@@ -3340,6 +3340,7 @@ function _navigateTo(name){
   if(name==='reservation') renderReservation();
   if(name==='mes-resa') renderMesResa();
   if(name==='admin') renderAdmin();
+  if(name==='profil') renderProfil();
   window.scrollTo(0,0);
 }
 
@@ -5140,8 +5141,8 @@ function ajouterEnfantInscription(){
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Pr\u00e9nom *</label>'
     +'<input class="extra-enfant-prenom" placeholder="Pr\u00e9nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>'
-    +'<input class="extra-enfant-nom" placeholder="Nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom *</label>'
+    +'<input class="extra-enfant-prenom" placeholder="Nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px;">'
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance *</label>'
@@ -5297,6 +5298,7 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
+
 
 
 
