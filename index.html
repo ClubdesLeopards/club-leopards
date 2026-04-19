@@ -333,11 +333,11 @@ textarea{resize:vertical;}
 
 /* ── ADMIN ── */
 .admin-hero{
-  background:linear-gradient(135deg,#1E1B4B,#4C1D95,#1A6FD4);
-  padding:28px 20px 20px;
+  background:linear-gradient(160deg,#00C4FF 0%,#0099E6 35%,#FF6B35 75%,#FFD700 100%);
+  padding:0;
   position:relative;
+  overflow:hidden;
 }
-.admin-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:20px;background:#F2F4F8;clip-path:ellipse(55% 100% at 50% 100%);}
 .admin-hero-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
 .admin-hero-sub{font-size:13px;color:rgba(255,255,255,0.7);}
 
@@ -1738,27 +1738,27 @@ textarea{resize:vertical;}
   <div class="page" id="page-admin">
 
     <!-- HEADER -->
-    <div class="admin-hero" style="background:linear-gradient(135deg,#0A0F1E 0%,#0D1B3E 50%,#0A2E5C 100%);padding:0;position:relative;overflow:hidden;">
+    <div class="admin-hero">
 
-      <!-- Accent blobs décoratifs -->
-      <div style="position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(233,177,13,.25) 0%,transparent 70%);pointer-events:none;"></div>
-      <div style="position:absolute;top:20px;left:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(99,102,241,.2) 0%,transparent 70%);pointer-events:none;"></div>
+      <!-- Déco soleil + vagues -->
+      <div style="position:absolute;top:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,215,0,.3) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-20px;left:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(255,255,255,.12) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;top:12px;left:18px;font-size:26px;opacity:.45;pointer-events:none;">☀️</div>
+      <div style="position:absolute;bottom:8px;right:18px;font-size:22px;opacity:.35;pointer-events:none;">🌊</div>
 
-      <!-- Top bar : titre + badge -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#E9B10D,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(233,177,13,.4);">🐆</div>
-          <div>
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1.5px;">Club des Léopards</div>
-            <div style="font-size:17px;font-weight:800;color:#fff;margin-top:1px;line-height:1.2;">Dashboard Admin</div>
+      <!-- Club des Léopards centré -->
+      <div style="display:flex;align-items:center;justify-content:center;padding:18px 20px 10px;position:relative;z-index:1;">
+        <div style="text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:3px;">
+            <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:20px;">🐆</div>
+            <div style="font-size:20px;font-weight:800;color:#fff;font-family:Syne,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,.15);">Club des Léopards</div>
           </div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:1px;">Administration · Saison 2026</div>
         </div>
-        <div style="background:rgba(233,177,13,.15);border:1px solid rgba(233,177,13,.35);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;color:#E9B10D;letter-spacing:.5px;">Saison 2026</div>
       </div>
 
       <!-- KPI cards -->
-      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px;"></div>
-
+      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px;position:relative;z-index:1;"></div>
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
       <div class="admin-tabs" style="display:flex;gap:6px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.06);">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
@@ -2203,6 +2203,9 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
+
 
 
 
@@ -2696,10 +2699,15 @@ function renderAdmin() {
   var kids=allKids(), fams=[].concat(DEMO_FAMS,ST.members), resas=[].concat(DEMO_RESAS,ST.reservations);
   var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
   var pl=0; GROUPES.forEach(function(g){var cnt=kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id;}).length;pl+=Math.max(0,MAX_G-cnt);});
-  el.innerHTML='<div class="stat-card" style="background:linear-gradient(135deg,#6366F1,#4F46E5);"><div class="stat-icon">🧒</div><div class="stat-val">'+kids.length+'</div><div class="stat-lbl">Enfants</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#F97316,#EA580C);"><div class="stat-icon">👨‍👩‍👧</div><div class="stat-val">'+fams.length+'</div><div class="stat-lbl">Familles</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#10B981,#059669);"><div class="stat-icon">💰</div><div class="stat-val">'+enc+'€</div><div class="stat-lbl">Encaissé</div></div>'
-    +'<div class="stat-card" style="background:linear-gradient(135deg,#E9B10D,#F57F17);"><div class="stat-icon">✅</div><div class="stat-val">'+pl+'</div><div class="stat-lbl">Places libres</div></div>';
+  el.innerHTML=
+    '<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
+    +'<div class="stat-icon">🧒</div><div class="stat-val" style="color:#fff;">'+kids.length+'</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Enfants</div></div>'
+    +'<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
+    +'<div class="stat-icon">👨‍👩‍👧</div><div class="stat-val" style="color:#fff;">'+fams.length+'</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Familles</div></div>'
+    +'<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
+    +'<div class="stat-icon">💰</div><div class="stat-val" style="color:#fff;">'+enc+'€</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Encaissé</div></div>'
+    +'<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
+    +'<div class="stat-icon">✅</div><div class="stat-val" style="color:#fff;">'+pl+'</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Places libres</div></div>';
   if(ST.adminTab==='dashboard')        renderDashboard();
   else if(ST.adminTab==='membres')     renderMembres();
   else if(ST.adminTab==='groupes')     renderAdminGroupes();
@@ -4281,64 +4289,98 @@ function renderDashboard(){
   var today=new Date();
   var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  var maxParSaison=(GROUPES_MATIN.length+GROUPES_APREM.length)*MAX_G;
+  var maxPlaces=(GROUPES_MATIN.length+GROUPES_APREM.length)*MAX_G;
+  var placesOccupees=kids.length;
+  var placesLibres=Math.max(0,maxPlaces-placesOccupees);
   var derniersMembres=fams.slice(-5).reverse();
 
   el.innerHTML=
-    '<div style="background:linear-gradient(135deg,#0A0F1E,#0D1B3E);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;">'
-    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,107,53,.15) 0%,transparent 70%);"></div>'
-    +'<div style="font-size:13px;font-weight:700;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">'+jours[today.getDay()]+'</div>'
-    +'<div style="font-size:32px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
-    +'<div style="font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;">'+today.getFullYear()+' · Club des Léopards</div>'
+
+    // ── HERO soleil et mer ─────────────────────────────────────
+    '<div style="background:linear-gradient(160deg,#00C4FF 0%,#0099E6 30%,#FF6B35 70%,#FFD700 100%);border-radius:20px;padding:28px 20px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center;">'
+    // Soleils et vagues déco
+    +'<div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(255,215,0,.25);border-radius:50%;"></div>'
+    +'<div style="position:absolute;bottom:-30px;left:-20px;width:100px;height:100px;background:rgba(255,255,255,.1);border-radius:50%;"></div>'
+    +'<div style="position:absolute;top:10px;left:20px;font-size:28px;opacity:.5;">☀️</div>'
+    +'<div style="position:absolute;bottom:10px;right:22px;font-size:22px;opacity:.4;">🌊</div>'
+    // Titre club
+    +'<div style="position:relative;z-index:1;">'
+    +'<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🐆 Club des Léopards</div>'
+    // Date
+    +'<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:4px;">'+jours[today.getDay()]+'</div>'
+    +'<div style="font-size:36px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.15);">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:3px;">'+today.getFullYear()+'</div>'
+    // Encaissé + places libres sous la date
+    +'<div style="display:flex;gap:10px;margin-top:14px;justify-content:center;">'
+    +'<div style="background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border-radius:12px;padding:10px 18px;flex:1;max-width:140px;">'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">💰 Encaissé</div>'
+    +'<div style="font-size:20px;font-weight:800;color:#fff;">'+enc+'€</div>'
     +'</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto;">'
-    +[{icon:'👥',val:fams.length,lbl:'Familles',color:'#3B82F6',bg:'#EFF6FF',tab:'membres'},
-      {icon:'📅',val:allResas.length,lbl:'Réservations',color:'#F97316',bg:'#FFF7ED',tab:'reservations'},
-    ].map(function(k){return '<div onclick="setAdminTab(\''+k.tab+'\')" style="background:'+k.bg+';border-radius:12px;padding:14px;cursor:pointer;border:1.5px solid '+k.color+'15;">'
-      +'<div style="font-size:20px;margin-bottom:4px;">'+k.icon+'</div>'
-      +'<div style="font-size:22px;font-weight:800;color:'+k.color+';font-family:Syne,sans-serif;line-height:1;">'+k.val+'</div>'
-      +'<div style="font-size:11px;font-weight:600;color:#374151;margin-top:2px;">'+k.lbl+'</div>'
-      +'</div>';}).join('')+'</div>'
+    +'<div style="background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border-radius:12px;padding:10px 18px;flex:1;max-width:140px;">'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">🏖️ Places libres</div>'
+    +'<div style="font-size:20px;font-weight:800;color:#fff;">'+placesLibres+'</div>'
+    +'</div>'
+    +'</div>'
+    +'</div></div>'
+
+    // ── 2 colonnes ───────────────────────────────────────────────
     +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">'
-    // Colonne gauche
+
+    // Col gauche : taux remplissage + en attente
     +'<div style="display:flex;flex-direction:column;gap:12px;">'
-    +'<div class="wcard"><div class="wcard-title"><span>📊</span> Taux de remplissage</div>'
-    +[{label:'🌸 Printemps',color:'#10B981',pct:Math.min(100,Math.round(kids.length*0.5/maxParSaison*100))},
-      {label:'☀️ Été',color:'#FF6B35',pct:Math.min(100,Math.round(kids.length/maxParSaison*100))},
-      {label:'🍂 Automne',color:'#F59E0B',pct:Math.min(100,Math.round(kids.length*0.3/maxParSaison*100))},
-    ].map(function(s){return '<div style="margin-bottom:9px;">'
-      +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px;"><span>'+s.label+'</span><span style="color:'+s.color+';">'+s.pct+'%</span></div>'
-      +'<div style="background:#F3F4F6;border-radius:5px;height:7px;overflow:hidden;"><div style="background:'+s.color+';height:100%;width:'+s.pct+'%;border-radius:5px;"></div></div></div>';}).join('')+'</div>'
-    +(attResas.length?'<div class="wcard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-      +'<div class="wcard-title" style="margin-bottom:0;"><span>⏳</span> En attente</div>'
-      +'<button onclick="setAdminTab(\'reservations\')" style="font-size:11px;color:#F97316;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
-      +attResas.slice(0,3).map(function(r){return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F9FAFB;">'
-        +'<div style="width:30px;height:30px;border-radius:8px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;font-size:14px;">📥</div>'
-        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+r.nom+'</div>'
-        +'<div style="font-size:10px;color:#9CA3AF;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div></div>'
-        +'<button onclick="setAdminTab(\'reservations\')" style="padding:4px 10px;background:#10B981;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider</button></div>';}).join('')
+    +'<div style="background:linear-gradient(135deg,#E0F7FA,#B2EBF2);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,153,230,.1);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+    +'<span style="font-size:20px;">📊</span>'
+    +'<span style="font-size:14px;font-weight:800;color:#006064;font-family:Syne,sans-serif;">Taux de remplissage</span>'
+    +'</div>'
+    +[{label:'🌸 Printemps',color:'#00BFA5',pct:Math.min(100,Math.round(kids.length*0.5/maxPlaces*100))},
+      {label:'☀️ Été',color:'#FF6B35',pct:Math.min(100,Math.round(kids.length/maxPlaces*100))},
+      {label:'🍂 Automne',color:'#FFB300',pct:Math.min(100,Math.round(kids.length*0.3/maxPlaces*100))},
+    ].map(function(s){return '<div style="margin-bottom:10px;">'
+      +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:4px;color:#004D40;"><span>'+s.label+'</span><span style="color:'+s.color+';">'+s.pct+'%</span></div>'
+      +'<div style="background:rgba(255,255,255,.6);border-radius:6px;height:8px;overflow:hidden;"><div style="background:'+s.color+';height:100%;width:'+s.pct+'%;border-radius:6px;"></div></div></div>';}).join('')
+    +'</div>'
+
+    +(attResas.length?'<div style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(255,160,0,.1);">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+      +'<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">⏳</span><span style="font-size:14px;font-weight:800;color:#E65100;font-family:Syne,sans-serif;">En attente</span></div>'
+      +'<button onclick="setAdminTab(\'reservations\')" style="font-size:11px;color:#FF6B35;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
+      +attResas.slice(0,3).map(function(r){return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,193,7,.3);">'
+        +'<div style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:14px;">📥</div>'
+        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#BF360C;">'+r.nom+'</div>'
+        +'<div style="font-size:10px;color:#E65100;">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div></div>'
+        +'<button onclick="setAdminTab(\'reservations\')" style="padding:4px 10px;background:#FF6B35;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider</button></div>';}).join('')
       +'</div>':'')
     +'</div>'
-    // Colonne droite
+
+    // Col droite : derniers inscrits + répartition âge
     +'<div style="display:flex;flex-direction:column;gap:12px;">'
-    +'<div class="wcard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>👤</span> Derniers inscrits</div>'
-    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#0099E6;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
+    +'<div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,150,136,.1);">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+    +'<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">👤</span><span style="font-size:14px;font-weight:800;color:#1B5E20;font-family:Syne,sans-serif;">Derniers inscrits</span></div>'
+    +'<button onclick="setAdminTab(\'membres\')" style="font-size:11px;color:#00897B;background:none;border:none;cursor:pointer;font-weight:700;">Voir tout →</button></div>'
     +(derniersMembres.length?derniersMembres.map(function(m){
       var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
-      var col=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'][(m.nom||'').charCodeAt(0)%5];
-      return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F9FAFB;">'
-        +'<div style="width:32px;height:32px;border-radius:9px;background:'+col+'18;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">'+ini+'</div>'
-        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+m.prenom+' '+m.nom+'</div>'
-        +'<div style="font-size:10px;color:#9CA3AF;">'+(m.children||[]).length+' enfant'+((m.children||[]).length>1?'s':'')+'</div></div></div>';}).join('')
-      :'<div style="text-align:center;color:#9CA3AF;padding:12px;font-size:13px;">Aucun membre</div>')
+      var cols=['#0099E6','#FF6B35','#00BFA5','#FFB300','#9C27B0'];
+      var col=cols[(m.nom||'').charCodeAt(0)%cols.length];
+      return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(76,175,80,.2);">'
+        +'<div style="width:32px;height:32px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">'+ini+'</div>'
+        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#1B5E20;">'+m.prenom+' '+m.nom+'</div>'
+        +'<div style="font-size:10px;color:#388E3C;">'+(m.children||[]).length+' enfant'+((m.children||[]).length>1?'s':'')+'</div></div></div>';}).join('')
+      :'<div style="text-align:center;color:#81C784;padding:12px;font-size:13px;">Aucun membre</div>')
     +'</div>'
-    +'<div class="wcard"><div class="wcard-title"><span>👶</span> Répartition par âge</div>'
+
+    +'<div style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,119,200,.1);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+    +'<span style="font-size:20px;">👶</span>'
+    +'<span style="font-size:14px;font-weight:800;color:#0D47A1;font-family:Syne,sans-serif;">Répartition par âge</span>'
+    +'</div>'
     +buildDashFreqNew(kids)
     +'</div>'
     +'</div>'
     +'</div>';
 }
+
 
 
 function renderFactureTab(){
@@ -4629,6 +4671,9 @@ window.toggleFacKid=toggleFacKid;
 window.toutDecocherFac=toutDecocherFac;
 window.genererFacturePDF=genererFacturePDF;
 window.envoyerFactureEmail=envoyerFactureEmail;
+
+
+
 
 
 
