@@ -1127,6 +1127,15 @@ textarea{resize:vertical;}
 .doc-item-head:hover { background:#F9FAFB; }
 .doc-item-body { padding:0 16px 14px; border-top:1px solid #F3F4F6; }
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
+
+@media (min-width: 481px) {
+  .page { padding-bottom: 90px; }
+  .content { padding-bottom: 100px; }
+  .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); }
+}
+@media (max-width: 480px) {
+  .page { padding-bottom: 130px; }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -2246,6 +2255,7 @@ textarea{resize:vertical;}
 
 
 <script>
+
 
 
 
@@ -5276,6 +5286,7 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
+
 
 
 
