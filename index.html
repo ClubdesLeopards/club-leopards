@@ -1129,6 +1129,7 @@ textarea{resize:vertical;}
 .doc-item-body { padding:0 16px 14px; border-top:1px solid #F3F4F6; }
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -2068,21 +2069,22 @@ textarea{resize:vertical;}
   <div class="admin-login-card">
     <div class="al-logo">🐆</div>
     <div class="al-title">Espace Administrateur</div>
-    <div class="al-sub">Entrez le code d'accès pour continuer</div>
-    <div class="al-dots">
-      <div class="al-dot" id="al-d1"></div>
-      <div class="al-dot" id="al-d2"></div>
-      <div class="al-dot" id="al-d3"></div>
-      <div class="al-dot" id="al-d4"></div>
+    <div class="al-sub">Connectez-vous avec votre compte admin</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
+      <input id="admin-email" type="email" placeholder="Email administrateur"
+        style="width:100%;padding:12px 16px;border:1.5px solid #E5E7EB;border-radius:12px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;"
+        autocomplete="email">
+      <input id="admin-pass" type="password" placeholder="Mot de passe"
+        style="width:100%;padding:12px 16px;border:1.5px solid #E5E7EB;border-radius:12px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')checkAdminCode()">
     </div>
-    <div class="al-input-wrap">
-      <input class="al-input" id="al-code" type="password" maxlength="4"
-        placeholder="••••" oninput="onAdminCodeInput(this)" onkeydown="if(event.key==='Enter')checkAdminCode()">
-      <button class="al-eye" onclick="toggleAdminEye()" id="al-eye-btn">👁</button>
-    </div>
-    <div class="al-err" id="al-err"></div>
-    <button class="al-btn" onclick="checkAdminCode()">Accéder au Dashboard</button>
-    <button class="al-cancel" onclick="closeAdminLogin()">Annuler</button>
+    <button onclick="checkAdminCode()" class="al-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#FFB800,#FF8C00);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">
+      Connexion →
+    </button>
+    <button onclick="closeAdminLogin()" class="al-cancel" style="margin-top:10px;background:none;border:none;color:#9CA3AF;font-size:13px;cursor:pointer;font-family:inherit;">
+      Annuler
+    </button>
   </div>
 </div>
 
@@ -2203,6 +2205,262 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
+// ═══ SUPABASE ═══
+var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// État de l'admin connecté
+var adminUser = null;
+
+// ── Chargement initial ──
+async function chargerDonnees() {
+  try {
+    // Membres + enfants
+    var { data: membres } = await sb.from('membres').select('*, enfants(*)').order('nom');
+    if (membres) {
+      ST.members = membres.map(function(m) {
+        return {
+          id: m.id,
+          prenom: m.prenom,
+          nom: m.nom,
+          email: m.email,
+          tel: m.tel,
+          adresse: m.adresse_vacances,
+          adresse_fixe: m.adresse_fixe,
+          urgence_nom: m.urgence_nom,
+          urgence_tel: m.urgence_tel,
+          droit_image: m.droit_image,
+          children: (m.enfants||[]).map(function(e) {
+            return {
+              id: e.id,
+              prenom: e.prenom,
+              nom: e.nom,
+              name: e.prenom + ' ' + e.nom,
+              age: parseFloat(e.age) || 0,
+              dob: e.date_naissance,
+              medical: e.medical,
+              membre_id: e.membre_id
+            };
+          })
+        };
+      });
+      // Vider les données démo
+      DEMO_FAMS = [];
+    }
+
+    // Réservations
+    var { data: resas } = await sb.from('reservations')
+      .select('*, membres(prenom,nom,email), enfants(prenom,nom,age)')
+      .order('created_at', { ascending: false });
+    if (resas) {
+      ST.reservations = resas.map(function(r) {
+        return {
+          id: r.id,
+          membre_id: r.membre_id,
+          enfant_id: r.enfant_id,
+          nom: (r.membres ? r.membres.prenom + ' ' + r.membres.nom : ''),
+          email: (r.membres ? r.membres.email : ''),
+          saisonLabel: r.saison,
+          slot: { time: r.periode, date: r.semaine_label },
+          semaine_debut: r.semaine_debut,
+          semaine_fin: r.semaine_fin,
+          montant: r.montant,
+          paid: r.montant,
+          statut: r.statut === 'en_attente' ? 'en attente' : r.statut,
+          mode_paiement: r.mode_paiement,
+          notes_admin: r.notes_admin,
+          children: r.enfants ? [{ name: r.enfants.prenom+' '+r.enfants.nom, age: r.enfants.age }] : []
+        };
+      });
+      DEMO_RESAS = [];
+    }
+
+    // Paiements
+    var { data: paies } = await sb.from('paiements')
+      .select('*, membres(prenom,nom)')
+      .order('created_at', { ascending: false });
+    if (paies) {
+      DEMO_PAYMENTS = paies.map(function(p) {
+        return {
+          id: p.id,
+          nom: p.membres ? p.membres.prenom+' '+p.membres.nom : '',
+          montant: parseFloat(p.montant),
+          mode: p.mode,
+          statut: p.statut === 'paye' ? 'payé' : p.statut,
+          reference: p.reference,
+          date: p.date_paiement
+        };
+      });
+    }
+
+    // Avoirs
+    var { data: avrs } = await sb.from('avoirs').select('*').order('created_at', { ascending: false });
+    if (avrs) {
+      AVOIRS = avrs.map(function(a) {
+        return {
+          id: a.id,
+          membre_id: a.membre_id,
+          nom: a.membre_nom,
+          somme: parseFloat(a.somme),
+          motif: a.motif,
+          annee: a.annee,
+          solde: a.solde,
+          date_solde: a.date_solde
+        };
+      });
+    }
+
+    // Suivi quotidien
+    var { data: suivi } = await sb.from('suivi_quotidien').select('*').order('date', { ascending: false });
+    if (suivi) {
+      SUIVI_QUOTIDIEN = suivi;
+    }
+
+    console.log('✅ Données Supabase chargées — membres:', ST.members.length, 'resas:', ST.reservations.length);
+    if (typeof renderAdmin === 'function') renderAdmin();
+  } catch(err) {
+    console.error('❌ Erreur chargement Supabase:', err);
+    toast('Erreur connexion base de données', 'ko');
+  }
+}
+
+// ── Auth Admin Supabase ──
+async function loginAdmin(email, password) {
+  var { data, error } = await sb.auth.signInWithPassword({ email: email, password: password });
+  if (error) { toast('Email ou mot de passe incorrect', 'ko'); return false; }
+  adminUser = data.user;
+  adminUnlocked = true;
+  toast('Connexion admin réussie ✅', 'ok');
+  closeAdminLogin();
+  navigate('admin');
+  chargerDonnees();
+  return true;
+}
+
+async function logoutAdmin() {
+  await sb.auth.signOut();
+  adminUser = null;
+  adminUnlocked = false;
+  navigate('home');
+  toast('Déconnexion effectuée', 'ok');
+}
+
+// Vérifier session existante au démarrage
+async function checkSession() {
+  var { data } = await sb.auth.getSession();
+  if (data && data.session) {
+    adminUser = data.session.user;
+    adminUnlocked = true;
+    chargerDonnees();
+  }
+}
+
+// ── Inscription → Supabase ──
+async function sauvegarderInscriptionSB(membreData) {
+  try {
+    // Insérer le membre
+    var { data: membre, error: errM } = await sb.from('membres').insert({
+      prenom: membreData.prenom,
+      nom: membreData.nom,
+      email: membreData.email,
+      tel: membreData.tel,
+      adresse_vacances: membreData.adresse,
+      adresse_fixe: membreData.adresse_fixe,
+      urgence_nom: membreData.urgence_nom,
+      urgence_tel: membreData.urgence_tel,
+      droit_image: membreData.droit_image || false
+    }).select().single();
+    if (errM) throw errM;
+
+    // Insérer les enfants
+    for (var i = 0; i < (membreData.children||[]).length; i++) {
+      var ch = membreData.children[i];
+      var { error: errE } = await sb.from('enfants').insert({
+        membre_id: membre.id,
+        prenom: ch.prenom || ch.name,
+        nom: ch.nom || membreData.nom,
+        date_naissance: ch.dob || '2015-01-01',
+        age: parseFloat(ch.age) || 0,
+        medical: ch.medical || 'RAS'
+      });
+      if (errE) console.warn('Enfant non sauvegardé:', errE);
+    }
+
+    ST.membreConnecte = membre;
+    chargerDonnees();
+    return membre;
+  } catch(err) {
+    console.error('Erreur inscription SB:', err);
+    toast('Erreur sauvegarde: ' + err.message, 'ko');
+    return null;
+  }
+}
+
+// ── Réservation → Supabase ──
+async function validerResaSB(resaData) {
+  try {
+    var { error } = await sb.from('reservations').insert({
+      membre_id: resaData.membre_id,
+      enfant_id: resaData.enfant_id,
+      saison: resaData.saison,
+      semaine_label: resaData.semaine_label,
+      semaine_debut: resaData.semaine_debut,
+      semaine_fin: resaData.semaine_fin,
+      periode: resaData.periode,
+      montant: resaData.montant || 120,
+      statut: 'en_attente'
+    });
+    if (error) throw error;
+    chargerDonnees();
+    toast('Réservation envoyée ✅', 'ok');
+  } catch(err) {
+    toast('Erreur réservation: ' + err.message, 'ko');
+  }
+}
+
+// ── Valider une résa (admin) ──
+async function validerResaAdmin(resaId) {
+  var { error } = await sb.from('reservations').update({ statut: 'valide' }).eq('id', resaId);
+  if (error) { toast('Erreur validation', 'ko'); return; }
+  toast('Réservation validée ✅', 'ok');
+  chargerDonnees();
+}
+
+// ── Supprimer une résa (admin) ──
+async function supprimerResaAdmin(resaId) {
+  if (!confirm('Supprimer cette réservation ?')) return;
+  var { error } = await sb.from('reservations').delete().eq('id', resaId);
+  if (error) { toast('Erreur suppression', 'ko'); return; }
+  toast('Réservation supprimée', 'ok');
+  chargerDonnees();
+}
+
+// ── Ajouter un avoir ──
+async function ajouterAvoirSB(data) {
+  var { error } = await sb.from('avoirs').insert({
+    membre_id: data.membre_id || null,
+    membre_nom: data.nom,
+    somme: parseFloat(data.somme),
+    motif: data.motif,
+    annee: data.annee || new Date().getFullYear()
+  });
+  if (error) { toast('Erreur avoir', 'ko'); return; }
+  toast('Avoir ajouté ✅', 'ok');
+  chargerDonnees();
+}
+
+// ── Solder un avoir ──
+async function solderAvoirSB(avoirId) {
+  var { error } = await sb.from('avoirs').update({ solde: true, date_solde: new Date().toISOString().split('T')[0] }).eq('id', avoirId);
+  if (error) { toast('Erreur', 'ko'); return; }
+  toast('Avoir soldé ✅', 'ok');
+  chargerDonnees();
+}
+
+
 
 
 
@@ -2686,15 +2944,12 @@ function toggleAdminEye() {
   if(btn) btn.textContent=inp.type==='password'?'👁':'🙈';
 }
 function checkAdminCode() {
-  var inp=document.getElementById('al-code'); var err=document.getElementById('al-err');
-  if(!inp) return;
-  if(inp.value.trim()==='2026'){
-    adminUnlocked=true; closeAdminLogin(); _navigateTo('admin'); toast('Bienvenue Admin','ok');
-  } else {
-    if(inp) inp.classList.add('error');
-    if(err) err.textContent='Code incorrect.';
-    setTimeout(function(){if(inp){inp.classList.remove('error');inp.value='';}updateAlDots('');},900);
-  }
+  var emailEl = document.getElementById('admin-email');
+  var passEl  = document.getElementById('admin-pass');
+  var email   = emailEl ? emailEl.value.trim() : '';
+  var pass    = passEl  ? passEl.value.trim()  : '';
+  if (!email || !pass) { toast('Email et mot de passe requis', 'ko'); return; }
+  loginAdmin(email, pass);
 }
 
 // ═══ ADMIN DASHBOARD ═══
@@ -4668,6 +4923,10 @@ window.envoyerFactureEmail=envoyerFactureEmail;
 
 
 
+
+
+
+document.addEventListener('DOMContentLoaded', function(){ checkSession(); });
 
 
 </script>
