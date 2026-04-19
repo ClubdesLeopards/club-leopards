@@ -1275,39 +1275,48 @@ textarea{resize:vertical;}
 
   <!-- ══════════ PAGE : INSCRIPTION ══════════ -->
   <div class="page" id="page-inscription">
-    <div class="inner-header">
-      <div class="ih-row">
-        <button class="ih-back" onclick="inscBack()">←</button>
-        <div class="ih-title" id="insc-header-title">📋 Inscription</div>
+
+    <!-- Header coloré dégradé -->
+    <div style="background:linear-gradient(135deg,#0077C8 0%,#0099E6 60%,#00C4FF 100%);padding:30px 20px 56px;position:relative;overflow:hidden;text-align:center;">
+      <div style="position:absolute;top:-40px;right:-30px;width:160px;height:160px;background:rgba(255,255,255,.08);border-radius:50%;"></div>
+      <div style="position:absolute;bottom:-30px;left:-20px;width:100px;height:100px;background:rgba(255,200,0,.15);border-radius:50%;"></div>
+      <button onclick="_navigateTo('home')" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,.2);border:none;border-radius:10px;color:#fff;padding:8px 12px;cursor:pointer;font-size:18px;font-family:inherit;">←</button>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:36px;margin-bottom:8px;">📋</div>
+        <div style="font-size:20px;font-weight:800;color:#fff;font-family:Syne,sans-serif;margin-bottom:3px;">Inscription</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);">Club des Léopards · Saison 2026</div>
       </div>
     </div>
-    <div class="content">
 
-      <!-- ── STEPPER 3 étapes ── -->
-      <div class="insc-stepper">
-        <div class="ist-item active" id="ist-1">
-          <div class="ist-circle">1</div>
-          <div class="ist-label">Enfant</div>
-        </div>
-        <div class="ist-line" id="isl-1"></div>
-        <div class="ist-item" id="ist-2">
-          <div class="ist-circle">2</div>
-          <div class="ist-label">Autorisations</div>
-        </div>
-        <div class="ist-line" id="isl-2"></div>
-        <div class="ist-item" id="ist-3">
-          <div class="ist-circle">✓</div>
-          <div class="ist-label">Récap.</div>
-        </div>
+    <!-- Stepper flottant -->
+    <div style="margin:-26px 20px 0;background:#fff;border-radius:18px;padding:14px 20px;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;align-items:center;gap:0;position:relative;z-index:10;margin-bottom:0;">
+      <div class="ist-item active" id="ist-1" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
+        <div class="ist-circle" style="width:30px;height:30px;border-radius:50%;background:#0099E6;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">1</div>
+        <div style="font-size:10px;font-weight:700;color:#0099E6;">Enfant</div>
       </div>
+      <div style="flex:1;height:2px;background:#E5E7EB;" id="isl-1"></div>
+      <div class="ist-item" id="ist-2" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
+        <div class="ist-circle" style="width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#9CA3AF;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">2</div>
+        <div style="font-size:10px;font-weight:700;color:#9CA3AF;">Autorisations</div>
+      </div>
+      <div style="flex:1;height:2px;background:#E5E7EB;" id="isl-2"></div>
+      <div class="ist-item" id="ist-3" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
+        <div class="ist-circle" style="width:30px;height:30px;border-radius:50%;background:#E5E7EB;color:#9CA3AF;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">✓</div>
+        <div style="font-size:10px;font-weight:700;color:#9CA3AF;">Récap.</div>
+      </div>
+    </div>
 
-      <!-- ══ ÉTAPE 1 : ENFANT & RESPONSABLE ══ -->
+    <div class="content" style="padding-top:16px;">
+
+      <!-- ══ ÉTAPE 1 ══ -->
       <div id="insc-step-1">
 
-        <!-- ── L'ENFANT ── -->
-        <div class="wcard">
-          <div class="wcard-title"><span>🧒</span> L'enfant</div>
-
+        <!-- Section Enfant principal -->
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #0099E6;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0077C8,#00BFFF);display:flex;align-items:center;justify-content:center;font-size:18px;">🧒</div>
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">L'enfant</div>
+          </div>
           <div class="form-row">
             <div class="fg">
               <label>Nom *</label>
@@ -1320,27 +1329,38 @@ textarea{resize:vertical;}
               <span class="err-txt" id="err-prenom"></span>
             </div>
           </div>
-
           <div class="form-row">
             <div class="fg">
               <label>Date de naissance *</label>
-              <div style="display:flex;gap:10px;align-items:center;">
-                <input id="i-dob" type="date" style="flex:1;" oninput="calcAge()">
-                <div id="i-age-display" style="background:linear-gradient(135deg,#1A6FD4,#7C3AED);color:#fff;padding:8px 14px;border-radius:12px;font-size:14px;font-weight:700;white-space:nowrap;min-width:70px;text-align:center;">— ans</div>
-              </div>
+              <input id="i-dob" type="date" style="width:100%;" oninput="calcAge()">
+              <div id="i-age-display" style="margin-top:6px;padding:8px 12px;border-radius:10px;background:#EFF6FF;font-size:13px;font-weight:700;color:#0099E6;text-align:center;">— ans</div>
+              <div id="i-age-alerte" style="display:none;margin-top:6px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:10px;padding:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center;">⛔ Inscription impossible — 13 ans maximum</div>
               <span class="err-txt" id="err-dob"></span>
             </div>
             <div class="fg">
-              <label>Allergies / Conditions médicales</label>
-              <textarea id="i-medical" rows="2" placeholder="Aucune — ou précisez (allergie, asthme…)" style="height:100%;min-height:48px;resize:none;"></textarea>
+              <label>Allergies / Médical</label>
+              <textarea id="i-medical" rows="3" placeholder="Aucune — ou précisez…" style="resize:none;"></textarea>
             </div>
           </div>
         </div>
 
-        <!-- ── COORDONNÉES ── -->
-        <div class="wcard">
-          <div class="wcard-title"><span>📍</span> Coordonnées</div>
+        <!-- Section Autres enfants — juste après L'enfant -->
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #00BFFF;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0099E6,#00C4FF);display:flex;align-items:center;justify-content:center;font-size:18px;">👨‍👩‍👧</div>
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Autres enfants à inscrire</div>
+          </div>
+          <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">Même famille ? Ajoutez les autres enfants ici.</div>
+          <div id="extra-enfants-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <button onclick="ajouterEnfantInscription()" style="width:100%;padding:10px;background:#EFF6FF;color:#0099E6;border:2px dashed #BFDBFE;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un autre enfant</button>
+        </div>
 
+        <!-- Section Coordonnées -->
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #FF6B35;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#FF6B35,#FF8C00);display:flex;align-items:center;justify-content:center;font-size:18px;">📍</div>
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Coordonnées</div>
+          </div>
           <div class="form-row">
             <div class="fg">
               <label>Adresse de vacances *</label>
@@ -1352,10 +1372,9 @@ textarea{resize:vertical;}
               <input id="i-adresse" placeholder="12 rue des Palmiers, Paris">
             </div>
           </div>
-
           <div class="form-row">
             <div class="fg">
-              <label>Téléphone de vacances *</label>
+              <label>Téléphone *</label>
               <input id="i-tel" type="tel" placeholder="06 00 00 00 00">
               <span class="err-txt" id="err-tel"></span>
             </div>
@@ -1367,10 +1386,12 @@ textarea{resize:vertical;}
           </div>
         </div>
 
-        <!-- ── RESPONSABLE LÉGAL ── -->
-        <div class="wcard">
-          <div class="wcard-title"><span>👤</span> Responsable légal</div>
-
+        <!-- Section Responsable légal -->
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #8B5CF6;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Responsable légal</div>
+          </div>
           <div class="form-row">
             <div class="fg">
               <label>Nom *</label>
@@ -1383,7 +1404,6 @@ textarea{resize:vertical;}
               <span class="err-txt" id="err-resp-prenom"></span>
             </div>
           </div>
-
           <div class="form-row">
             <div class="fg">
               <label>Lien avec l'enfant *</label>
@@ -1395,96 +1415,76 @@ textarea{resize:vertical;}
               </select>
             </div>
             <div class="fg">
-              <label>Contact d'urgence (si différent)</label>
+              <label>Contact d'urgence</label>
               <input id="i-urgence" placeholder="Nom · Téléphone">
             </div>
           </div>
         </div>
 
-        <!-- Enfants supplémentaires -->
-        <div class="wcard" style="margin-bottom:12px;">
-          <div class="wcard-title"><span>👶</span> Autres enfants à inscrire</div>
-          <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">Vous pouvez ajouter d'autres enfants de la même famille.</div>
-          <div id="extra-enfants-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
-          <button onclick="ajouterEnfantInscription()" style="width:100%;padding:10px;background:#EFF6FF;color:#0099E6;border:1.5px dashed #BFDBFE;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">+ Ajouter un autre enfant</button>
-        </div>
-        <button class="btn btn-blue btn-full" style="padding:15px;font-size:15px;" onclick="inscNext(1)">
+        <button class="btn btn-blue btn-full" style="padding:15px;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#0077C8,#0099E6);box-shadow:0 4px 16px rgba(0,119,200,.3);" onclick="inscNext(1)">
           Suivant → Autorisations
         </button>
       </div>
 
-      <!-- ══ ÉTAPE 2 : AUTORISATIONS ══ -->
+      <!-- ══ ÉTAPE 2 ══ -->
       <div id="insc-step-2" style="display:none;">
-        <div class="wcard">
-          <div class="wcard-title"><span>📸</span> Droit à l'image</div>
-          <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:20px;">
-            Dans le cadre de nos activités, des photos de votre enfant pourront être prises pour illustrer notre communication.
-          </p>
-
-          <!-- Checkbox simple -->
-          <label id="droit-label" onclick="toggleDroit()" style="display:flex;align-items:flex-start;gap:14px;padding:18px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid #BBF7D0;border-radius:16px;cursor:pointer;transition:all .2s;">
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #10B981;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:18px;">📸</div>
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Droit à l'image</div>
+          </div>
+          <p style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:16px;">Dans le cadre de nos activités, des photos de votre enfant pourront être prises pour illustrer notre communication.</p>
+          <label id="droit-label" onclick="toggleDroit()" style="display:flex;align-items:flex-start;gap:14px;padding:16px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid #BBF7D0;border-radius:14px;cursor:pointer;">
             <div id="droit-checkbox" style="width:26px;height:26px;border-radius:8px;border:2px solid #10B981;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:1px;"></div>
-            <div style="font-size:14px;color:#065F46;line-height:1.6;">
-              <strong>J'autorise</strong> le Club des Léopards à publier des photos de mon enfant sur ses supports de communication.
-            </div>
+            <div style="font-size:13px;color:#065F46;line-height:1.6;"><strong>J'autorise</strong> le Club des Léopards à publier des photos de mon enfant.</div>
           </label>
-
-          <p style="font-size:12px;color:#9CA3AF;margin-top:10px;line-height:1.5;">
-            ℹ️ Si vous ne cochez pas cette case, aucune photo de votre enfant ne sera publiée.
-          </p>
-          <span class="err-txt" id="err-droit" style="display:block;margin-top:4px;"></span>
+          <span class="err-txt" id="err-droit" style="display:block;margin-top:6px;"></span>
         </div>
-
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <button class="btn btn-ghost" style="flex:1;padding:14px;" onclick="inscBack()">← Retour</button>
-          <button class="btn btn-blue" style="flex:2;padding:14px;font-size:15px;" onclick="inscNext(2)">Suivant → Récapitulatif</button>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" style="flex:1;padding:14px;border-radius:14px;" onclick="inscBack()">← Retour</button>
+          <button class="btn btn-blue" style="flex:2;padding:14px;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#0077C8,#0099E6);" onclick="inscNext(2)">Suivant → Récap.</button>
         </div>
       </div>
 
-      <!-- ══ ÉTAPE 3 : RÉCAPITULATIF ══ -->
+      <!-- ══ ÉTAPE 3 ══ -->
       <div id="insc-step-3" style="display:none;">
         <div id="insc-recap-content"></div>
-
-        <!-- Engagements -->
-        <div class="wcard" style="margin-bottom:12px;">
-          <div class="wcard-title"><span>📜</span> Engagements & CGV</div>
-
-          <div style="display:flex;gap:10px;margin-bottom:16px;">
-            <button onclick="ouvrirDocModal('ri')" style="flex:1;padding:14px 10px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:14px;cursor:pointer;font-family:inherit;text-align:center;">
-              <div style="font-size:22px;margin-bottom:6px;">📋</div>
+        <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #F59E0B;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;font-size:18px;">📜</div>
+            <div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Engagements</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <button onclick="ouvrirDocModal('ri')" style="flex:1;padding:12px 8px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;cursor:pointer;font-family:inherit;text-align:center;">
+              <div style="font-size:20px;margin-bottom:4px;">📋</div>
               <div style="font-size:12px;font-weight:700;color:#1565C0;">Règlement intérieur</div>
-              <div style="font-size:10px;color:#93C5FD;margin-top:2px;">Lire →</div>
             </button>
-            <button onclick="ouvrirDocModal('cgv')" style="flex:1;padding:14px 10px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:14px;cursor:pointer;font-family:inherit;text-align:center;">
-              <div style="font-size:22px;margin-bottom:6px;">📄</div>
+            <button onclick="ouvrirDocModal('cgv')" style="flex:1;padding:12px 8px;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:12px;cursor:pointer;font-family:inherit;text-align:center;">
+              <div style="font-size:20px;margin-bottom:4px;">📄</div>
               <div style="font-size:12px;font-weight:700;color:#065F46;">CGV</div>
-              <div style="font-size:10px;color:#6EE7B7;margin-top:2px;">Lire →</div>
             </button>
           </div>
           <div style="display:flex;flex-direction:column;gap:10px;">
             <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-transform:none;letter-spacing:0;">
-              <input type="checkbox" id="i-accept-ri" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1A6FD4;">
-              <span>J'ai lu et j'accepte le <strong>règlement intérieur</strong> du Club des Léopards *</span>
+              <input type="checkbox" id="i-accept-ri" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#0099E6;">
+              <span>J'ai lu et j'accepte le <strong>règlement intérieur</strong> *</span>
             </label>
             <span class="err-txt" id="err-accept-ri"></span>
-
             <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-transform:none;letter-spacing:0;">
-              <input type="checkbox" id="i-accept-cgv" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1A6FD4;">
-              <span>J'accepte les <strong>conditions générales de vente</strong> *</span>
+              <input type="checkbox" id="i-accept-cgv" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#0099E6;">
+              <span>J'accepte les <strong>CGV</strong> *</span>
             </label>
             <span class="err-txt" id="err-accept-cgv"></span>
-
             <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-transform:none;letter-spacing:0;">
-              <input type="checkbox" id="i-accept-resp" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#1A6FD4;">
-              <span>Je certifie être le <strong>responsable légal</strong> de l'enfant et l'autoriser à participer aux activités *</span>
+              <input type="checkbox" id="i-accept-resp" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#0099E6;">
+              <span>Je certifie être le <strong>responsable légal</strong> *</span>
             </label>
             <span class="err-txt" id="err-accept-resp"></span>
           </div>
         </div>
-
-        <div style="display:flex;gap:10px;margin-top:4px;">
-          <button class="btn btn-ghost" style="flex:1;padding:14px;" onclick="inscBack()">← Modifier</button>
-          <button class="btn btn-amber" style="flex:2;padding:14px;font-size:15px;" onclick="submitInscription()">✅ Confirmer</button>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" style="flex:1;padding:14px;border-radius:14px;" onclick="inscBack()">← Modifier</button>
+          <button style="flex:2;padding:14px;font-size:15px;border-radius:14px;background:linear-gradient(135deg,#FF6B35,#FF8C00);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 4px 14px rgba(255,107,53,.3);" onclick="submitInscription()">✅ Confirmer l'inscription</button>
         </div>
       </div>
 
@@ -1493,127 +1493,64 @@ textarea{resize:vertical;}
 
   <!-- ══════════ PAGE : RÉSERVATION ══════════ -->
   <div class="page" id="page-reservation">
-    <div class="inner-header">
-      <div class="ih-row">
-        <button class="ih-back" id="resa-back-btn" onclick="resaBack()">←</button>
-        <div class="ih-title" id="resa-season-title">🏖️ Réserver</div>
+
+    <!-- Header orange-or -->
+    <div style="background:linear-gradient(135deg,#FF6B35 0%,#FF8C00 60%,#FFC200 100%);padding:30px 20px 56px;position:relative;overflow:hidden;text-align:center;">
+      <div style="position:absolute;top:-40px;right:-20px;width:160px;height:160px;background:rgba(255,255,255,.08);border-radius:50%;"></div>
+      <div style="position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;background:rgba(0,0,0,.06);border-radius:50%;"></div>
+      <button id="resa-back-btn" onclick="resaBack()" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,.25);border:none;border-radius:10px;color:#fff;padding:8px 12px;cursor:pointer;font-size:18px;font-family:inherit;">←</button>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:36px;margin-bottom:8px;">🏖️</div>
+        <div id="resa-season-title" style="font-size:22px;font-weight:800;color:#fff;font-family:Syne,sans-serif;margin-bottom:4px;">Réserver</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8);">Choisissez votre saison</div>
       </div>
     </div>
-    <div class="content">
 
-      <!-- Vue choix saisons (défaut) -->
-      <div id="rv-choix">
-        <p style="text-align:center;font-size:14px;color:#9CA3AF;margin-bottom:20px;">Choisissez votre saison</p>
-        <div style="display:flex;flex-direction:column;gap:14px;">
+    <div class="content" style="padding-top:0;">
+      <!-- Choix saisons -->
+      <div id="rv-choix" style="margin-top:-28px;position:relative;z-index:5;">
+        <div style="display:flex;flex-direction:column;gap:12px;text-align:center;">
 
-          <div onclick="goSaisonDirect('ete')" style="background:linear-gradient(135deg,#FFF1EC,#FFE4D6);border:1.5px solid #FFC4A8;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
-            <div style="font-size:40px;">☀️</div>
-            <div style="flex:1;">
-              <div style="font-size:16px;font-weight:800;color:#C2410C;margin-bottom:4px;">Été 2026</div>
-              <div style="font-size:13px;color:#78716C;">29 juin → 28 août · 9 semaines</div>
-              <div style="font-size:12px;color:#EF6B4A;margin-top:4px;font-weight:600;">9h30–12h30 · 15h00–18h15</div>
-            </div>
-            <div style="font-size:22px;color:#FFC4A8;">→</div>
-          </div>
-
-          <div onclick="goSaisonDirect('automne')" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1.5px solid #FDE68A;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
-            <div style="font-size:40px;">🍂</div>
-            <div style="flex:1;">
-              <div style="font-size:16px;font-weight:800;color:#9A3412;margin-bottom:4px;">Automne 2026</div>
-              <div style="font-size:13px;color:#4B5563;">19 oct. → 30 oct. · 2 semaines</div>
-              <div style="font-size:12px;color:#F59E0B;margin-top:4px;font-weight:600;">10h00–12h30 · 15h00–18h00</div>
-            </div>
-            <div style="font-size:22px;color:#FDE68A;">→</div>
-          </div>
-
-          <div onclick="goSaisonDirect('printemps')" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1.5px solid #BBF7D0;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
+          <div onclick="goSaisonDirect('printemps')" style="background:#fff;border-radius:18px;padding:20px 18px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.1);border-left:4px solid #10B981;display:flex;align-items:center;gap:16px;transition:transform .15s;" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
             <div style="font-size:40px;">🌸</div>
-            <div style="flex:1;">
-              <div style="font-size:16px;font-weight:800;color:#065F46;margin-bottom:4px;">Printemps 2027</div>
-              <div style="font-size:13px;color:#4B5563;">5 avril → 30 avril · 4 semaines</div>
-              <div style="font-size:12px;color:#10B981;margin-top:4px;font-weight:600;">10h00–12h30 · 15h00–18h00</div>
+            <div style="flex:1;text-align:left;">
+              <div style="font-size:16px;font-weight:800;color:#065F46;font-family:Syne,sans-serif;">Printemps 2027</div>
+              <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">5 avr. → 30 avr. · 4 semaines</div>
+              <div style="font-size:13px;font-weight:700;color:#10B981;margin-top:4px;">120€ / semaine</div>
             </div>
-            <div style="font-size:22px;color:#BBF7D0;">→</div>
+            <div style="font-size:22px;color:#10B981;">›</div>
           </div>
 
-          <div onclick="navigate('mes-resa')" style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:20px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;">
-            <div style="font-size:40px;">📅</div>
-            <div style="flex:1;">
-              <div style="font-size:16px;font-weight:800;color:#1565C0;margin-bottom:4px;">Mes réservations</div>
-              <div style="font-size:13px;color:#4B5563;">Historique &amp; suivi</div>
+          <div onclick="goSaisonDirect('ete')" style="background:#fff;border-radius:18px;padding:20px 18px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.1);border-left:4px solid #FF6B35;display:flex;align-items:center;gap:16px;transition:transform .15s;" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
+            <div style="font-size:40px;">☀️</div>
+            <div style="flex:1;text-align:left;">
+              <div style="font-size:16px;font-weight:800;color:#C2410C;font-family:Syne,sans-serif;">Été 2026</div>
+              <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">29 juin → 28 août · 9 semaines</div>
+              <div style="font-size:13px;font-weight:700;color:#FF6B35;margin-top:4px;">120€ / semaine</div>
             </div>
-            <div style="font-size:22px;color:#BFDBFE;">→</div>
+            <div style="font-size:22px;color:#FF6B35;">›</div>
+          </div>
+
+          <div onclick="goSaisonDirect('automne')" style="background:#fff;border-radius:18px;padding:20px 18px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.1);border-left:4px solid #F59E0B;display:flex;align-items:center;gap:16px;transition:transform .15s;" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
+            <div style="font-size:40px;">🍂</div>
+            <div style="flex:1;text-align:left;">
+              <div style="font-size:16px;font-weight:800;color:#92400E;font-family:Syne,sans-serif;">Automne 2026</div>
+              <div style="font-size:12px;color:#9CA3AF;margin-top:2px;">19 oct. → 30 oct. · 2 semaines</div>
+              <div style="font-size:13px;font-weight:700;color:#F59E0B;margin-top:4px;">120€ / semaine</div>
+            </div>
+            <div style="font-size:22px;color:#F59E0B;">›</div>
           </div>
 
         </div>
       </div>
-      <!-- Vue semaines d'une saison (masquée par défaut) -->
-      <div id="rv-semaines" style="display:none;">
-        <div id="resa-saison-banner" style="border-radius:16px;padding:14px 16px;margin-bottom:16px;"></div>
+
+      <!-- Détail semaines -->
+      <div id="rv-semaines" style="display:none;margin-top:-28px;position:relative;z-index:5;">
         <div id="resa-semaines-content"></div>
-        <!-- Barre panier sticky -->
-        <div id="client-panier-bar" style="display:none;position:sticky;bottom:80px;z-index:50;margin:0 -4px 16px;">
-          <div style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);border-radius:18px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 28px rgba(0,0,0,.25);">
-            <div style="color:#fff;">
-              <div style="font-size:10px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Mon panier</div>
-              <div id="panier-client-summary" style="font-size:14px;font-weight:700;">0 prestation · 0€</div>
-            </div>
-            <button onclick="openClientPanier()" style="background:#E9B10D;color:#1A1A2E;border:none;border-radius:12px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">🛒 Voir →</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ══ MODAL PANIER CLIENT ══ -->
-  <div id="client-panier-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:flex-end;justify-content:center;flex-direction:column;">
-    <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding-bottom:32px;">
-      <div style="width:40px;height:4px;background:#E5E7EB;border-radius:2px;margin:12px auto 0;"></div>
-      <div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:18px;font-weight:700;color:#1A1A2E;">🛒 Mon panier</div>
-        <button onclick="closeClientPanier()" style="background:#F3F4F6;border:none;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:16px;">✕</button>
-      </div>
-      <div id="client-panier-items" style="padding:0 20px;"></div>
-      <div id="client-panier-footer" style="padding:16px 20px 0;border-top:1px solid #F3F4F6;margin-top:8px;display:none;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
-          <div style="font-size:16px;font-weight:700;">Total</div>
-          <div id="client-panier-total-amt" style="font-size:22px;font-weight:700;color:#E9B10D;">0€</div>
-        </div>
-        <div style="background:#EFF6FF;border-radius:12px;padding:12px;margin-bottom:14px;font-size:13px;color:#1565C0;line-height:1.5;">
-          📬 Votre demande sera transmise à l'équipe. La réservation est confirmée à réception du paiement.
-        </div>
-        <button onclick="envoyerDemandeReservation()" style="width:100%;padding:16px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
-          ✅ Envoyer ma demande
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- ══ MODAL VALIDATION RÉSA ADMIN ══ -->
-  <div id="validation-resa-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:20px;width:92%;max-width:400px;padding:24px;">
-      <div style="font-size:17px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">✅ Valider la réservation</div>
-      <div id="validation-resa-info" style="font-size:13px;color:#9CA3AF;margin-bottom:16px;"></div>
-      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;">Mode de paiement :</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Carte bleue" style="accent-color:#1A6FD4;"> 💳 Carte bleue</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Virement"> 🏦 Virement</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Chèque"> 📝 Chèque</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Chèques vacances"> 🏖️ Chèques vacances</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Espèces"> 💵 Espèces</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Avoirs"> 🎫 Avoirs</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:14px;"><input type="radio" name="mode-paiement" value="Offert"> 🎁 Offert</label>
-      </div>
-      <div class="err-txt" id="err-mode-paiement" style="margin-bottom:8px;"></div>
-      <div style="display:flex;gap:10px;">
-        <button onclick="fermerValidationResa()" style="flex:1;padding:13px;background:#F3F4F6;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Annuler</button>
-        <button onclick="confirmerValidationResa()" style="flex:2;padding:13px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">✅ Confirmer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════ PAGE : MES RÉSA ══════════ -->
   <div class="page" id="page-mes-resa">
     <div class="inner-header">
       <div class="ih-row">
@@ -1626,33 +1563,63 @@ textarea{resize:vertical;}
 
   <!-- ══════════ PAGE : PROFIL ══════════ -->
   <div class="page" id="page-profil">
-    <div style="background:linear-gradient(135deg,#0A0F1E 0%,#0D1B3E 50%,#0A2E5C 100%);padding:32px 20px 50px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;background:rgba(255,107,53,.1);border-radius:50%;"></div>
-      <div style="font-size:40px;margin-bottom:10px;">🐆</div>
-      <div style="font-size:20px;font-weight:800;color:#fff;font-family:Syne,sans-serif;margin-bottom:4px;">Mon Profil</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.5);">Club des Léopards 2026</div>
-    </div>
-    <div class="content" style="margin-top:-20px;position:relative;z-index:5;">
-      <div id="profil-non-connecte">
-        <div class="wcard" style="margin-bottom:12px;">
-          <div class="wcard-title"><span>🔑</span> Connexion par code</div>
-          <div style="font-size:13px;color:#6B7280;margin-bottom:12px;line-height:1.6;">Entrez votre code famille reçu par email lors de votre inscription.</div>
-          <input id="profil-code" placeholder="LEO-2026-XXXX" maxlength="14"
-            style="width:100%;padding:12px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:15px;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px;"
-            oninput="this.value=this.value.toUpperCase()">
-          <button onclick="connecterParCode()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">Se connecter</button>
-        </div>
-        <div class="wcard">
-          <div class="wcard-title"><span>✨</span> Lien magique</div>
-          <div style="font-size:13px;color:#6B7280;margin-bottom:12px;line-height:1.6;">Recevez un lien de connexion sur votre email.</div>
-          <input id="profil-magic-email" type="email" placeholder="votre@email.com"
-            style="width:100%;padding:12px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
-          <button onclick="envoyerLienMagique()" style="width:100%;padding:12px;background:linear-gradient(135deg,#FF6B35,#FF8C00);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">✉️ Envoyer le lien</button>
-        </div>
+    <!-- Header dynamique -->
+    <div style="background:linear-gradient(135deg,#0A0F1E 0%,#0D1B3E 50%,#0A2E5C 100%);padding:36px 20px 56px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-40px;right:-30px;width:160px;height:160px;background:rgba(255,107,53,.12);border-radius:50%;"></div>
+      <div style="position:absolute;bottom:-30px;left:-20px;width:120px;height:120px;background:rgba(0,153,230,.1);border-radius:50%;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8C00);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 6px 20px rgba(255,107,53,.4);">🐆</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;font-family:Syne,sans-serif;margin-bottom:4px;">Mon Profil</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.5);">Club des Léopards · Saison 2026</div>
       </div>
+    </div>
+
+    <div class="content" style="margin-top:-28px;position:relative;z-index:5;">
+
+      <!-- Non connecté -->
+      <div id="profil-non-connecte">
+
+        <!-- Un seul module avec MDP + Lien magique -->
+        <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 4px 20px rgba(0,0,0,.1);">
+
+          <!-- Header module -->
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#0077C8,#0099E6);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;">🔐</div>
+            <div style="font-size:16px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Accéder à mon profil</div>
+            <div style="font-size:13px;color:#9CA3AF;margin-top:3px;">Créez votre accès ou recevez un lien</div>
+          </div>
+
+          <!-- Onglets -->
+          <div style="display:flex;gap:0;background:#F3F4F6;border-radius:12px;padding:3px;margin-bottom:18px;">
+            <button id="profil-tab-mdp" onclick="setProfilTab('mdp')" style="flex:1;padding:9px;background:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;color:#0A0F1E;box-shadow:0 1px 4px rgba(0,0,0,.08);">🔒 Mot de passe</button>
+            <button id="profil-tab-magic" onclick="setProfilTab('magic')" style="flex:1;padding:9px;background:transparent;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;color:#9CA3AF;">✨ Lien magique</button>
+          </div>
+
+          <!-- Panel MDP -->
+          <div id="profil-panel-mdp">
+            <div style="font-size:13px;color:#6B7280;margin-bottom:12px;line-height:1.6;">Créez un mot de passe avec votre email d'inscription pour accéder à votre profil à tout moment.</div>
+            <input id="profil-email-mdp" type="email" placeholder="votre@email.com"
+              style="width:100%;padding:12px;border:2px solid #E5E7EB;border-radius:12px;font-family:inherit;font-size:14px;box-sizing:border-box;margin-bottom:8px;">
+            <input id="profil-mdp" type="password" placeholder="Mot de passe (min. 6 caractères)"
+              style="width:100%;padding:12px;border:2px solid #E5E7EB;border-radius:12px;font-family:inherit;font-size:14px;box-sizing:border-box;margin-bottom:8px;">
+            <input id="profil-mdp2" type="password" placeholder="Confirmer le mot de passe"
+              style="width:100%;padding:12px;border:2px solid #E5E7EB;border-radius:12px;font-family:inherit;font-size:14px;box-sizing:border-box;margin-bottom:14px;">
+            <button onclick="creerMotDePasse()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;box-shadow:0 4px 14px rgba(0,119,200,.3);">Créer mon accès →</button>
+          </div>
+
+          <!-- Panel Lien magique -->
+          <div id="profil-panel-magic" style="display:none;">
+            <div style="font-size:13px;color:#6B7280;margin-bottom:12px;line-height:1.6;">Recevez un lien de connexion directement sur votre adresse email. Valable 24h.</div>
+            <input id="profil-magic-email" type="email" placeholder="votre@email.com"
+              style="width:100%;padding:12px;border:2px solid #E5E7EB;border-radius:12px;font-family:inherit;font-size:14px;box-sizing:border-box;margin-bottom:14px;">
+            <button onclick="envoyerLienMagique()" style="width:100%;padding:13px;background:linear-gradient(135deg,#FF6B35,#FF8C00);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;box-shadow:0 4px 14px rgba(255,107,53,.3);">✉️ Recevoir le lien</button>
+          </div>
+
+        </div>
+
       <div id="profil-connecte" style="display:none;">
         <div id="profil-content"></div>
-        <button onclick="deconnecterProfil()" style="width:100%;padding:12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:8px;">Se déconnecter</button>
+        <button onclick="deconnecterProfil()" style="width:100%;padding:12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:10px;">Se déconnecter</button>
       </div>
     </div>
   </div>
@@ -2000,14 +1967,14 @@ textarea{resize:vertical;}
       <div class="bnav-icon">🏖️</div>
       <div class="bnav-label">Réserver</div>
     </button>
+    <button class="bnav-item" id="bn-mes-resa" onclick="navigate('mes-resa')">
+      <div class="bnav-icon">📅</div>
+      <div class="bnav-label">Mes réservations</div>
+      <div class="bnav-dot" id="resa-dot"></div>
+    </button>
     <button class="bnav-item" id="bn-profil" onclick="navigate('profil')">
       <div class="bnav-icon">👤</div>
       <div class="bnav-label">Profil</div>
-    </button>
-    <button class="bnav-item" id="bn-mes-resa" onclick="navigate('mes-resa')">
-      <div class="bnav-icon">📅</div>
-      <div class="bnav-label">Mes résa</div>
-      <div class="bnav-dot" id="resa-dot"></div>
     </button>
     <button class="bnav-item" id="bn-admin" onclick="navigate('admin')">
       <div class="bnav-icon">⚙️</div>
@@ -2147,7 +2114,13 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 <script>
+
+
+
 
 
 var SB_URL='https://kpizggqrpdrykoifvily.supabase.co';
@@ -4315,6 +4288,90 @@ function genererFactureResa(ri){
   extra.forEach(function(name){try{if(typeof eval(name)==='function')window[name]=eval(name);}catch(e){}});
 })();
 
+
+// ══ PROFIL — mot de passe + formatage code ══
+function formatCodeProfil(el){
+  var v=el.value.replace(/[^A-Z0-9]/g,'');
+  if(v.length>3&&v.indexOf('-')<0)v=v.slice(0,3)+'-'+v.slice(3);
+  if(v.length>8&&v.split('-').length<3)v=v.slice(0,8)+'-'+v.slice(8);
+  el.value=v.slice(0,14);
+}
+function creerMotDePasse(){
+  var email=(document.getElementById('profil-email-mdp')||{value:''}).value.trim();
+  var mdp=(document.getElementById('profil-mdp')||{value:''}).value;
+  var mdp2=(document.getElementById('profil-mdp2')||{value:''}).value;
+  if(!email){toast('Email requis','ko');return;}
+  if(!mdp||mdp.length<6){toast('Mot de passe trop court (6 min)','ko');return;}
+  if(mdp!==mdp2){toast('Les mots de passe ne correspondent pas','ko');return;}
+  // Cherche le membre par email
+  var fams=[].concat(DEMO_FAMS,ST.members);
+  var m=fams.find(function(f){return(f.email||'').toLowerCase()===email.toLowerCase();});
+  if(!m){toast('Email non trouvé — vérifiez votre inscription','ko');return;}
+  m.mdp=mdp;
+  toast('Mot de passe créé ✅','ok');
+  setTimeout(function(){afficherProfilConnecte(m);},800);
+}
+
+// Override connecterParCode to also support mdp
+function connecterParCode(){
+  var code=(document.getElementById('profil-code')||{value:''}).value.trim();
+  if(!code){toast('Entrez votre code','ko');return;}
+  var fams=[].concat(DEMO_FAMS,ST.members);
+  var m=fams.find(function(f){
+    var expectedCode='LEO-2026-'+(f.nom||'').substring(0,4).toUpperCase();
+    return expectedCode===code||(f.code&&f.code===code)||(f.mdp&&f.mdp===code);
+  });
+  if(!m){toast('Code incorrect','ko');return;}
+  afficherProfilConnecte(m);
+}
+
+function afficherProfilConnecte(m){
+  var nonC=document.getElementById('profil-non-connecte');
+  var conn=document.getElementById('profil-connecte');
+  var cont=document.getElementById('profil-content');
+  if(nonC)nonC.style.display='none';
+  if(conn)conn.style.display='block';
+  if(!cont)return;
+  var cols=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899'];
+  var col=cols[(m.nom||'').charCodeAt(0)%cols.length];
+  var ini=((m.prenom||'?').charAt(0)+(m.nom||'').charAt(0)).toUpperCase();
+  var kidsHTML=(m.children||[]).map(function(ch){
+    var g=getGroupe(parseFloat(ch.age)||0);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:'+(g?g.color+'10':'#F9FAFB')+';border-radius:12px;margin-bottom:6px;">'
+      +'<span style="font-size:22px;">'+(g?g.emoji:'🧒')+'</span>'
+      +'<div><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+ch.name+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+ch.age+' ans'+(g?' · '+g.name:'')+'</div></div></div>';
+  }).join('');
+  cont.innerHTML=
+    '<div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
+    +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">'
+    +'<div style="width:52px;height:52px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;">'+ini+'</div>'
+    +'<div><div style="font-size:16px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">'+m.prenom+' '+m.nom+'</div>'
+    +'<div style="font-size:12px;color:#10B981;font-weight:600;">✅ Connecté</div></div></div>'
+    +'<div style="display:flex;flex-direction:column;gap:0;">'
+    +[['📧',m.email||'—'],['📞',m.tel||'—'],['🏠',m.adresse||'—']].map(function(r){return '<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #F3F4F6;font-size:13px;"><span>'+r[0]+'</span><span style="color:#374151;font-weight:500;">'+r[1]+'</span></div>';}).join('')
+    +'</div></div>'
+    +(kidsHTML?'<div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);"><div style="font-size:13px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;margin-bottom:10px;">👶 Mes enfants</div>'+kidsHTML+'</div>':'');
+}
+
+// ══ WINDOW BINDINGS SUPPLEMENT ══
+(function(){
+  var extra=['formatCodeProfil','creerMotDePasse','connecterParCode','afficherProfilConnecte','deconnecterProfil'];
+  extra.forEach(function(name){try{if(typeof eval(name)==='function')window[name]=eval(name);}catch(e){}});
+})();
+
+
+function setProfilTab(t){
+  var tabs=['mdp','magic'];
+  tabs.forEach(function(x){
+    var btn=document.getElementById('profil-tab-'+x);
+    var panel=document.getElementById('profil-panel-'+x);
+    if(btn){btn.style.background=x===t?'#fff':'transparent';btn.style.color=x===t?'#0A0F1E':'#9CA3AF';btn.style.fontWeight=x===t?'700':'600';btn.style.boxShadow=x===t?'0 1px 4px rgba(0,0,0,.08)':'none';}
+    if(panel)panel.style.display=x===t?'block':'none';
+  });
+}
+(function(){try{if(typeof setProfilTab==='function')window.setProfilTab=setProfilTab;}catch(e){}})();
+
 (function(){
   var fns=['navigate','_navigateTo','setAdminTab','renderAdmin','renderDashboard',
     'renderEquipe','ajouterAnimateur','fermerAjouterAnimateur','confirmerAjouterAnimateur','editEquipe','delEquipe',
@@ -4343,6 +4400,9 @@ function genererFactureResa(ri){
   ];
   fns.forEach(function(name){try{if(typeof eval(name)==='function')window[name]=eval(name);}catch(e){}});
 })();
+
+
+
 
 
 </script>
