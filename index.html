@@ -1621,6 +1621,14 @@ textarea{resize:vertical;}
         <div id="profil-content"></div>
         <button onclick="deconnecterProfil()" style="width:100%;padding:12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:10px;">Se déconnecter</button>
       </div>
+
+      <!-- Bouton Admin discret -->
+      <div style="text-align:center;margin-top:20px;padding-bottom:8px;">
+        <button onclick="navigate('admin')" style="background:none;border:none;cursor:pointer;font-size:12px;color:#D1D5DB;font-family:inherit;padding:8px 16px;border-radius:8px;">
+          ⚙️ Accès administrateur
+        </button>
+      </div>
+
     </div>
   </div>
   </div>
@@ -1977,10 +1985,7 @@ textarea{resize:vertical;}
       <div class="bnav-icon">👤</div>
       <div class="bnav-label">Profil</div>
     </button>
-    <button class="bnav-item" id="bn-admin" onclick="navigate('admin')">
-      <div class="bnav-icon">⚙️</div>
-      <div class="bnav-label">Admin</div>
-    </button>
+
     <a class="desktop-brand" onclick="navigate('home')" style="cursor:pointer;">
     <span class="desktop-brand-icon">🐆</span>
     Club des Léopards
@@ -2119,7 +2124,9 @@ textarea{resize:vertical;}
 
 
 
+
 <script>
+
 
 
 
@@ -4403,6 +4410,7 @@ function setProfilTab(t){
   ];
   fns.forEach(function(name){try{if(typeof eval(name)==='function')window[name]=eval(name);}catch(e){}});
 })();
+
 
 
 
