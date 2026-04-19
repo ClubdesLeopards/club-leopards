@@ -1764,7 +1764,7 @@ textarea{resize:vertical;}
   <div class="page" id="page-admin">
 
     <!-- HEADER -->
-    <div class="admin-hero">
+    <div class="admin-hero" style="position:sticky;top:0;z-index:100;">
 
       <!-- Déco soleil + vagues -->
       <div style="position:absolute;top:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,215,0,.3) 0%,transparent 70%);pointer-events:none;"></div>
@@ -2247,6 +2247,7 @@ textarea{resize:vertical;}
 
 
 <script>
+
 
 
 
@@ -3154,6 +3155,7 @@ function renderAdmin() {
 }
 
 function setAdminTab(t) {
+  var pg=document.getElementById("page-admin");if(pg)pg.scrollTop=0;
   ST.adminTab = t;
   ['dashboard', 'equipe', 'membres', 'groupes', 'reservations', 'paiements', 'frequentation', 'comptabilite', 'facture', 'avoirs', 'recherche'].forEach(function(tab) {
     var atEl = document.getElementById('at-' + tab);
@@ -3329,7 +3331,7 @@ function _navigateTo(name){
   var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
   if(name==='reservation') renderReservation();
   if(name==='mes-resa') renderMesResa();
-  if(name==='admin') renderAdmin();
+  if(name==='admin'){var pg=document.getElementById('page-admin');if(pg)pg.scrollTop=0;renderAdmin();}
   if(name==='profil') renderProfil();
   window.scrollTo(0,0);
 }
@@ -5272,6 +5274,7 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
+
 
 
 
