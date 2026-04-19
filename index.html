@@ -2245,6 +2245,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 // ═══ ÉTAT GLOBAL ═══
 var ST = {
   adminTab:'dashboard', gPeriod:'matin',
@@ -2721,12 +2724,14 @@ function renderAdmin() {
   else if(ST.adminTab==='comptabilite') renderComptabilite();
   else if(ST.adminTab==='facture')     renderFactureTab();
   else if(ST.adminTab==='avoirs')      renderAvoirs();
-  else if(ST.adminTab==='recherche')   globalSearch();
+  else if(ST.adminTab==='equipe')      renderEquipe();
+  else if(ST.adminTab==='avoirs')   renderAvoirs();
+  if(ST.adminTab==='recherche')   globalSearch();
 }
 
 function setAdminTab(t) {
   ST.adminTab = t;
-  ['dashboard', 'membres', 'groupes', 'reservations', 'paiements', 'frequentation', 'comptabilite', 'facture', 'recherche'].forEach(function(tab) {
+  ['dashboard', 'equipe', 'membres', 'groupes', 'reservations', 'paiements', 'frequentation', 'comptabilite', 'facture', 'avoirs', 'recherche'].forEach(function(tab) {
     var atEl = document.getElementById('at-' + tab);
     var anEl = document.getElementById('an-' + tab);
     if (atEl) atEl.style.display = tab === t ? '' : 'none';
@@ -3660,6 +3665,7 @@ function delEquipe(id){if(!confirm('Supprimer ?'))return;EQUIPE=EQUIPE.filter(fu
 
 // ═══ DASHBOARD ═══
 
+var _membreAlpha='';
 function filterMembreAlpha(l){_membreAlpha=_membreAlpha===l?'':l;renderMembres();}
 function renderMembres(){
   var el=document.getElementById('admin-membres-content');if(!el)return;
@@ -4536,6 +4542,9 @@ function renderDashboard(){
 }
 
 window.setDashAgeFilter=setDashAgeFilter;
+
+
+
 
 
 
