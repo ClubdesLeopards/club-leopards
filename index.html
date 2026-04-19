@@ -1742,6 +1742,8 @@ textarea{resize:vertical;}
 
         </div>
 
+      </div><!-- /profil-non-connecte -->
+
       <div id="profil-connecte" style="display:none;">
         <div id="profil-content"></div>
         <button onclick="deconnecterProfil()" style="width:100%;padding:12px;background:#FEF2F2;color:#EF4444;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:10px;">Se déconnecter</button>
@@ -2263,6 +2265,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
@@ -2611,38 +2615,10 @@ var DEMO_KIDS = [
   {id:15,prenom:'Sara',   nom:'Benuwa',     age:4, parent:'Fam. Benuwa',   email:'benuwa@email.com',   tel:'06 12 12 12 12',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'08/06/2025'},
 ];
 
-var DEMO_FAMS = [
-  {prenom:'Marie', nom:'Bousin',    email:'bousin@email.com',   tel:'06 01 01 01 01',adresse:'12 rue de la Plage, La Baule',  children:[{name:'Emma',age:6},{name:'Lucas',age:8}],   date:'01/06/2025'},
-  {prenom:'Pierre',nom:'Ammanet',   email:'ammanet@email.com',  tel:'06 02 02 02 02',adresse:'8 av. Ocean, La Baule',         children:[{name:'Léa',age:5},{name:'Noah',age:9}],     date:'02/06/2025'},
-  {prenom:'Sophie',nom:'Mouthet',   email:'mouthet@email.com',  tel:'06 03 03 03 03',adresse:'3 bd du Marechal, La Baule',    children:[{name:'Chloé',age:7}],                       date:'03/06/2025'},
-  {prenom:'Jean',  nom:'de Robalis',email:'robalis@email.com',  tel:'06 04 04 04 04',adresse:'Villa Les Pins, La Baule',      children:[{name:'Hugo',age:11}],                       date:'03/06/2025'},
-  {prenom:'Claire',nom:'Lecoeur',   email:'lecoeur@email.com',  tel:'06 05 05 05 05',adresse:'22 rue des Mouettes, La Baule', children:[{name:'Inès',age:4}],                        date:'04/06/2025'},
-  {prenom:'Marc',  nom:'Manach',    email:'manach@email.com',   tel:'06 06 06 06 06',adresse:'Residence Ocean, La Baule',     children:[{name:'Tom',age:10}],                        date:'04/06/2025'},
-  {prenom:'Julie', nom:'Foute',     email:'foute@email.com',    tel:'06 07 07 07 07',adresse:'7 rue des Pins, La Baule',      children:[{name:'Alice',age:6},{name:'Maxime',age:8}], date:'05/06/2025'},
-];
-
-var DEMO_RESAS = [
-  {id:101,nom:'Fam. Bousin',  email:'bousin@email.com', tel:'06 01 01 01 01',slot:{time:'Sem. Matin',   date:'07/07/2026'},children:[{name:'Emma',age:6},{name:'Lucas',age:8}],paid:240,statut:'payé',      saisonLabel:'Été 2026',date:'01/06/2025'},
-  {id:102,nom:'Fam. Ammanet', email:'ammanet@email.com',tel:'06 02 02 02 02',slot:{time:'Sem. Apres-midi',date:'07/07/2026'},children:[{name:'Noah',age:9}],                    paid:120,statut:'payé',      saisonLabel:'Été 2026',date:'02/06/2025'},
-  {id:103,nom:'Fam. Mouthet', email:'mouthet@email.com',tel:'06 03 03 03 03',slot:{time:'Sem. Matin',   date:'14/07/2026'},children:[{name:'Chloé',age:7}],                    paid:0,  statut:'en attente', saisonLabel:'Été 2026',date:'03/06/2025'},
-  {id:104,nom:'Fam. de Robalis',email:'robalis@email.com',tel:'06 04 04 04 04',slot:{time:'Sem. Matin', date:'21/07/2026'},children:[{name:'Hugo',age:11}],                     paid:120,statut:'payé',      saisonLabel:'Été 2026',date:'03/06/2025'},
-];
-
-var DEMO_PAYMENTS = [
-  {nom:'Fam. Bousin',   initiale:'BO',color:'#2196F3',formule:'2 Sem. Matin',  montant:240,statut:'payé',    mode:'Virement',     date:'01/06/2025'},
-  {nom:'Fam. Ammanet',  initiale:'AM',color:'#9C27B0',formule:'1 Sem. Aprem',  montant:120,statut:'payé',    mode:'Chèque',       date:'02/06/2025'},
-  {nom:'Fam. Mouthet',  initiale:'MO',color:'#F97316',formule:'1 Sem. Matin',  montant:120,statut:'attente', mode:'',             date:'03/06/2025'},
-  {nom:'Fam. de Robalis',initiale:'RO',color:'#10B981',formule:'1 Sem. Matin', montant:120,statut:'payé',    mode:'Carte bleue',  date:'03/06/2025'},
-  {nom:'Fam. Lecoeur',  initiale:'LE',color:'#EF4444',formule:'1 Sem. Aprem',  montant:120,statut:'attente', mode:'',             date:'04/06/2025'},
-];
-
-var DEMO_FREQ = {
-  jours:   [{label:'Lun',matin:14,aprem:11},{label:'Mar',matin:18,aprem:16},{label:'Mer',matin:12,aprem:8},{label:'Jeu',matin:20,aprem:15},{label:'Ven',matin:16,aprem:13}],
-  semaines:[{label:'S27',matin:68,aprem:54},{label:'S28',matin:82,aprem:71},{label:'S29',matin:76,aprem:65},{label:'S30',matin:90,aprem:78},{label:'S31',matin:74,aprem:60}],
-  mois:    [{label:'Juin',matin:124,aprem:98},{label:'Juil.',matin:312,aprem:267},{label:'Août',matin:348,aprem:290}],
-  groupes: [{label:'G1',nom:'3-4 ans',val:14,color:'#F97316'},{label:'G2',nom:'5-6 ans',val:11,color:'#8B5CF6'},{label:'G3',nom:'7-8 ans',val:18,color:'#1A6FD4'},{label:'G4',nom:'9-10 ans',val:16,color:'#059669'},{label:'G5',nom:'11-14 ans',val:9,color:'#DC2626'}],
-};
-
+var DEMO_FAMS = [];
+var DEMO_RESAS = [];
+var DEMO_PAYMENTS = [];
+var DEMO_FREQ = {jours:[],mois:[]};
 function getGroupe(age, periode) {
   var a = parseFloat(age);
   var list = periode === 'aprem' ? GROUPES_APREM : (periode === 'matin' ? GROUPES_MATIN : GROUPES);
@@ -3033,46 +3009,60 @@ function retirerDuPanier(i){ clientPanier.splice(i,1); renderClientPanierModal()
 function envoyerDemandeReservation() {
   if(!clientPanier.length) return;
   var m = ST.membreConnecte;
-  var nomFam = m ? (m.prenom+' '+(m.nom||'').toUpperCase()) : 'Famille';
+  var nomFam = m ? (m.prenom+' '+NOM(m.nom||'')) : 'Famille';
+
   clientPanier.forEach(function(item){
-    var resaObj = {
-      id: 'R'+Date.now()+Math.floor(Math.random()*9000),
-      membre_id: m ? m.id : null,
-      nom: nomFam,
-      email: m ? m.email : '',
-      slot: {time: item.periodeLabel, date: item.sem.debut+' au '+item.sem.fin},
-      saisonLabel: item.saisonLabel,
-      semaine_debut: item.sem.debut,
-      semaine_fin: item.sem.fin,
-      periode: item.periode,
-      montant: item.prix||120,
-      paid: 0,
-      statut: 'en attente',
-      children: m ? (m.children||[]) : [],
-      date: new Date().toLocaleDateString('fr-FR'),
-      created_at: new Date().toISOString()
-    };
-    ST.reservations.push(resaObj);
-    // Sauvegarder dans Supabase si membre connecté
-    if(m && m.id && (m.children||[]).length > 0) {
-      var enfantId = m.children[0].id || null;
-      validerResaSB({
-        membre_id: m.id,
-        enfant_id: enfantId,
+    // Insérer une résa par enfant inscrit
+    var kids = m ? (m.children||[]) : [];
+    var kidsList = kids.length > 0 ? kids : [{name: nomFam, age: 0}];
+
+    kidsList.forEach(function(kid){
+      var resaObj = {
+        id: 'R'+Date.now()+Math.floor(Math.random()*9000),
+        membre_id: m ? m.id : null,
+        enfant_id: kid.id || null,
+        nom: nomFam,
+        email: m ? m.email : '',
+        slot: {time: item.periodeLabel, date: item.sem.debut+' au '+item.sem.fin},
+        saisonLabel: item.saisonLabel,
         saison: item.saison,
-        semaine_label: item.sem.label||item.saisonLabel,
         semaine_debut: item.sem.debut,
         semaine_fin: item.sem.fin,
-        periode: item.periode||'matin',
-        montant: item.prix||120
-      });
-    }
+        periode: item.periode || 'matin',
+        montant: item.prix || 120,
+        paid: 0,
+        statut: 'en attente',
+        children: [kid],
+        date: new Date().toLocaleDateString('fr-FR'),
+        created_at: new Date().toISOString()
+      };
+      ST.reservations.push(resaObj);
+
+      // Sauvegarder dans Supabase
+      if(m && m.id) {
+        sb.from('reservations').insert({
+          membre_id: m.id,
+          enfant_id: kid.id || null,
+          saison: item.saison || 'ete',
+          semaine_label: item.saisonLabel,
+          semaine_debut: item.sem.debut,
+          semaine_fin: item.sem.fin,
+          periode: item.periode || 'matin',
+          montant: item.prix || 120,
+          statut: 'en_attente'
+        }).then(function(res){
+          if(res.error) console.warn('Resa SB error:', res.error.message);
+          else chargerDonnees(); // Recharger pour afficher dans admin
+        });
+      }
+    });
   });
+
   clientPanier = [];
   renderClientPanierBar();
   closeClientPanier();
-  toast('Demande envoyée à l\'équipe !', 'ok');
-  setTimeout(function(){ navigate('mes-resa'); }, 1200);
+  toast('Demande envoyée !', 'ok');
+  navigate('mes-resa');
 }
 
 // ═══ MES RÉSA ═══
@@ -3623,16 +3613,7 @@ function imprimerGroupes() {
 
 
 // ═══ AVOIRS ═══
-var AVOIRS = {
-  nMoins1: [
-    {id:1, membre:'Fam. Mouthet',  somme:120, motif:'Annulation météo – Été 2025', solde:false, dateSolde:''},
-    {id:2, membre:'Fam. Lecoeur',  somme:60,  motif:'Absence médicale – Printemps 2025', solde:true, dateSolde:'15/09/2025'},
-  ],
-  n: [
-    {id:3, membre:'',  somme:0, motif:'', solde:false, dateSolde:''},
-  ],
-};
-
+var AVOIRS = {nMoins1:[],n:[]};
 
 
 function solderAvoir(tableIdx, rowIdx) {
@@ -3657,14 +3638,7 @@ function ajouterAvoir(tableIdx) {
 }
 
 // ═══ SUIVI QUOTIDIEN ═══
-var SUIVI_QUOTIDIEN = [
-  {date:'01/06/2025', ref:'Fam. Bousin',    cb:240,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'02/06/2025', ref:'Fam. Ammanet',   cb:0,    vir:120, chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'03/06/2025', ref:'Fam. Mouthet',   cb:0,    vir:0,   chq:120,chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'03/06/2025', ref:'Fam. de Robalis',cb:120,  vir:0,   chq:0,  chqvac:0, esp:0,  avoir24:0,  remb25:0},
-  {date:'04/06/2025', ref:'Fam. Lecoeur',   cb:0,    vir:0,   chq:0,  chqvac:120,esp:0, avoir24:0,  remb25:0},
-];
-
+var SUIVI_QUOTIDIEN = [];
 function renderSuiviQuotidien() {
   var el = document.getElementById('suivi-quotidien-content'); if(!el) return;
   var cols = ['CB/CD','Virement','Chèque','Chq Vac.','Espèces','Avoir 2024','Remb. 2025'];
@@ -5298,6 +5272,8 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
+
+
 
 
 
