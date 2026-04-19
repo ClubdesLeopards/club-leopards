@@ -2237,6 +2237,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
@@ -2766,54 +2767,75 @@ function buildInscRecap() {
 }
 
 function submitInscription() {
-  var ri=document.getElementById('i-accept-ri'), cgv=document.getElementById('i-accept-cgv'), resp=document.getElementById('i-accept-resp');
+  var ri=document.getElementById('i-accept-ri');
+  var cgv=document.getElementById('i-accept-cgv');
+  var resp=document.getElementById('i-accept-resp');
   var ok=true;
-  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-ri');if(e)e.textContent='';}
-  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-cgv');if(e)e.textContent='';}
-  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e=document.getElementById('err-accept-resp');if(e)e.textContent='';}
+  if(!ri||!ri.checked){var e=document.getElementById('err-accept-ri');if(e)e.textContent='Requis';ok=false;}else{var e2=document.getElementById('err-accept-ri');if(e2)e2.textContent='';}
+  if(!cgv||!cgv.checked){var e=document.getElementById('err-accept-cgv');if(e)e.textContent='Requis';ok=false;}else{var e2=document.getElementById('err-accept-cgv');if(e2)e2.textContent='';}
+  if(!resp||!resp.checked){var e=document.getElementById('err-accept-resp');if(e)e.textContent='Requis';ok=false;}else{var e2=document.getElementById('err-accept-resp');if(e2)e2.textContent='';}
   if(!ok) return;
-  var nom=(document.getElementById('i-nom')||{value:''}).value;
-  var prenom=(document.getElementById('i-prenom')||{value:''}).value;
-  var dob=(document.getElementById('i-dob')||{value:''}).value;
-  var membreData={
-    prenom:(document.getElementById('i-resp-prenom')||{value:''}).value, nom:(document.getElementById('i-resp-nom')||{value:''}).value,
-    email:(document.getElementById('i-email')||{value:''}).value, tel:(document.getElementById('i-tel')||{value:''}).value,
-    adresse:(document.getElementById('i-adresse-vacances')||{value:''}).value, medical:(document.getElementById('i-medical')||{value:''}).value,
-    urgence:(document.getElementById('i-urgence')||{value:''}).value, droitImage:inscDroit,
-    children:(function(){
-      var list=[{prenom:prenom,nom:nom,name:nom+' '+prenom,age:parseAge(dob),dob:dob,medical:medical,periode:'matin'}];
-      var extra=document.querySelectorAll('#extra-enfants-list [data-extra]');
-      for(var ei=0;ei<extra.length;ei++){
-        var ep=extra[ei].querySelector('.extra-enfant-prenom');
-        var en2=extra[ei].querySelector('.extra-enfant-nom');
-        var ed=extra[ei].querySelector('.extra-enfant-dob');
-        var ea=extra[ei].querySelector('.extra-enfant-age');
-        var em=extra[ei].querySelector('.extra-enfant-medical');
-        var epr=ep?ep.value.trim():'';
-        if(epr) list.push({
-          prenom:epr,
-          nom:en2?en2.value.trim():nom,
-          name:(en2?en2.value.trim():nom)+' '+epr,
-          age:ea&&ea.value?parseFloat(ea.value):parseAge(ed?ed.value:''),
-          dob:ed?ed.value:'',
-          medical:em?em.value.trim():'RAS',
-          periode:'matin'
-        });
-      }
-      return list;
-    })(),
-    date:new Date().toLocaleDateString('fr-FR'),
+
+  // Lire les champs enfant 1
+  var nom    = (document.getElementById('i-nom')||{value:''}).value.trim();
+  var prenom = (document.getElementById('i-prenom')||{value:''}).value.trim();
+  var dob    = (document.getElementById('i-dob')||{value:''}).value;
+  var medical= (document.getElementById('i-medical')||{value:''}).value.trim()||'RAS';
+
+  // Construire la liste des enfants
+  var enfants=[{prenom:prenom,nom:nom,name:nom+' '+prenom,age:parseAge(dob),dob:dob,medical:medical,periode:'matin'}];
+  var extra=document.querySelectorAll('#extra-enfants-list [data-extra]');
+  for(var ei=0;ei<extra.length;ei++){
+    var ep  = extra[ei].querySelector('.extra-enfant-prenom');
+    var en2 = extra[ei].querySelector('.extra-enfant-nom');
+    var ed  = extra[ei].querySelector('.extra-enfant-dob');
+    var ea  = extra[ei].querySelector('.extra-enfant-age');
+    var em  = extra[ei].querySelector('.extra-enfant-medical');
+    var epr = ep ? ep.value.trim() : '';
+    if(!epr) continue;
+    enfants.push({
+      prenom: epr,
+      nom:    en2 ? en2.value.trim() : nom,
+      name:   (en2?en2.value.trim():nom)+' '+epr,
+      age:    ea&&ea.value ? parseFloat(ea.value) : parseAge(ed?ed.value:''),
+      dob:    ed ? ed.value : '',
+      medical:em ? em.value.trim()||'RAS' : 'RAS',
+      periode:'matin'
+    });
+  }
+
+  // Construire membreData
+  var membreData = {
+    prenom:     (document.getElementById('i-resp-prenom')||{value:''}).value.trim(),
+    nom:        (document.getElementById('i-resp-nom')||{value:''}).value.trim(),
+    email:      (document.getElementById('i-email')||{value:''}).value.trim(),
+    tel:        (document.getElementById('i-tel')||{value:''}).value.trim(),
+    adresse:    (document.getElementById('i-adresse-vacances')||{value:''}).value.trim(),
+    adresse_fixe:(document.getElementById('i-adresse')||{value:''}).value.trim(),
+    urgence_nom:(document.getElementById('i-urgence')||{value:''}).value.trim(),
+    droitImage: inscDroit,
+    children:   enfants,
+    date:       new Date().toLocaleDateString('fr-FR')
   };
+
+  // Sauvegarder
   ST.members.push(membreData);
-  ST.membreConnecte=membreData;
-  toast('✅ Inscription enregistrée !','ok');
-  inscDroit=null;
-  ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse','i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  var ad=document.getElementById('i-age-display'); if(ad) ad.textContent='— ans';
+  ST.membreConnecte = membreData;
+  sauvegarderInscriptionSB(membreData);
+
+  toast('Inscription enregistrée !','ok');
+
+  // Reset
+  inscDroit = null;
+  ['i-nom','i-prenom','i-dob','i-medical','i-adresse-vacances','i-adresse',
+   'i-tel','i-email','i-resp-prenom','i-resp-nom','i-urgence'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  var ad=document.getElementById('i-age-display');if(ad)ad.textContent='— ans';
   var el2=document.getElementById('extra-enfants-list');if(el2)el2.innerHTML='';
-  if(ri)ri.checked=false; if(cgv)cgv.checked=false; if(resp)resp.checked=false;
+  if(ri)ri.checked=false;if(cgv)cgv.checked=false;if(resp)resp.checked=false;
   inscGoStep(1);
-  setTimeout(function(){ navigate('home'); }, 1200);
+  setTimeout(function(){ navigate('home'); }, 1500);
 }
 
 function addInscChild(){}
@@ -5074,6 +5096,7 @@ window.ajouterEnfantInscription=ajouterEnfantInscription;
 
 
 window.calcExtraAge=calcExtraAge;
+
 
 
 
