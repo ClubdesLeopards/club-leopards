@@ -382,10 +382,10 @@ textarea{resize:vertical;}
   color:#fff;
 }
 .admin-tab.active{
-  background:linear-gradient(135deg,#FF6B35,#FF8C00);
+  background:linear-gradient(135deg,#FFB800,#FF8C00);
   border-color:transparent;
   color:#fff;
-  box-shadow:0 3px 14px rgba(255,107,53,.4);
+  box-shadow:0 3px 12px rgba(255,184,0,.45);
 }
 
 .g-card{background:#fff;border-radius:18px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);}
@@ -1743,24 +1743,20 @@ textarea{resize:vertical;}
       <!-- Déco soleil + vagues -->
       <div style="position:absolute;top:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,215,0,.3) 0%,transparent 70%);pointer-events:none;"></div>
       <div style="position:absolute;bottom:-20px;left:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(255,255,255,.12) 0%,transparent 70%);pointer-events:none;"></div>
-      <div style="position:absolute;top:12px;left:18px;font-size:26px;opacity:.45;pointer-events:none;">☀️</div>
-      <div style="position:absolute;bottom:8px;right:18px;font-size:22px;opacity:.35;pointer-events:none;">🌊</div>
 
       <!-- Club des Léopards centré -->
-      <div style="display:flex;align-items:center;justify-content:center;padding:18px 20px 10px;position:relative;z-index:1;">
+      <div style="position:relative;padding:18px 20px 10px;z-index:1;">
+        <div style="position:absolute;top:14px;left:16px;font-size:30px;line-height:1;">🐆</div>
         <div style="text-align:center;">
-          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:3px;">
-            <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:20px;">🐆</div>
-            <div style="font-size:20px;font-weight:800;color:#fff;font-family:Syne,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,.15);">Club des Léopards</div>
-          </div>
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:1px;">Administration · Saison 2026</div>
+          <div style="font-size:26px;font-weight:800;color:#fff;font-family:Syne,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,.15);margin-bottom:5px;">Club des Léopards</div>
+          <div style="font-size:15px;font-weight:600;color:rgba(255,255,255,.8);">Administration · Saison 2026</div>
         </div>
       </div>
 
       <!-- KPI cards -->
-      <div id="admin-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 16px;position:relative;z-index:1;"></div>
+      <div id="admin-stats" style="display:none;"></div>
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
-      <div class="admin-tabs" style="display:flex;gap:6px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.06);">
+      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:14px 12px 10px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100%;box-sizing:border-box;margin-top:6px;">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
         <button class="admin-tab"        id="an-equipe"        onclick="setAdminTab('equipe')">👥 Équipe</button>
         <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
@@ -2203,6 +2199,7 @@ textarea{resize:vertical;}
 
 
 <script>
+
 
 
 
@@ -2695,31 +2692,19 @@ function checkAdminCode() {
 
 // ═══ ADMIN DASHBOARD ═══
 function renderAdmin() {
-  var el=document.getElementById('admin-stats'); if(!el) return;
-  var kids=allKids(), fams=[].concat(DEMO_FAMS,ST.members), resas=[].concat(DEMO_RESAS,ST.reservations);
-  var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='payé'?p.montant:0);},0);
-  var pl=0; GROUPES.forEach(function(g){var cnt=kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id;}).length;pl+=Math.max(0,MAX_G-cnt);});
-  el.innerHTML=
-    '<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
-    +'<div class="stat-icon">🧒</div><div class="stat-val" style="color:#fff;">'+kids.length+'</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Enfants</div></div>'
-    +'<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
-    +'<div class="stat-icon">👨‍👩‍👧</div><div class="stat-val" style="color:#fff;">'+fams.length+'</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Familles</div></div>'
-    +'<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
-    +'<div class="stat-icon">💰</div><div class="stat-val" style="color:#fff;">'+enc+'€</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Encaissé</div></div>'
-    +'<div class="stat-card" style="background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);">'
-    +'<div class="stat-icon">✅</div><div class="stat-val" style="color:#fff;">'+pl+'</div><div class="stat-lbl" style="color:rgba(255,255,255,.8);">Places libres</div></div>';
-  if(ST.adminTab==='dashboard')        renderDashboard();
-  else if(ST.adminTab==='membres')     renderMembres();
-  else if(ST.adminTab==='groupes')     renderAdminGroupes();
-  else if(ST.adminTab==='reservations') renderAdminResas();
-  else if(ST.adminTab==='paiements')   renderPaiements();
+  var el=document.getElementById('admin-stats');
+  if(el) el.innerHTML='';
+  if(ST.adminTab==='dashboard')          renderDashboard();
+  else if(ST.adminTab==='equipe')        renderEquipe();
+  else if(ST.adminTab==='membres')       renderMembres();
+  else if(ST.adminTab==='groupes')       renderAdminGroupes();
+  else if(ST.adminTab==='reservations')  renderAdminResas();
+  else if(ST.adminTab==='paiements')     renderPaiements();
   else if(ST.adminTab==='frequentation') renderFrequentation();
-  else if(ST.adminTab==='comptabilite') renderComptabilite();
-  else if(ST.adminTab==='facture')     renderFactureTab();
-  else if(ST.adminTab==='avoirs')      renderAvoirs();
-  else if(ST.adminTab==='equipe')      renderEquipe();
-  else if(ST.adminTab==='avoirs')   renderAvoirs();
-  if(ST.adminTab==='recherche')   globalSearch();
+  else if(ST.adminTab==='comptabilite')  renderComptabilite();
+  else if(ST.adminTab==='facture')       renderFactureTab();
+  else if(ST.adminTab==='avoirs')        renderAvoirs();
+  if(ST.adminTab==='recherche')          globalSearch();
 }
 
 function setAdminTab(t) {
@@ -4295,35 +4280,28 @@ function renderDashboard(){
   var derniersMembres=fams.slice(-5).reverse();
 
   el.innerHTML=
-
-    // ── HERO soleil et mer ─────────────────────────────────────
-    '<div style="background:linear-gradient(160deg,#00C4FF 0%,#0099E6 30%,#FF6B35 70%,#FFD700 100%);border-radius:20px;padding:28px 20px 24px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center;">'
-    // Soleils et vagues déco
-    +'<div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(255,215,0,.25);border-radius:50%;"></div>'
-    +'<div style="position:absolute;bottom:-30px;left:-20px;width:100px;height:100px;background:rgba(255,255,255,.1);border-radius:50%;"></div>'
-    +'<div style="position:absolute;top:10px;left:20px;font-size:28px;opacity:.5;">☀️</div>'
-    +'<div style="position:absolute;bottom:10px;right:22px;font-size:22px;opacity:.4;">🌊</div>'
-    // Titre club
-    +'<div style="position:relative;z-index:1;">'
-    +'<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🐆 Club des Léopards</div>'
-    // Date
-    +'<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:4px;">'+jours[today.getDay()]+'</div>'
-    +'<div style="font-size:36px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.15);">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
-    +'<div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:3px;">'+today.getFullYear()+'</div>'
-    // Encaissé + places libres sous la date
-    +'<div style="display:flex;gap:10px;margin-top:14px;justify-content:center;">'
-    +'<div style="background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border-radius:12px;padding:10px 18px;flex:1;max-width:140px;">'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">💰 Encaissé</div>'
-    +'<div style="font-size:20px;font-weight:800;color:#fff;">'+enc+'€</div>'
+    '<div style="background:linear-gradient(135deg,#00C4FF 0%,#0099E6 40%,#FF8C00 80%,#FFD700 100%);border-radius:16px;padding:20px 16px;margin-bottom:16px;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,215,0,.2);border-radius:50%;pointer-events:none;"></div>'
+    +'<div style="text-align:center;margin-bottom:14px;position:relative;z-index:1;">'
+    +'<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">'+jours[today.getDay()]+'</div>'
+    +'<div style="font-size:32px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+today.getDate()+' '+mois[today.getMonth()]+'</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,.65);margin-top:3px;">'+today.getFullYear()+'</div>'
     +'</div>'
-    +'<div style="background:rgba(255,255,255,.25);backdrop-filter:blur(8px);border-radius:12px;padding:10px 18px;flex:1;max-width:140px;">'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">🏖️ Places libres</div>'
-    +'<div style="font-size:20px;font-weight:800;color:#fff;">'+placesLibres+'</div>'
-    +'</div>'
-    +'</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;position:relative;z-index:1;">'
+    +[{icon:'🧒',val:kids.length,lbl:'Enfants',tab:'groupes'},
+      {icon:'👨\u200d👩\u200d👧',val:fams.length,lbl:'Familles',tab:'membres'},
+      {icon:'💰',val:enc+'€',lbl:'Encaissé',tab:'paiements'},
+      {icon:'✅',val:Math.max(0,(GROUPES_MATIN.length+GROUPES_APREM.length)*MAX_G-kids.length),lbl:'Places libres',tab:'groupes'},
+    ].map(function(k){
+      var oc='setAdminTab("'+k.tab+'")';
+      return '<div onclick="'+oc+'" style="background:rgba(255,255,255,.22);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;">'
+        +'<div style="font-size:16px;margin-bottom:2px;">'+k.icon+'</div>'
+        +'<div style="font-size:15px;font-weight:800;color:#fff;line-height:1;">'+k.val+'</div>'
+        +'<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,.8);margin-top:2px;text-transform:uppercase;">'+k.lbl+'</div>'
+        +'</div>';
+    }).join('')
     +'</div></div>'
 
-    // ── 2 colonnes ───────────────────────────────────────────────
     +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">'
 
     // Col gauche : taux remplissage + en attente
@@ -4671,6 +4649,7 @@ window.toggleFacKid=toggleFacKid;
 window.toutDecocherFac=toutDecocherFac;
 window.genererFacturePDF=genererFacturePDF;
 window.envoyerFactureEmail=envoyerFactureEmail;
+
 
 
 
