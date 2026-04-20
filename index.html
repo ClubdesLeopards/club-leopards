@@ -14,11 +14,11 @@ body{font-family:'DM Sans','Helvetica Neue',sans-serif;background:#F2F4F8;color:
 ::-webkit-scrollbar-thumb{background:#C7D2FE;border-radius:2px;}
 
 /* ── APP SHELL ── */
-.app{max-width:480px;margin:0 auto;background:#F2F4F8;}
+
 
 /* ── PAGES ── */
-.page{display:none !important;height:0;overflow:hidden;margin:0;padding:0;}
-.page.active{display:block !important;height:auto;overflow:visible;padding-bottom:110px;}
+
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── HERO HEADER ── */
@@ -114,6 +114,9 @@ body{font-family:'DM Sans','Helvetica Neue',sans-serif;background:#F2F4F8;color:
   grid-template-columns:1fr 1fr;
   gap:14px;
   margin-bottom:20px;
+}
+@media(min-width:768px){
+  .big-grid{ grid-template-columns:repeat(4,1fr); }
 }
 .big-card{
   border-radius:22px;
@@ -823,99 +826,7 @@ textarea{resize:vertical;}
 }
 
 /* ══ RESPONSIVE DESKTOP ══ */
-@media (min-width: 769px) {
-  html, body { height:100%; margin:0; padding:0; }
-  body {
-    background:#F2F4F8;
-    min-height:100vh;
-  }
-  /* App pleine largeur */
-  .app {
-    width:100%;
-    max-width:100%;
-    margin:0;
-    background:#F2F4F8;
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-  }
 
-  /* Pages */
-  .page { padding-bottom:80px; background:#F2F4F8; flex:1; overflow-y:visible; }
-  .page.active { display:block; }
-
-  /* Barre de nav en bas, pleine largeur */
-  .bottom-nav {
-    position:sticky; bottom:0; z-index:100;
-    transform:none; width:100%; max-width:100%;
-    background:rgba(13,47,100,0.92);
-    backdrop-filter:blur(16px);
-    border-top:1px solid rgba(255,255,255,0.15);
-    border-bottom:none;
-    box-shadow:0 -2px 20px rgba(0,0,0,0.2);
-    order:99;
-    padding:0;
-    justify-content:center;
-    gap:0;
-    flex-shrink:0;
-  }
-  .bnav-item {
-    padding:14px 0 12px;
-    flex:1; max-width:140px;
-    border-radius:0;
-    text-align:center;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-  }
-  .bnav-item:hover { background:rgba(255,255,255,0.1); }
-  .bnav-icon { font-size:18px; margin-bottom:1px; }
-  .bnav-label { font-size:11px; color:rgba(255,255,255,0.75); }
-  .bnav-item.active { background:rgba(255,255,255,0.15); }
-  .bnav-item.active .bnav-label { color:#fff; font-weight:800; }
-  .bnav-dot { top:10px; }
-
-  /* Hero pleine largeur */
-  .hero-header { border-radius:0; padding:64px 80px 90px; text-align:center; overflow:visible; }
-  .hero-header::after { clip-path:ellipse(52% 100% at 50% 100%); }
-  .hero-title { font-size:52px; }
-  .hero-sub { font-size:18px; }
-  .club-badge { display:inline-block; }
-
-  /* Inner header */
-  .inner-header { border-radius:0; }
-
-  /* Contenu centré avec max-width */
-  .content { max-width:1020px; margin:0 auto; padding:32px 40px; width:100%; box-sizing:border-box; }
-  .page > .hero-header, .page > .inner-header, .page > .admin-hero { width:100%; }
-
-  /* Grilles desktop */
-  .big-grid { grid-template-columns:repeat(4,1fr); }
-  .form-row { grid-template-columns:1fr 1fr; }
-  .stats-row { grid-template-columns:repeat(4,1fr); }
-  .kpi-row { grid-template-columns:repeat(4,1fr); }
-
-  /* Admin */
-  #page-admin .content { padding:24px 32px; }
-  .admin-tabs { flex-wrap:nowrap; overflow-x:auto; }
-
-  /* Cards */
-  .wcard { padding:24px 28px; }
-
-  /* Modals */
-  .overlay { align-items:center; }
-  .modal {
-    border-radius:20px; max-width:560px;
-    max-height:85vh;
-    animation:mIn 0.28s cubic-bezier(.34,1.56,.64,1);
-  }
-  @keyframes mIn { from{transform:scale(.92);opacity:0;} to{transform:none;opacity:1;} }
-  .modal-handle { display:none; }
-  @keyframes slideUp { from{transform:translateY(0);} to{transform:translateY(0);} }
-
-  /* Inscription */
-  .insc-stepper { padding:20px 32px; }
-  .desktop-brand { display:flex !important; }
-}
 
 /* ══ DESKTOP BRAND BAR ══ */
 .desktop-brand {
@@ -1080,19 +991,7 @@ textarea{resize:vertical;}
 .al-dot.filled { background:linear-gradient(135deg,#1A6FD4,#7C3AED) !important; }
 
 /* Desktop navbar */
-@media (min-width:769px){
-  .bottom-nav {
-    background:linear-gradient(90deg,#1E1B4B,#1A6FD4,#06B6D4) !important;
-    backdrop-filter:blur(0) !important;
-    border-bottom:none !important;
-    box-shadow:0 2px 20px rgba(0,0,0,.2) !important;
-  }
-  .bnav-label { color:rgba(255,255,255,.7) !important; }
-  .bnav-item:hover { background:rgba(255,255,255,.12) !important; }
-  .bnav-item.active { background:rgba(255,255,255,.18) !important; }
-  .bnav-item.active .bnav-label { color:#fff !important; }
-  .desktop-brand { color:#fff !important; }
-}
+
 /* ══ END ADMIN COLORFUL THEME ══ */
 
 
@@ -1106,37 +1005,92 @@ textarea{resize:vertical;}
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
 
 /* Desktop fix */
-@media (min-width:768px){
-  .app{max-width:480px;margin:0 auto;background:#F2F4F8;}
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;width:100%;background:#fff;border-top:1px solid #F3F4F6;display:flex;justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:200;padding-bottom:env(safe-area-inset-bottom,0);box-sizing:border-box;}
-  .bnav-item{ flex:1; }
-  .page.active{display:block !important;height:auto;overflow:visible;padding-bottom:110px;}
-}
 
-@media(min-width:768px){
-  .app{max-width:480px;margin:0 auto;background:#F2F4F8;}
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;width:100%;background:#fff;border-top:1px solid #F3F4F6;display:flex;justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:200;padding-bottom:env(safe-area-inset-bottom,0);box-sizing:border-box;}
-  .bnav-item{ flex:1; }
 
-@media(min-width:768px){
-  .app{max-width:480px;margin:0 auto;background:#F2F4F8;}
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;width:100%;background:#fff;border-top:1px solid #F3F4F6;display:flex;justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:200;padding-bottom:env(safe-area-inset-bottom,0);box-sizing:border-box;}
-  .bnav-item{ flex:1; }
-  .page{display:none !important;height:0;overflow:hidden;margin:0;padding:0;}
-}
-  .page{display:none !important;height:0;overflow:hidden;margin:0;padding:0;}
+
+  
 }
 
 /* Desktop */
-@media(min-width:768px){
-  .app{max-width:100%;}
-  .bnav-item{flex:1;}
-  #page-admin.active{padding-top:0;}
-}
+
 /* Mobile */
-@media(max-width:767px){
-  .bottom-nav{max-width:480px;left:50%;right:auto;transform:translateX(-50%);}
-  .page.active{padding-bottom:130px;}
+
+
+/* ═══ LAYOUT UNIQUE ═══ */
+.app{
+  max-width:480px;
+  margin:0 auto;
+  background:#F2F4F8;
+}
+.page{
+  display:none;
+}
+.page.active{
+  display:block;
+  padding-bottom:100px;
+}
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:#fff;
+  border-top:1px solid #F3F4F6;
+  display:flex;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+  z-index:200;
+  padding-bottom:env(safe-area-inset-bottom,0);
+  box-sizing:border-box;
+}
+
+
+/* ═══ RESPONSIVE ═══ */
+@media (min-width:768px){
+  /* App et pages : pleine largeur */
+  .app{ max-width:100%; }
+
+  /* Nav bar : pleine largeur sur desktop */
+  .bottom-nav{
+    max-width:100%;
+    left:0; right:0;
+    transform:none;
+    justify-content:space-around;
+  }
+  .bnav-item{ flex:1; }
+  .page.active{ padding-bottom:80px; }
+
+  /* Contenu client : max-width pour lisibilité */
+  #page-home .content,
+  #page-inscription .content,
+  #page-reservation .content,
+  #page-mes-resa .content,
+  #page-profil .content{
+    max-width:800px;
+    margin:0 auto;
+  }
+}
+
+@media (max-width:767px){
+  .bottom-nav{
+    max-width:480px;
+    left:50%; right:auto;
+    transform:translateX(-50%);
+  }
+  .page.active{ padding-bottom:130px; }
+}
+
+@media(min-width:768px){
+  .big-card{ padding:36px 24px 30px; min-height:180px; }
+  .bc-icon{ font-size:48px; }
+  .bc-title{ font-size:22px; }
+  .bc-sub{ font-size:14px; }
+}
+
+@media(min-width:768px){
+  #page-home .content{ padding-left:40px; padding-right:40px; }
+  .big-grid{ gap:16px; }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2257,6 +2211,15 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5296,6 +5259,15 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
+
+
+
+
+
+
+
+
+
 
 
 
