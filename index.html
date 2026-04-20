@@ -2312,6 +2312,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2614,6 +2615,11 @@ async function solderAvoirSB(avoirId) {
 
 // ═══ ÉTAT GLOBAL ═══
 var ADMIN_CODE = '2026';
+function formatDate(iso){
+  if(!iso) return '-';
+  var p=iso.slice(0,10).split('-');
+  return p[2]+'/'+p[1]+'/'+p[0];
+}
 function NOM(s){ return s ? String(s).toUpperCase() : ''; }
 var ST = {
   adminTab:'dashboard', gPeriod:'matin',
@@ -3799,7 +3805,7 @@ function renderEquipe(){
         +'<div><div style="font-size:14px;font-weight:700;">'+a.prenom+' '+a.nom+'</div>'
         +'<div style="font-size:12px;color:#0099E6;font-weight:600;">'+a.poste+'</div></div></div>'
         +'<div style="font-size:12px;display:flex;flex-direction:column;gap:5px;">'
-        +'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#9CA3AF;">Naissance</span><span>'+(a.dob?new Date(a.dob).toLocaleDateString('fr-FR'):'-')+' ('+age+' ans)</span></div>'
+        +'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#9CA3AF;">Naissance</span><span>'+(a.dob?formatDate(a.dob):'-')+' ('+age+' ans)</span></div>'
         +'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#9CA3AF;">Email</span><span>'+a.email+'</span></div>'
         +'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#9CA3AF;">Tel</span><span>'+a.tel+'</span></div>'
         +'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#9CA3AF;">Secu</span><span style="font-family:monospace;font-size:11px;">'+a.secu+'</span></div>'
@@ -5640,6 +5646,7 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
 
 
 
