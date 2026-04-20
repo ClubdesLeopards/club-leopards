@@ -8,11 +8,14 @@
 /* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-html,body{height:100%;margin:0;padding:0;overflow:hidden;}
+html{height:100%;}
 body{
+  height:100%;
+  overflow-y:auto;
   font-family:'DM Sans','Helvetica Neue',sans-serif;
   background:#F2F4F8;
   color:#1A1A2E;
+  min-height:100vh;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
@@ -23,14 +26,13 @@ body{
 .app{
   max-width:480px;
   margin:0 auto;
-  height:100%;
   background:#F2F4F8;
   position:relative;
-  overflow:hidden;
+  min-height:100vh;
 }
 
 /* ── PAGES ── */
-.page{display:none;position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:130px;}
+.page{display:none;padding-bottom:110px;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
@@ -506,14 +508,16 @@ textarea{resize:vertical;}
 /* ── BOTTOM NAV ── */
 .bottom-nav{
   position:fixed;
-  bottom:0;left:0;right:0;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
   width:100%;
+  max-width:480px;
   background:#fff;
   border-top:1px solid #F3F4F6;
   display:flex;
-  justify-content:space-around;
   box-shadow:0 -4px 20px rgba(0,0,0,.08);
-  z-index:100;
+  z-index:200;
   padding-bottom:env(safe-area-inset-bottom,0);
   box-sizing:border-box;
 }
@@ -1130,14 +1134,33 @@ textarea{resize:vertical;}
 .doc-item-body { padding:0 16px 14px; border-top:1px solid #F3F4F6; }
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
 
+/* Desktop fix */
 @media (min-width:768px){
   .app{ max-width:100%; }
-  .bnav-item{ padding:14px 24px 10px; }
-  .bnav-label{ font-size:13px; }
-  .admin-hero{ width:100%; }
+  .bottom-nav{ max-width:100%; left:0; right:0; transform:none; justify-content:space-around; }
+  .bnav-item{ flex:1; }
+  .page.active{ padding-top:0; }
 }
-@media (max-width:767px){
-  .bottom-nav{ max-width:480px; left:50%; right:auto; transform:translateX(-50%); }
+
+@media(min-width:768px){
+  .app{ max-width:100%; }
+  .bottom-nav{ max-width:100%; left:0; right:0; transform:none; justify-content:space-around; }
+  .bnav-item{ flex:1; }
+
+@media(min-width:768px){
+  .app{ max-width:100%; }
+  .bottom-nav{
+    max-width:100%;
+    left:0; right:0;
+    transform:none;
+    justify-content:space-around;
+    position:fixed;
+    bottom:0;
+  }
+  .bnav-item{ flex:1; }
+  .page{ padding-bottom:80px; }
+}
+  .page{ padding-bottom:80px; }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1793,7 +1816,7 @@ textarea{resize:vertical;}
       <!-- KPI cards -->
       <div id="admin-stats" style="display:none;"></div>
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
-      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:18px 10px 12px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100%;box-sizing:border-box;margin-top:10px;justify-content:center;flex-wrap:wrap;">
+      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:18px 10px 12px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100vw;margin-left:calc(-50vw + 50%);box-sizing:border-box;margin-top:10px;justify-content:center;flex-wrap:wrap;">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
         <button class="admin-tab"        id="an-equipe"        onclick="setAdminTab('equipe')">👥 Équipe</button>
         <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
@@ -2258,6 +2281,8 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
 
 
 
@@ -3338,12 +3363,17 @@ function _navigateTo(name){
   document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
   document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
   var pg=document.getElementById('page-'+name);
-  if(pg){ pg.classList.add('active'); pg.scrollTop=0; }
+  if(pg) pg.classList.add('active');
   var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
   if(name==='reservation') renderReservation();
   if(name==='mes-resa') renderMesResa();
   if(name==='admin') renderAdmin();
   if(name==='profil') renderProfil();
+  window.scrollTo(0,0);
+  document.body.scrollTop=0;
+  document.documentElement.scrollTop=0;
+  var pg2=document.getElementById('page-'+name);
+  if(pg2) pg2.scrollTop=0;
 }
 
 // ═══ STUBS MODAL PAIEMENT ═══
@@ -5284,6 +5314,8 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
+
+
 
 
 
