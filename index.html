@@ -2314,6 +2314,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -5364,24 +5365,24 @@ function ajouterEnfantInscription(){
   div.style.cssText='background:#F8FAFF;border:1.5px solid #BFDBFE;border-radius:14px;padding:14px;position:relative;margin-bottom:8px;';
   div.innerHTML=
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-    +'<div style="font-size:13px;font-weight:700;color:#0077C8;">\uD83D\uDC76 Enfant '+idx+'</div>'
+    +'<div style="font-size:13px;font-weight:700;color:#0077C8;">👶 Enfant '+idx+'</div>'
     +'<button type="button" onclick="this.closest(\'[data-extra]\').remove()" style="background:#FEE2E2;border:none;border-radius:8px;padding:4px 10px;color:#EF4444;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Supprimer</button>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Pr\u00e9nom *</label>'
-    +'<input class="extra-enfant-prenom" placeholder="Pr\u00e9nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>'
+    +'<input class="extra-enfant-nom" placeholder="NOM" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;text-transform:uppercase;"></div>'
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom *</label>'
-    +'<input class="extra-enfant-prenom" placeholder="Nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
+    +'<input class="extra-enfant-prenom" placeholder="Prénom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px;">'
     +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date de naissance *</label>'
     +'<input class="extra-enfant-dob" type="date" onchange="calcExtraAge(this)" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>'
     +'<div style="background:#F0F9FF;border-radius:10px;padding:10px 14px;text-align:center;min-width:60px;">'
-    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">\u00c2ge</div>'
+    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Âge</div>'
     +'<div class="extra-enfant-age-display" style="font-size:18px;font-weight:800;color:#0099E6;">—</div>'
     +'<input class="extra-enfant-age" type="hidden" value="0">'
     +'</div></div>'
-    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Allergies / M\u00e9dical</label>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Allergies / Médical</label>'
     +'<input class="extra-enfant-medical" placeholder="RAS" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>';
   div.dataset.extra='1';
   list.appendChild(div);
@@ -5654,6 +5655,7 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
 
 
 
