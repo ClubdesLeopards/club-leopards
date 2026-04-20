@@ -2309,6 +2309,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
@@ -3810,12 +3811,24 @@ function renderEquipe(){
 }
 function ajouterAnimateur(){var ov=document.getElementById('ajouter-animateur-overlay');if(ov)ov.style.display='flex';}
 function fermerAjouterAnimateur(){var ov=document.getElementById('ajouter-animateur-overlay');if(ov)ov.style.display='none';}
-function confirmerAjouterAnimateur(){
+async function confirmerAjouterAnimateur(){
   var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var p=f('an-prenom');if(!p){toast('Prenom requis','ko');return;}
+  var p=f('an-prenom');if(!p){toast('Prénom requis','ko');return;}
   var n=f('an-nom');if(!n){toast('Nom requis','ko');return;}
-  EQUIPE.push({id:Date.now(),prenom:p,nom:n,dob:f('an-dob'),email:f('an-email'),tel:f('an-tel'),secu:f('an-secu'),diplome:f('an-diplome'),poste:f('an-poste')||'Animateur'});
-  fermerAjouterAnimateur();toast('Animateur ajoute','ok');renderEquipe();
+  var newAnim={prenom:p,nom:n,dob:f('an-dob')||null,email:f('an-email')||null,tel:f('an-tel')||null,secu:f('an-secu')||null,diplome:f('an-diplome')||null,poste:f('an-poste')||'Animateur'};
+  // Sauvegarder Supabase
+  try {
+    var res=await sb.from('equipe').insert(newAnim).select().single();
+    if(res.error) throw res.error;
+    newAnim.id=res.data.id;
+    toast('Animateur ajouté ✅','ok');
+  } catch(e){
+    console.warn('equipe insert:', e);
+    newAnim.id=Date.now();
+    toast('Ajouté localement (hors ligne)','ok');
+  }
+  EQUIPE.push(newAnim);
+  fermerAjouterAnimateur();renderEquipe();
 }
 function editEquipe(id){
   var a=EQUIPE.find(function(x){return x.id===id;});if(!a)return;
@@ -3866,6 +3879,10 @@ function editEquipe(id){
       a.diplome=g('ee-diplome')||a.diplome;
       a.poste=(document.getElementById('ee-poste')||{value:''}).value||a.poste;
       a.secu=g('ee-secu')||a.secu;
+      // Sauvegarder Supabase
+      if(a.id && typeof a.id === 'number' && a.id < 1e12) {
+        sb.from('equipe').update({prenom:a.prenom,nom:a.nom,email:a.email,tel:a.tel,dob:a.dob||null,diplome:a.diplome,poste:a.poste,secu:a.secu}).eq('id',a.id).then(function(r){if(r.error)console.warn('equipe update:',r.error.message);});
+      }
       ov.style.display='none';
       toast('Animateur mis à jour ✅','ok');
       renderEquipe();
@@ -4468,13 +4485,23 @@ function renderSuiviQuotidien(){
 }
 function ouvrirSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov){var d=document.getElementById('sq-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);ov.style.display='flex';}}
 function fermerSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov)ov.style.display='none';}
-function confirmerSaisieQuotidienne(){
+async function confirmerSaisieQuotidienne(){
   var f=function(id){return parseFloat((document.getElementById(id)||{value:'0'}).value)||0;};
   var s=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var ref=s('sq-ref');if(!ref){toast('Reference requise','ko');return;}
-  var date=s('sq-date');var d=date?new Date(date).toLocaleDateString('fr-FR'):new Date().toLocaleDateString('fr-FR');
-  SUIVI_QUOTIDIEN.push({date:d,ref:ref,cb:f('sq-cb'),vir:f('sq-vir'),chq:f('sq-chq'),chqvac:f('sq-chqvac'),esp:f('sq-esp'),avoir24:f('sq-avoir24'),remb25:f('sq-remb25')});
-  fermerSaisieQuotidienne();toast('Entree ajoutee','ok');setComptaTab('suivi');
+  var ref=s('sq-ref');if(!ref){toast('Référence requise','ko');return;}
+  var date=s('sq-date')||new Date().toISOString().slice(0,10);
+  var entry={date:new Date(date).toLocaleDateString('fr-FR'),ref:ref,cb:f('sq-cb'),vir:f('sq-vir'),chq:f('sq-chq'),chqvac:f('sq-chqvac'),esp:f('sq-esp'),avoir24:f('sq-avoir24'),remb25:f('sq-remb25')};
+  SUIVI_QUOTIDIEN.unshift(entry);
+  // Sauvegarder Supabase
+  try {
+    var res=await sb.from('suivi_quotidien').insert({date:date,reference:ref,cb:entry.cb,virement:entry.vir,cheque:entry.chq,cheque_vac:entry.chqvac,especes:entry.esp,avoir_n1:entry.avoir24,remboursement:entry.remb25});
+    if(res.error) throw res.error;
+    toast('Saisie enregistrée ✅','ok');
+  } catch(e){
+    console.warn('suivi_quotidien insert:', e);
+    toast('Enregistré localement','ok');
+  }
+  fermerSaisieQuotidienne();setComptaTab('suivi');
 }
 
 // ═══ AVOIRS ═══
@@ -4493,7 +4520,26 @@ function renderAvoirs(){
 function solderAvoir(ti,ri){var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;var real=tab.filter(function(a){return a.membre;})[ri];if(!real)return;real.solde=true;real.dateSolde=new Date().toLocaleDateString('fr-FR');toast('Solde','ok');renderAvoirs();}
 function ajouterAvoir(ti){window._avoirTableIdx=ti;var ov=document.getElementById('ajouter-avoir-overlay');if(ov){['aa-membre','aa-motif'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});var som=document.getElementById('aa-somme');if(som)som.value='120';ov.style.display='flex';}}
 function fermerAjouterAvoir(){var ov=document.getElementById('ajouter-avoir-overlay');if(ov)ov.style.display='none';}
-function confirmerAjouterAvoir(){var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};var membre=f('aa-membre');if(!membre){toast('Nom requis','ko');return;}var somme=parseInt(f('aa-somme')||'0');var motif=f('aa-motif');if(!motif){toast('Motif requis','ko');return;}var ti=window._avoirTableIdx||0;var tab=ti===0?AVOIRS.nMoins1:AVOIRS.n;tab.push({id:Date.now(),membre:membre,somme:somme,motif:motif,solde:false,dateSolde:''});fermerAjouterAvoir();toast('Avoir ajoute','ok');renderAvoirs();}
+async function confirmerAjouterAvoir(){
+  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var membre=f('aa-membre');if(!membre){toast('Nom requis','ko');return;}
+  var somme=parseFloat(f('aa-somme')||'0');
+  var motif=f('aa-motif');if(!motif){toast('Motif requis','ko');return;}
+  var ti=window._avoirTableIdx||0;
+  var saison=ti===0?'nMoins1':'n';
+  var newAvoir={id:Date.now(),membre:membre,somme:somme,motif:motif,solde:false,dateSolde:''};
+  (ti===0?AVOIRS.nMoins1:AVOIRS.n).push(newAvoir);
+  // Sauvegarder Supabase
+  try {
+    var res=await sb.from('avoirs').insert({nom_famille:membre,somme:somme,motif:motif,saison:saison,solde:false});
+    if(res.error) throw res.error;
+    toast('Avoir ajouté ✅','ok');
+  } catch(e){
+    console.warn('avoirs insert:', e);
+    toast('Ajouté localement','ok');
+  }
+  fermerAjouterAvoir();renderAvoirs();
+}
 function genererDocAvoir(membre,somme,motif,ni){
   var ref='AV-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
   var montantAvoir=confirm('Avoir TOTAL ('+somme+'€) ? Annuler = partiel')?somme:parseInt(prompt('Montant partiel :',somme)||somme);
@@ -5593,6 +5639,7 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
 
 
 
