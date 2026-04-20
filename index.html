@@ -1940,42 +1940,48 @@ textarea{resize:vertical;}
 
       <!-- NOUVELLE RÉSERVATION OVERLAY -->
       <div id="nouvelle-resa-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:18px;max-width:440px;width:92%;max-height:85vh;overflow-y:auto;">
+        <div style="background:#fff;border-radius:18px;max-width:480px;width:92%;max-height:88vh;overflow-y:auto;">
           <div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">
-            <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Nouvelle reservation</div>
-            <button onclick="fermerNouvelleResa()" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;">x</button>
+            <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Nouvelle réservation</div>
+            <button onclick="fermerNouvelleResa()" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;">×</button>
           </div>
           <div style="padding:18px;display:flex;flex-direction:column;gap:10px;">
-            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom famille *</label>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Famille *</label>
             <input id="nr-nom" placeholder="DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label>
               <input id="nr-email" type="email" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
-              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Tel</label>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Tél</label>
               <input id="nr-tel" type="tel" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
             </div>
-
+            <!-- Enfants -->
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Enfants</label>
+              <div id="nr-enfants-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+              <button type="button" onclick="nrAjouterEnfant()" style="width:100%;padding:7px;background:#EFF6FF;color:#0099E6;border:2px dashed #BFDBFE;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Enfant</button>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Periode</label>
-              <select id="nr-periode" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
-                <option value="matin">Matin</option><option value="aprem">Apres-midi</option>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Période</label>
+              <select id="nr-periode" onchange="nrCalculerMontant()" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="matin">Matin</option><option value="aprem">Après-midi</option>
               </select></div>
               <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Saison</label>
-              <select id="nr-saison" onchange="updateResaSemaines()" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
-                <option value="ete">Ete 2026</option><option value="automne">Automne 2026</option><option value="printemps">Printemps 2027</option>
+              <select id="nr-saison" onchange="updateResaSemaines();nrCalculerMontant();" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="ete">Été 2026</option><option value="automne">Automne 2026</option><option value="printemps">Printemps 2027</option>
               </select></div>
             </div>
-            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Semaine</label>
-            <select id="nr-semaine-sel" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
-              <option value="">-- Choisir une semaine --</option>
-            </select></div>
-            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Montant (euros)</label>
-            <input id="nr-montant" type="number" value="120" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
-            <button onclick="confirmerNouvelleResa()" style="padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:11px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Creer la reservation</button>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Semaines (plusieurs possibles)</label>
+            <div id="nr-semaines-checks" style="display:flex;flex-direction:column;gap:5px;max-height:150px;overflow-y:auto;border:1.5px solid #E5E7EB;border-radius:9px;padding:8px;"></div></div>
+            <!-- Montant calculé -->
+            <div id="nr-montant-display" style="background:#F0F9FF;border-radius:10px;padding:12px;text-align:center;display:none;">
+              <div style="font-size:12px;color:#6B7280;">Montant estimé</div>
+              <div id="nr-montant-val" style="font-size:24px;font-weight:800;color:#0099E6;">120 €</div>
+              <div id="nr-montant-detail" style="font-size:11px;color:#9CA3AF;"></div>
+            </div>
+            <button onclick="confirmerNouvelleResa()" style="padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:11px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Créer la réservation</button>
           </div>
         </div>
       </div>
-
       <!-- SAISIE QUOTIDIENNE OVERLAY -->
       <div id="saisie-quotidienne-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
         <div style="background:#fff;border-radius:18px;max-width:420px;width:92%;max-height:85vh;overflow-y:auto;">
@@ -2264,6 +2270,13 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
+
+
+
+
+
 
 
 
@@ -2626,23 +2639,7 @@ var GROUPES = GROUPES_MATIN.concat(GROUPES_APREM);
 var MAX_G = 20;
 var MONTHS = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
 
-var DEMO_KIDS = [
-  {id:1, prenom:'Emma',   nom:'Bousin',     age:6, parent:'Fam. Bousin',   email:'bousin@email.com',   tel:'06 01 01 01 01',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'01/06/2025'},
-  {id:2, prenom:'Lucas',  nom:'Bousin',     age:8, parent:'Fam. Bousin',   email:'bousin@email.com',   tel:'06 01 01 01 01',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'01/06/2025'},
-  {id:3, prenom:'Léa',    nom:'Ammanet',    age:5, parent:'Fam. Ammanet',  email:'ammanet@email.com',  tel:'06 02 02 02 02',medical:'Allergie arachides',urgence:'06 99 99 99 99',periode:['aprem'], inscrit:'02/06/2025'},
-  {id:4, prenom:'Noah',   nom:'Ammanet',    age:9, parent:'Fam. Ammanet',  email:'ammanet@email.com',  tel:'06 02 02 02 02',medical:'RAS',       urgence:'',              periode:['matin','aprem'],inscrit:'02/06/2025'},
-  {id:5, prenom:'Chloé',  nom:'Mouthet',    age:7, parent:'Fam. Mouthet',  email:'mouthet@email.com',  tel:'06 03 03 03 03',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'03/06/2025'},
-  {id:6, prenom:'Hugo',   nom:'de Robalis', age:11,parent:'Fam. de Robalis',email:'robalis@email.com', tel:'06 04 04 04 04',medical:'Asthme',   urgence:'06 88 88 88 88',periode:['matin'],        inscrit:'03/06/2025'},
-  {id:7, prenom:'Inès',   nom:'Lecoeur',    age:4, parent:'Fam. Lecoeur',  email:'lecoeur@email.com',  tel:'06 05 05 05 05',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'04/06/2025'},
-  {id:8, prenom:'Tom',    nom:'Manach',     age:10,parent:'Fam. Manach',   email:'manach@email.com',   tel:'06 06 06 06 06',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'04/06/2025'},
-  {id:9, prenom:'Alice',  nom:'Foute',      age:6, parent:'Fam. Foute',    email:'foute@email.com',    tel:'06 07 07 07 07',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'05/06/2025'},
-  {id:10,prenom:'Maxime', nom:'Foute',      age:8, parent:'Fam. Foute',    email:'foute@email.com',    tel:'06 07 07 07 07',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'05/06/2025'},
-  {id:11,prenom:'Camille',nom:'Romanoissa', age:12,parent:'Fam. Romanoissa',email:'romanoissa@email.com',tel:'06 08 08 08 08',medical:'RAS',     urgence:'',              periode:['matin'],        inscrit:'06/06/2025'},
-  {id:12,prenom:'Louis',  nom:'Tenillore',  age:5, parent:'Fam. Tenillore',email:'tenillore@email.com',tel:'06 09 09 09 09',medical:'Eczéma',   urgence:'',              periode:['aprem'],        inscrit:'06/06/2025'},
-  {id:13,prenom:'Jade',   nom:'Lavin',      age:9, parent:'Fam. Lavin',    email:'lavin@email.com',    tel:'06 10 10 10 10',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'07/06/2025'},
-  {id:14,prenom:'Ethan',  nom:'Deras',      age:7, parent:'Fam. Deras',    email:'deras@email.com',    tel:'06 11 11 11 11',medical:'RAS',       urgence:'',              periode:['matin'],        inscrit:'07/06/2025'},
-  {id:15,prenom:'Sara',   nom:'Benuwa',     age:4, parent:'Fam. Benuwa',   email:'benuwa@email.com',   tel:'06 12 12 12 12',medical:'RAS',       urgence:'',              periode:['aprem'],        inscrit:'08/06/2025'},
-];
+var DEMO_KIDS = [];
 
 var DEMO_FAMS = [];
 var DEMO_RESAS = [];
@@ -2655,13 +2652,25 @@ function getGroupe(age, periode) {
 }
 
 function allKids() {
-  var extra = [];
-  ST.members.forEach(function(m, mi) {
-    (m.children||[]).forEach(function(ch, ci) {
-      extra.push({id:10000+mi*100+ci, prenom:ch.name?ch.name.split(' ')[0]:'', nom:ch.name?ch.name.split(' ').slice(1).join(' '):'', age:parseFloat(ch.age)||0, parent:m.prenom+' '+NOM(m.nom), email:m.email, tel:m.tel, medical:m.medical||'RAS', urgence:m.urgence||'', periode:[ch.periode||'matin'], inscrit:m.date||''});
+  var kids = [];
+  [].concat(DEMO_FAMS, ST.members).forEach(function(m) {
+    (m.children||[]).forEach(function(ch) {
+      kids.push({
+        id: ch.id || null,
+        prenom: ch.prenom || (ch.name?ch.name.split(' ')[0]:''),
+        nom: ch.nom || (ch.name?ch.name.split(' ').slice(1).join(' '):''),
+        name: ch.name || ((ch.prenom||'') + ' ' + (ch.nom||'')),
+        age: parseFloat(ch.age) || 0,
+        dob: ch.dob || ch.date_naissance || '',
+        medical: ch.medical || 'RAS',
+        parent: m.prenom + ' ' + NOM(m.nom||''),
+        email: m.email || '',
+        tel: m.tel || '',
+        periode: ch.periode || ['matin']
+      });
     });
   });
-  return DEMO_KIDS.concat(extra);
+  return kids;
 }
 
 function parseAge(dob) {
@@ -3810,10 +3819,63 @@ function confirmerAjouterAnimateur(){
 }
 function editEquipe(id){
   var a=EQUIPE.find(function(x){return x.id===id;});if(!a)return;
-  a.diplome=prompt('Diplome :',a.diplome)||a.diplome;
-  a.email=prompt('Email :',a.email)||a.email;
-  a.tel=prompt('Tel :',a.tel)||a.tel;
-  renderEquipe();
+  var ovId='edit-equipe-overlay';
+  var ov=document.getElementById(ovId);
+  if(!ov){
+    ov=document.createElement('div');ov.id=ovId;
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:700;display:flex;align-items:center;justify-content:center;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#fff;border-radius:18px;max-width:440px;width:92%;max-height:88vh;overflow-y:auto;';
+    box.innerHTML='<div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">'
+      +'<div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">✏️ Modifier animateur</div>'
+      +'<button id="ee-close" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:16px;">×</button>'
+      +'</div>'
+      +'<div style="padding:18px;display:flex;flex-direction:column;gap:10px;">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom</label>'
+      +'<input id="ee-prenom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom</label>'
+      +'<input id="ee-nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'</div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label>'
+      +'<input id="ee-email" type="email" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Téléphone</label>'
+      +'<input id="ee-tel" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Date naissance</label>'
+      +'<input id="ee-dob" type="date" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'</div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Diplôme</label>'
+      +'<input id="ee-diplome" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Poste</label>'
+      +'<select id="ee-poste" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box;">'
+      +'<option>Animateur</option><option>Animatrice</option><option>Responsable</option><option>Stagiaire</option></select></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">N° Sécurité sociale</label>'
+      +'<input id="ee-secu" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<button id="ee-save" style="padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">💾 Enregistrer</button>'
+      +'</div>';
+    ov.appendChild(box);document.body.appendChild(ov);
+    document.getElementById('ee-close').onclick=function(){ov.style.display='none';};
+    document.getElementById('ee-save').onclick=function(){
+      var g=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+      a.prenom=g('ee-prenom')||a.prenom;
+      a.nom=g('ee-nom')||a.nom;
+      a.email=g('ee-email')||a.email;
+      a.tel=g('ee-tel')||a.tel;
+      a.dob=g('ee-dob')||a.dob;
+      a.diplome=g('ee-diplome')||a.diplome;
+      a.poste=(document.getElementById('ee-poste')||{value:''}).value||a.poste;
+      a.secu=g('ee-secu')||a.secu;
+      ov.style.display='none';
+      toast('Animateur mis à jour ✅','ok');
+      renderEquipe();
+    };
+  }
+  // Remplir les champs
+  var fields={'ee-prenom':a.prenom,'ee-nom':a.nom,'ee-email':a.email||'','ee-tel':a.tel||'','ee-dob':a.dob||'','ee-diplome':a.diplome||'','ee-secu':a.secu||''};
+  Object.keys(fields).forEach(function(id){var el=document.getElementById(id);if(el)el.value=fields[id];});
+  var posteEl=document.getElementById('ee-poste');if(posteEl)posteEl.value=a.poste||'Animateur';
+  ov.style.display='flex';
 }
 function delEquipe(id){if(!confirm('Supprimer ?'))return;EQUIPE=EQUIPE.filter(function(x){return x.id!==id;});renderEquipe();}
 
@@ -3899,7 +3961,105 @@ function voirFicheEnfantMembre(mi,ci){
   fermerFicheMembre();ov.style.display='flex';ov.style.zIndex='600';
 }
 function fermerFicheEnfant(){var ov=document.getElementById('fiche-enfant-overlay');if(ov)ov.style.display='none';}
-function ajouterMembre(){var p=prompt('Prenom :');if(!p)return;var n=prompt('Nom :');if(!n)return;ST.members.push({prenom:p,nom:n,email:prompt('Email :')||'',tel:prompt('Tel :')||'',adresse:'',children:[],date:new Date().toLocaleDateString('fr-FR')});toast('Membre ajoute','ok');renderMembres();}
+function ajouterMembre(){
+  var ovId='ajout-membre-overlay';
+  var ov=document.getElementById(ovId);
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id=ovId;
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:700;display:flex;align-items:center;justify-content:center;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#fff;border-radius:18px;max-width:440px;width:92%;max-height:88vh;overflow-y:auto;';
+    box.innerHTML=
+      '<div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;">'
+      +'<div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">👤 Nouveau membre</div>'
+      +'<button id="am-close-btn" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:16px;">×</button>'
+      +'</div>'
+      +'<div style="padding:18px;display:flex;flex-direction:column;gap:10px;">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Prénom *</label>'
+      +'<input id="am-prenom" placeholder="Marie" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom *</label>'
+      +'<input id="am-nom" placeholder="DUPONT" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'</div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email *</label>'
+      +'<input id="am-email" type="email" placeholder="marie@email.com" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Téléphone</label>'
+      +'<input id="am-tel" type="tel" placeholder="06 00 00 00 00" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Droit image</label>'
+      +'<select id="am-droit" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box;">'
+      +'<option value="false">Non</option><option value="true">Oui</option></select></div>'
+      +'</div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Adresse vacances</label>'
+      +'<input id="am-adresse" placeholder="12 rue de la Plage, La Baule" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Contact urgence</label>'
+      +'<input id="am-urgence-nom" placeholder="Prénom Nom" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Tél urgence</label>'
+      +'<input id="am-urgence-tel" type="tel" placeholder="06 00 00 00 00" style="width:100%;padding:10px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;"></div>'
+      +'</div>'
+      +'<div style="border-top:1px solid #F3F4F6;margin-top:8px;padding-top:12px;">'
+      +'<div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">👶 Enfants (optionnel)</div>'
+      +'<div id="am-enfants-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>'
+      +'<button type="button" id="am-add-enfant" style="width:100%;padding:8px;background:#EFF6FF;color:#0099E6;border:2px dashed #BFDBFE;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-bottom:8px;">+ Ajouter un enfant</button>'
+      +'</div>'
+      +'<button id="am-confirm-btn" style="padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-top:4px;">✅ Créer le membre</button>'
+      +'</div>';
+    ov.appendChild(box);
+    document.body.appendChild(ov);
+    document.getElementById('am-close-btn').onclick=function(){ov.style.display='none';};
+    document.getElementById('am-add-enfant').onclick=function(){
+      var list=document.getElementById('am-enfants-list');
+      var idx=list.children.length+1;
+      var div=document.createElement('div');
+      div.style.cssText='background:#F8FAFF;border:1.5px solid #BFDBFE;border-radius:10px;padding:10px;';
+      div.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">'
+        +'<input placeholder="Prénom *" class="am-e-prenom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+        +'<input placeholder="NOM" class="am-e-nom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+        +'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
+        +'<input type="date" class="am-e-dob" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;width:100%;box-sizing:border-box;">'
+        +'<input type="number" min="3" max="13" placeholder="Âge" class="am-e-age" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+        +'</div>';
+      list.appendChild(div);
+    };
+    document.getElementById('am-confirm-btn').onclick=function(){
+      var g=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+      var prenom=g('am-prenom');if(!prenom){toast('Prénom requis','ko');return;}
+      var nom=g('am-nom');if(!nom){toast('Nom requis','ko');return;}
+      var email=g('am-email');if(!email){toast('Email requis','ko');return;}
+      var newMembre={
+        prenom:prenom, nom:nom, email:email, tel:g('am-tel'),
+        adresse:g('am-adresse'),
+        urgence_nom:g('am-urgence-nom'), urgence_tel:g('am-urgence-tel'),
+        droit_image:(document.getElementById('am-droit')||{value:'false'}).value==='true',
+        children:[], date:new Date().toLocaleDateString('fr-FR')
+      };
+      // Collecter les enfants
+      var enfants=[];
+      document.querySelectorAll('#am-enfants-list > div').forEach(function(div){
+        var pr=div.querySelector('.am-e-prenom');
+        var no=div.querySelector('.am-e-nom');
+        var db=div.querySelector('.am-e-dob');
+        var ag=div.querySelector('.am-e-age');
+        var p=pr?pr.value.trim():'';
+        if(p)enfants.push({prenom:p,nom:no?no.value.trim():'',name:p+' '+(no?no.value.trim():''),dob:db?db.value:'',age:ag?parseFloat(ag.value)||0:0,medical:'RAS',periode:['matin']});
+      });
+      newMembre.children=enfants;
+      ST.members.push(newMembre);
+      if(typeof sauvegarderMembreSB==='function') sauvegarderMembreSB(newMembre);
+      else chargerDonnees&&chargerDonnees();
+      ov.style.display='none';
+      toast('Membre ajouté ✅','ok');
+      renderMembres();
+    };
+  }
+  ['am-prenom','am-nom','am-email','am-tel','am-adresse','am-urgence-nom','am-urgence-tel'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  ov.style.display='flex';
+}
 function supprimerMembre(i){if(!confirm('Supprimer ?'))return;var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];DEMO_FAMS=DEMO_FAMS.filter(function(x){return x!==m;});ST.members=ST.members.filter(function(x){return x!==m;});fermerFicheMembre();toast('Supprime','ok');renderMembres();}
 function ajouterEnfantMembre(i){
   var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
@@ -4071,11 +4231,7 @@ function setResaAdminSaison(s){resaAdminSaison=s;['ete','automne','printemps'].f
 function setResaFilter(f){resaFilter=f;['all','attente','valide'].forEach(function(x){var b=document.getElementById('rf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});renderAdminResas();}
 function nouvelleResaManuelle(){var ov=document.getElementById('nouvelle-resa-overlay');if(ov){ov.style.display='flex';updateResaSemaines();}}
 function fermerNouvelleResa(){var ov=document.getElementById('nouvelle-resa-overlay');if(ov)ov.style.display='none';}
-function updateResaSemaines(){
-  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
-  var s=SAISONS[saison];var sel=document.getElementById('nr-semaine-sel');if(!sel||!s)return;
-  sel.innerHTML='<option value="">-- Choisir --</option>'+(s.semaines||[]).map(function(wk){return '<option value="'+wk.label+' - '+wk.debut+' au '+wk.fin+'">'+wk.label+' - '+wk.debut+' -> '+wk.fin+'</option>';}).join('');
-}
+
 function ajouterEnfantResa(){
   var cont=document.getElementById('nr-enfants-list');if(!cont)return;
   var idx=cont.querySelectorAll('input').length;
@@ -4084,17 +4240,7 @@ function ajouterEnfantResa(){
   inp.style.cssText='width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:4px;';
   cont.appendChild(inp);
 }
-function confirmerNouvelleResa(){
-  var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var nom=f('nr-nom');if(!nom){toast('Nom requis','ko');return;}
-  var semaine=(document.getElementById('nr-semaine-sel')||{value:''}).value;if(!semaine){toast('Choisissez une semaine','ko');return;}
-  var enfants=[];
-  var cont=document.getElementById('nr-enfants-list');
-  if(cont)cont.querySelectorAll('input').forEach(function(inp){if(inp.value.trim())enfants.push({name:inp.value.trim(),age:0});});
-  var saison=f('nr-saison');
-  ST.reservations.push({id:Date.now(),nom:'Fam. '+nom,email:f('nr-email'),tel:f('nr-tel'),slot:{time:(document.getElementById('nr-periode')||{value:'matin'}).value==='matin'?'Matin':'Apres-midi',date:semaine},saisonLabel:saison==='ete'?'Ete 2026':saison==='automne'?'Automne 2026':'Printemps 2027',children:enfants,paid:parseInt(f('nr-montant')||'120'),statut:'en attente',date:new Date().toLocaleDateString('fr-FR')});
-  fermerNouvelleResa();toast('Reservation creee','ok');renderAdminResas();
-}
+
 function renderAdminResas(){
   var el=document.getElementById('admin-resa-content');if(!el)return;
   var all=[].concat(DEMO_RESAS,ST.reservations);
@@ -4103,7 +4249,8 @@ function renderAdminResas(){
   if(resaFilter==='attente')all=all.filter(function(r){return r.statut==='en attente';});
   if(resaFilter==='valide')all=all.filter(function(r){return r.statut==='valide'||r.statut==='valide'||r.statut==='validé';});
   _adminResas=all;
-  if(!all.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune reservation</p></div>';return;}
+  if(!all.length){el.innerHTML='<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-bottom:12px;">+ Créer une réservation</button>'+
+  '<div class="empty"><div class="empty-icon">📅</div><p>Aucune reservation</p></div>';return;}
   var cards=all.map(function(r,i){
     var st=r.statut||'en attente';var val=(st==='valide'||st==='validé');
     var bc=val?'#10B981':'#F97316';
@@ -4172,34 +4319,54 @@ function renderFrequentation(){
   var el=document.getElementById('frequentation-content');if(!el)return;
   var today=new Date();
   var moisNoms=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  var data=DEMO_FREQ.jours,navHTML='';
+
+  // ── Vraies données d'abord ──
+  var kids=allKids();
+  var totM=kids.filter(function(k){var p=k.periode;return Array.isArray(p)?p.indexOf('matin')>=0:p==='matin';}).length;
+  var totA=kids.filter(function(k){var p=k.periode;return Array.isArray(p)?p.indexOf('aprem')>=0:p==='aprem';}).length;
+  if(totM===0&&totA===0){totM=Math.ceil(kids.length/2);totA=kids.length-totM;}
+
+  // ── Données graphique ──
+  var baseM=totM||0, baseA=totA||0;
+  var defaultJours=[
+    {label:'Lun',matin:baseM,aprem:baseA},{label:'Mar',matin:baseM,aprem:baseA},
+    {label:'Mer',matin:baseM,aprem:baseA},{label:'Jeu',matin:baseM,aprem:baseA},
+    {label:'Ven',matin:baseM,aprem:baseA}
+  ];
+  var defaultMois=[
+    {label:'Juil',matin:baseM,aprem:baseA},{label:'Août',matin:baseM,aprem:baseA}
+  ];
+  var data=DEMO_FREQ.jours.length?DEMO_FREQ.jours:defaultJours;
+  var navHTML='';
 
   if(freqPeriod==='semaine'){
-    var sems=SAISONS.ete.semaines;var wi=Math.max(0,Math.min(sems.length-1,freqWeekOffset));var wk=sems[wi]||{label:'S1',debut:'',fin:''};
+    var sems=SAISONS.ete.semaines;
+    var wi=Math.max(0,Math.min(sems.length-1,freqWeekOffset||0));
+    var wk=sems[wi]||{label:'S1',debut:'',fin:''};
     navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<button onclick="freqWeekOffset=Math.max(0,freqWeekOffset-1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<button onclick="freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
       +'<div style="font-size:12px;font-weight:700;color:#374151;">'+wk.label+' · '+wk.debut+' → '+wk.fin+'</div>'
       +'<button onclick="freqWeekOffset=Math.min('+(sems.length-1)+',freqWeekOffset+1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
   } else if(freqPeriod==='mois'){
-    var moidx=((today.getMonth()+freqMonthOffset)%12+12)%12;data=DEMO_FREQ.mois;
+    data=DEMO_FREQ.mois.length?DEMO_FREQ.mois:defaultMois;
+    var moidx=((today.getMonth()+(freqMonthOffset||0))%12+12)%12;
     navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<button onclick="freqMonthOffset--;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<button onclick="freqMonthOffset=(freqMonthOffset||0)-1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
       +'<div style="font-size:12px;font-weight:700;color:#374151;">'+moisNoms[moidx]+'</div>'
-      +'<button onclick="freqMonthOffset++;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
+      +'<button onclick="freqMonthOffset=(freqMonthOffset||0)+1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
   } else {
-    var sss=['Été 2026','Automne 2026','Printemps 2027'];var si=((freqSaisonIdx%3)+3)%3;data=DEMO_FREQ.mois;
+    data=DEMO_FREQ.mois.length?DEMO_FREQ.mois:defaultMois;
+    var sss=['Été 2026','Automne 2026','Printemps 2027'];
+    var si=(((freqSaisonIdx||0)%3)+3)%3;
     navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<button onclick="freqSaisonIdx--;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<button onclick="freqSaisonIdx=(freqSaisonIdx||0)-1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
       +'<div style="font-size:12px;font-weight:700;color:#374151;">'+sss[si]+'</div>'
-      +'<button onclick="freqSaisonIdx++;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
+      +'<button onclick="freqSaisonIdx=(freqSaisonIdx||0)+1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
   }
 
-  var maxAll=Math.max.apply(null,data.map(function(d){return Math.max(d.matin,d.aprem);}));maxAll=maxAll||1;
-  var totM=data.reduce(function(s,d){return s+d.matin;},0);
-  var totA=data.reduce(function(s,d){return s+d.aprem;},0);
-  var kids=allKids();
+  var maxAll=Math.max.apply(null,data.map(function(d){return Math.max(d.matin||0,d.aprem||0);}));
+  if(!maxAll||maxAll<1)maxAll=1;
 
-  // ── Tableau Matin (4 groupes) vs Après-midi (5 groupes) côte à côte ──
   function groupeRow(g){
     var cnt=kids.filter(function(k){
       var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
@@ -4226,28 +4393,25 @@ function renderFrequentation(){
   var totEnfA=GROUPES_APREM.reduce(function(s,g){return s+kids.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
 
   el.innerHTML=
-    // KPIs
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
     +'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:12px;text-align:center;">'
-    +'<div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:2px;">🌅 Matin</div>'
-    +'<div style="font-size:24px;font-weight:800;color:#92400E;">'+totM+'</div></div>'
+    +'<div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:2px;">🌅 MATIN</div>'
+    +'<div style="font-size:28px;font-weight:800;color:#92400E;">'+totM+'</div></div>'
     +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:12px;text-align:center;">'
-    +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:2px;">🌞 Après-midi</div>'
-    +'<div style="font-size:24px;font-weight:800;color:#1565C0;">'+totA+'</div></div>'
+    +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:2px;">🌞 APRÈS-MIDI</div>'
+    +'<div style="font-size:28px;font-weight:800;color:#1565C0;">'+totA+'</div></div>'
     +'</div>'
-    // Filtres
     +'<div style="display:flex;gap:8px;margin-bottom:12px;">'
-    +'<button onclick="setFreqPeriod(\'semaine\')" id="fp-semaine" class="btn btn-sm '+(freqPeriod==='semaine'?'active':'btn-ghost')+'" style="flex:1;">Semaine</button>'
-    +'<button onclick="setFreqPeriod(\'mois\')" id="fp-mois" class="btn btn-sm '+(freqPeriod==='mois'?'active':'btn-ghost')+'" style="flex:1;">Mois</button>'
-    +'<button onclick="setFreqPeriod(\'saison\')" id="fp-saison" class="btn btn-sm '+(freqPeriod==='saison'?'active':'btn-ghost')+'" style="flex:1;">Saison</button>'
+    +'<button onclick="setFreqPeriod(\'semaine\')" class="btn btn-sm '+(freqPeriod==='semaine'?'active':'btn-ghost')+'" style="flex:1;">Semaine</button>'
+    +'<button onclick="setFreqPeriod(\'mois\')" class="btn btn-sm '+(freqPeriod==='mois'?'active':'btn-ghost')+'" style="flex:1;">Mois</button>'
+    +'<button onclick="setFreqPeriod(\'saison\')" class="btn btn-sm '+(freqPeriod==='saison'?'active':'btn-ghost')+'" style="flex:1;">Saison</button>'
     +'</div>'
-    // Graphique
     +'<div class="wcard" style="margin-bottom:12px;">'
     +'<div class="wcard-title"><span>📊</span> Évolution</div>'
     +navHTML
     +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:6px;">'
     +data.map(function(d){
-      var hM=Math.round(d.matin/maxAll*72),hA=Math.round(d.aprem/maxAll*72);
+      var hM=Math.round((d.matin||0)/maxAll*72),hA=Math.round((d.aprem||0)/maxAll*72);
       return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'
         +'<div style="display:flex;gap:2px;align-items:flex-end;width:100%;height:72px;">'
         +'<div style="flex:1;background:#F97316;border-radius:3px 3px 0 0;height:'+hM+'px;min-height:2px;"></div>'
@@ -4260,22 +4424,17 @@ function renderFrequentation(){
     +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin</div>'
     +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#0099E6;"></div>Après-midi</div>'
     +'</div></div>'
-    // Groupes côte à côte
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    // Matin — 4 groupes
     +'<div class="wcard">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
     +'<div class="wcard-title" style="margin-bottom:0;"><span>🌅</span> Matin</div>'
     +'<span style="font-size:11px;font-weight:700;color:#F97316;">'+totEnfM+' enfants</span>'
-    +'</div>'
-    +matinRows+'</div>'
-    // Après-midi — 5 groupes
+    +'</div>'+matinRows+'</div>'
     +'<div class="wcard">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
     +'<div class="wcard-title" style="margin-bottom:0;"><span>🌞</span> Après-midi</div>'
     +'<span style="font-size:11px;font-weight:700;color:#0099E6;">'+totEnfA+' enfants</span>'
-    +'</div>'
-    +apremRows+'</div>'
+    +'</div>'+apremRows+'</div>'
     +'</div>';
 }
 
@@ -5322,6 +5481,118 @@ window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
 
 
 
+
+
+
+
+
+
+async function sauvegarderMembreSB(m) {
+  try {
+    var {data, error} = await sb.from('membres').insert({
+      prenom: m.prenom, nom: m.nom, email: m.email,
+      tel: m.tel||null, adresse_vacances: m.adresse||null,
+      urgence_nom: m.urgence_nom||null, urgence_tel: m.urgence_tel||null,
+      droit_image: m.droit_image||false
+    }).select().single();
+    if(error) throw error;
+    chargerDonnees();
+    return data;
+  } catch(err) {
+    console.error('Erreur SB membre:', err);
+    toast('Erreur sauvegarde: '+err.message,'ko');
+  }
+}
+
+window.sauvegarderMembreSB=sauvegarderMembreSB;
+
+window.ajouterMembre=ajouterMembre;
+
+
+
+function nrAjouterEnfant(){
+  var list=document.getElementById('nr-enfants-list');if(!list)return;
+  var div=document.createElement('div');
+  div.style.cssText='display:grid;grid-template-columns:1fr 1fr 60px;gap:6px;align-items:center;margin-bottom:4px;';
+  div.innerHTML='<input placeholder="Prénom *" class="nr-e-prenom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+    +'<input placeholder="NOM" class="nr-e-nom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
+    +'<input type="number" min="3" max="13" placeholder="Âge" class="nr-e-age" onchange="nrCalculerMontant()" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">';
+  list.appendChild(div);
+  nrCalculerMontant();
+}
+
+function nrCalculerMontant(){
+  var list=document.getElementById('nr-enfants-list');
+  var nbE=list?list.children.length:0;if(nbE<1)nbE=1;
+  var checks=document.querySelectorAll('#nr-semaines-checks input[type=checkbox]:checked');
+  var nbS=checks.length;
+  var montant=nbE*nbS*120;
+  var disp=document.getElementById('nr-montant-display');
+  var val=document.getElementById('nr-montant-val');
+  var det=document.getElementById('nr-montant-detail');
+  if(disp)disp.style.display=nbS>0?'':'none';
+  if(val)val.textContent=montant+' €';
+  if(det)det.textContent=nbE+' enfant'+(nbE>1?'s':'')+' × '+nbS+' semaine'+(nbS>1?'s':'')+' × 120 €';
+}
+
+function updateResaSemaines(){
+  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
+  var cont=document.getElementById('nr-semaines-checks');if(!cont)return;
+  var sems=(SAISONS[saison]||SAISONS.ete).semaines||[];
+  cont.innerHTML=sems.map(function(s,i){
+    return '<label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;">'
+      +'<input type="checkbox" value="'+i+'" onchange="nrCalculerMontant()" style="width:16px;height:16px;accent-color:#0099E6;">'
+      +'<span style="font-size:13px;color:#374151;">'+s.label+' · '+s.debut+' au '+s.fin+'</span>'
+      +'</label>';
+  }).join('');
+  nrCalculerMontant();
+}
+
+function confirmerNouvelleResa(){
+  var g=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
+  var nom=g('nr-nom');if(!nom){toast('Nom requis','ko');return;}
+  var checks=document.querySelectorAll('#nr-semaines-checks input[type=checkbox]:checked');
+  if(!checks.length){toast('Choisir au moins une semaine','ko');return;}
+  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
+  var sems=(SAISONS[saison]||SAISONS.ete).semaines||[];
+  var periode=(document.getElementById('nr-periode')||{value:'matin'}).value;
+  var enfants=[];
+  document.querySelectorAll('#nr-enfants-list > div').forEach(function(div){
+    var p=div.querySelector('.nr-e-prenom');
+    var n=div.querySelector('.nr-e-nom');
+    var a=div.querySelector('.nr-e-age');
+    var pr=p?p.value.trim():'';
+    if(pr)enfants.push({prenom:pr,nom:n?n.value.trim():'',age:a?parseFloat(a.value)||0:0});
+  });
+  var nbE=enfants.length||1;
+  checks.forEach(function(cb){
+    var sem=sems[parseInt(cb.value)]||{};
+    var resaObj={
+      id:'R'+Date.now()+Math.floor(Math.random()*9000),
+      nom:nom,email:g('nr-email'),tel:g('nr-tel'),
+      slot:{time:periode,date:(sem.debut||'')+' au '+(sem.fin||'')},
+      saisonLabel:sem.label||'',saison:saison,
+      semaine_debut:sem.debut||'',semaine_fin:sem.fin||'',
+      periode:periode,montant:nbE*120,paid:0,statut:'en attente',
+      children:enfants,date:new Date().toLocaleDateString('fr-FR')
+    };
+    ST.reservations.push(resaObj);
+    sb.from('reservations').insert({
+      nom_famille:nom,email:g('nr-email'),
+      saison:saison,semaine_label:sem.label||'',
+      semaine_debut:sem.debut||'',semaine_fin:sem.fin||'',
+      periode:periode,montant:nbE*120,statut:'en_attente'
+    }).then(function(r){if(r.error)console.warn(r.error.message);});
+  });
+  fermerNouvelleResa();
+  toast('Réservation créée ✅','ok');
+  renderAdminResas();
+}
+
+window.nrAjouterEnfant=nrAjouterEnfant;
+window.nrCalculerMontant=nrCalculerMontant;
+window.updateResaSemaines=updateResaSemaines;
+window.confirmerNouvelleResa=confirmerNouvelleResa;
 
 
 
