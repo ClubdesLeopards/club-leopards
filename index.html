@@ -2310,6 +2310,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMDc5NjIsImV4cCI6MjA1OTc4Mzk2Mn0.SyZ6HpFXsOhRAZkAMdGMbFWmQfJlVLTPe_wBJhWcFos';
@@ -3816,14 +3818,13 @@ async function confirmerAjouterAnimateur(){
   var p=f('an-prenom');if(!p){toast('Prénom requis','ko');return;}
   var n=f('an-nom');if(!n){toast('Nom requis','ko');return;}
   var newAnim={prenom:p,nom:n,dob:f('an-dob')||null,email:f('an-email')||null,tel:f('an-tel')||null,secu:f('an-secu')||null,diplome:f('an-diplome')||null,poste:f('an-poste')||'Animateur'};
-  // Sauvegarder Supabase
   try {
     var res=await sb.from('equipe').insert(newAnim).select().single();
     if(res.error) throw res.error;
     newAnim.id=res.data.id;
     toast('Animateur ajouté ✅','ok');
   } catch(e){
-    console.warn('equipe insert:', e);
+    console.warn('equipe insert:', e.message||e);
     newAnim.id=Date.now();
     toast('Ajouté localement (hors ligne)','ok');
   }
@@ -5639,6 +5640,8 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
+
 
 
 
