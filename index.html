@@ -8,12 +8,7 @@
 /* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;}
 body{
   font-family:'DM Sans','Helvetica Neue',sans-serif;
   background:#F2F4F8;
@@ -511,14 +506,16 @@ textarea{resize:vertical;}
 /* ── BOTTOM NAV ── */
 .bottom-nav{
   position:fixed;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:480px;
+  bottom:0;left:0;right:0;
+  width:100%;
   background:#fff;
   border-top:1px solid #F3F4F6;
   display:flex;
+  justify-content:space-around;
   box-shadow:0 -4px 20px rgba(0,0,0,.08);
   z-index:100;
   padding-bottom:env(safe-area-inset-bottom,0);
+  box-sizing:border-box;
 }
 .bnav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;
@@ -1133,12 +1130,14 @@ textarea{resize:vertical;}
 .doc-item-body { padding:0 16px 14px; border-top:1px solid #F3F4F6; }
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
 
-@media (min-width: 481px) {
-  .page { padding-bottom: 90px !important; }
-  .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); }
+@media (min-width:768px){
+  .app{ max-width:100%; }
+  .bnav-item{ padding:14px 24px 10px; }
+  .bnav-label{ font-size:13px; }
+  .admin-hero{ width:100%; }
 }
-@media (max-width: 480px) {
-  .page { padding-bottom: 130px !important; }
+@media (max-width:767px){
+  .bottom-nav{ max-width:480px; left:50%; right:auto; transform:translateX(-50%); }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1419,7 +1418,7 @@ textarea{resize:vertical;}
       </div>
     </div>
 
-    <div class="content" style="padding-top:16px;padding-bottom:140px;">
+    <div class="content" style="padding-top:16px;">
 
       <!-- ══ ÉTAPE 1 ══ -->
       <div id="insc-step-1">
@@ -1794,7 +1793,7 @@ textarea{resize:vertical;}
       <!-- KPI cards -->
       <div id="admin-stats" style="display:none;"></div>
       <!-- Tabs collés au bas du hero, style pill sur fond foncé -->
-      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:18px 10px 12px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100vw;margin-left:calc(-50vw + 50%);box-sizing:border-box;margin-top:10px;justify-content:center;flex-wrap:wrap;">
+      <div class="admin-tabs" style="display:flex;gap:4px;overflow-x:auto;padding:18px 10px 12px;scrollbar-width:none;-ms-overflow-style:none;background:rgba(0,0,0,.22);border-top:1px solid rgba(255,255,255,.1);width:100%;box-sizing:border-box;margin-top:10px;justify-content:center;flex-wrap:wrap;">
         <button class="admin-tab active" id="an-dashboard"     onclick="setAdminTab('dashboard')">📊 Dashboard</button>
         <button class="admin-tab"        id="an-equipe"        onclick="setAdminTab('equipe')">👥 Équipe</button>
         <button class="admin-tab"        id="an-membres"       onclick="setAdminTab('membres')">👨&#8203;👩&#8203;👧 Membres</button>
@@ -1809,7 +1808,7 @@ textarea{resize:vertical;}
       </div>
     </div>
 
-    <div class="content" style="padding-top:16px;padding-bottom:140px;">
+    <div class="content" style="padding-top:16px;">
 
       <!-- DASHBOARD -->
       <div id="at-dashboard">
@@ -2259,10 +2258,6 @@ textarea{resize:vertical;}
 
 
 <script>
-
-
-
-
 
 
 
@@ -3340,19 +3335,11 @@ function showInfos(){var p=document.getElementById('infos-panel');if(p)p.style.d
 // ═══ NAVIGATION ═══
 
 function _navigateTo(name){
-  document.querySelectorAll('.page').forEach(function(p){
-    if(p&&p.classList){ p.classList.remove('active'); }
-  });
-  document.querySelectorAll('.bnav-item').forEach(function(b){
-    if(b&&b.classList) b.classList.remove('active');
-  });
+  document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
+  document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
   var pg=document.getElementById('page-'+name);
-  if(pg){
-    pg.classList.add('active');
-    pg.scrollTop=0;
-  }
-  var bn=document.getElementById('bn-'+name);
-  if(bn) bn.classList.add('active');
+  if(pg){ pg.classList.add('active'); pg.scrollTop=0; }
+  var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
   if(name==='reservation') renderReservation();
   if(name==='mes-resa') renderMesResa();
   if(name==='admin') renderAdmin();
@@ -5297,10 +5284,6 @@ window.deconnecterProfil=deconnecterProfil;
 
 
 window.sauvegarderInscriptionSB=sauvegarderInscriptionSB;
-
-
-
-
 
 
 
