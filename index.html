@@ -8,11 +8,16 @@
 /* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 body{
   font-family:'DM Sans','Helvetica Neue',sans-serif;
   background:#F2F4F8;
   color:#1A1A2E;
-  min-height:100vh;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
@@ -23,14 +28,14 @@ body{
 .app{
   max-width:480px;
   margin:0 auto;
-  height:100vh;
+  height:100%;
   background:#F2F4F8;
   position:relative;
   overflow:hidden;
 }
 
 /* ── PAGES ── */
-.page{display:none;position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;padding-bottom:130px;}
+.page{display:none;position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:130px;}
 .page.active{display:block;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
@@ -1129,12 +1134,11 @@ textarea{resize:vertical;}
 .doc-chev { font-size:16px; color:#9CA3AF; transition:transform .2s; }
 
 @media (min-width: 481px) {
-  .page { padding-bottom: 90px; }
-  .content { padding-bottom: 100px; }
+  .page { padding-bottom: 90px !important; }
   .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); }
 }
 @media (max-width: 480px) {
-  .page { padding-bottom: 130px; }
+  .page { padding-bottom: 130px !important; }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3167,7 +3171,6 @@ function renderAdmin() {
 }
 
 function setAdminTab(t) {
-  var pg=document.getElementById("page-admin");if(pg)pg.scrollTop=0;
   ST.adminTab = t;
   ['dashboard', 'equipe', 'membres', 'groupes', 'reservations', 'paiements', 'frequentation', 'comptabilite', 'facture', 'avoirs', 'recherche'].forEach(function(tab) {
     var atEl = document.getElementById('at-' + tab);
@@ -3337,11 +3340,19 @@ function showInfos(){var p=document.getElementById('infos-panel');if(p)p.style.d
 // ═══ NAVIGATION ═══
 
 function _navigateTo(name){
-  document.querySelectorAll('.page').forEach(function(p){if(p&&p.classList)p.classList.remove('active');});
-  document.querySelectorAll('.bnav-item').forEach(function(b){if(b&&b.classList)b.classList.remove('active');});
+  document.querySelectorAll('.page').forEach(function(p){
+    if(p&&p.classList){ p.classList.remove('active'); }
+  });
+  document.querySelectorAll('.bnav-item').forEach(function(b){
+    if(b&&b.classList) b.classList.remove('active');
+  });
   var pg=document.getElementById('page-'+name);
-  if(pg){ pg.classList.add('active'); pg.scrollTop=0; }
-  var bn=document.getElementById('bn-'+name); if(bn) bn.classList.add('active');
+  if(pg){
+    pg.classList.add('active');
+    pg.scrollTop=0;
+  }
+  var bn=document.getElementById('bn-'+name);
+  if(bn) bn.classList.add('active');
   if(name==='reservation') renderReservation();
   if(name==='mes-resa') renderMesResa();
   if(name==='admin') renderAdmin();
