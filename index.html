@@ -2313,6 +2313,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2431,6 +2432,18 @@ async function chargerDonnees() {
     console.error('❌ Erreur chargement Supabase:', err);
     toast('Erreur connexion base de données', 'ko');
   }
+
+  // Charger équipe animateurs
+  try {
+    var eqRes = await sb.from('equipe').select('*').order('prenom');
+    if(!eqRes.error && eqRes.data) {
+      EQUIPE = eqRes.data.map(function(a){
+        return {id:a.id, prenom:a.prenom, nom:a.nom,
+          dob:a.dob||'', email:a.email||'', tel:a.tel||'',
+          secu:a.secu||'', diplome:a.diplome||'', poste:a.poste||'Animateur'};
+      });
+    }
+  } catch(e){ console.warn('equipe load:', e); }
 }
 
 // ── Auth Admin Supabase ──
@@ -3773,12 +3786,7 @@ renderReservation();
 
 
 // ═══ DATA ═══
-var EQUIPE = [
-  {id:1,prenom:'Sophie',nom:'Martin',dob:'1995-03-15',email:'sophie.martin@club.fr',tel:'06 10 10 10 10',secu:'1 95 03 75 000 000 00',diplome:'BPJEPS AAN',poste:'Responsable'},
-  {id:2,prenom:'Lucas',nom:'Durand',dob:'1998-07-22',email:'lucas.durand@club.fr',tel:'06 20 20 20 20',secu:'1 98 07 75 000 000 00',diplome:'BPJEPS Surf',poste:'Animateur'},
-  {id:3,prenom:'Emma',nom:'Petit',dob:'2000-01-10',email:'emma.petit@club.fr',tel:'06 30 30 30 30',secu:'2 00 01 75 000 000 00',diplome:'BAFA',poste:'Animatrice'},
-];
-
+var EQUIPE = [];
 // ═══ CLUB DEBUT (pour calcul age) ═══
 var CLUB_DEBUT = new Date('2026-07-06');
 function ageAuClub(dob){
@@ -5646,6 +5654,7 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
 
 
 
