@@ -2315,6 +2315,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -4880,42 +4881,67 @@ function envoyerReservation(){
 
 function retourChoixSemaine(){renderEtape3(currentSaison);}
 
-function confirmerEnvoiReservation(){
+async function confirmerEnvoiReservation(){
   var s=SAISONS[currentSaison]||{};
+  var m=ST.membreConnecte;
+  var nomFam=m?(m.prenom+' '+NOM(m.nom||'')):'Famille';
   var enfNoms=_resaEnfantsSelectionnes.map(function(e){return e.name;}).join(', ')||'—';
   var allSel=[];
   ['matin','aprem'].forEach(function(p){(_semainesSelectionnees[p]||[]).forEach(function(wi){allSel.push({wi:wi,periode:p});});});
   allSel.sort(function(a,b){return a.wi-b.wi;});
+  if(!allSel.length) return;
   var nbEnf=Math.max(1,(_resaEnfantsSelectionnes||[]).length);
-  var lignes=allSel.map(function(item,i){var wk=(s.semaines||[])[item.wi];if(!wk)return '';var prix=calculerPrixSemaine(nbEnf,i);return wk.label+' '+wk.debut+' au '+wk.fin+' ('+(item.periode==='matin'?'Matin':'Apres-midi')+') - '+prix+'EUR';}).join('\n');
-  var total=allSel.reduce(function(sum,item,i){var wk=(s.semaines||[])[item.wi];if(!wk)return sum;return sum+calculerPrixSemaine(nbEnf,i);},0);
 
-  // Ajouter à ST.reservations pour l'admin
+  // Enregistrer chaque semaine dans ST.reservations + Supabase
   allSel.forEach(function(item,i){
     var wk=(s.semaines||[])[item.wi];if(!wk)return;
     var prix=calculerPrixSemaine(nbEnf,i);
-    ST.reservations.push({
-      id:Date.now()+i,
-      nom:(_resaEnfantsSelectionnes[0]?'Fam. '+(_resaEnfantsSelectionnes[0].name.split(' ').pop()||''):'Famille'),
-      slot:{time:item.periode==='matin'?'Matin':'Apres-midi',date:wk.debut+' → '+wk.fin},
+    var resaObj={
+      id:'R'+Date.now()+i,
+      membre_id:m?m.id:null,
+      nom:nomFam,
+      email:m?m.email:'',
+      slot:{time:item.periode==='matin'?'Matin':'Après-midi',date:wk.debut+' → '+wk.fin},
       saisonLabel:s.label||currentSaison,
+      saison:currentSaison,
+      semaine_debut:wk.debut,
+      semaine_fin:wk.fin,
+      semaine_label:wk.label,
+      periode:item.periode,
+      montant:prix,
+      paid:0,
+      statut:'en attente',
       children:_resaEnfantsSelectionnes.slice(),
-      paid:prix,statut:'en attente',date:new Date().toLocaleDateString('fr-FR')
+      date:new Date().toLocaleDateString('fr-FR'),
+      created_at:new Date().toISOString()
+    };
+    ST.reservations.push(resaObj);
+
+    // Sauvegarder dans Supabase
+    sb.from('reservations').insert({
+      membre_id:m?m.id:null,
+      nom_famille:nomFam,
+      email:m?m.email:'',
+      saison:currentSaison,
+      semaine_label:wk.label,
+      semaine_debut:wk.debut,
+      semaine_fin:wk.fin,
+      periode:item.periode,
+      montant:prix,
+      statut:'en_attente'
+    }).then(function(res){
+      if(res.error) console.warn('Resa SB:', res.error.message);
     });
   });
 
-  // Email à l'admin
-  var subj=encodeURIComponent('Nouvelle demande de reservation - '+s.label);
-  var body=encodeURIComponent('Bonjour,\n\nNouvelle demande de reservation :\n\nSaison : '+s.label+'\nEnfants : '+enfNoms+'\n\nSemaines :\n'+lignes+'\n\nTotal estimé : '+total+' EUR\n\nMerci de confirmer par email.\n\nClub des Leopards');
-  window.location.href='mailto:clubdesleopards@free.fr?subject='+subj+'&body='+body;
-
-  // Page de confirmation
+  // Page de confirmation — sans ouvrir de mail
   var el=document.getElementById('resa-semaines-content');if(!el)return;
   el.innerHTML='<div style="text-align:center;padding:30px 20px;">'
     +'<div style="font-size:60px;margin-bottom:16px;">🎉</div>'
     +'<div style="font-size:20px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;margin-bottom:8px;">Demande envoyée !</div>'
     +'<div style="font-size:14px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Votre demande a été transmise à l\'équipe du Club des Léopards. Vous serez contacté sous 48h pour confirmer et organiser le paiement.</div>'
-    +'<button onclick="navigate(\'home\')" style="width:100%;padding:14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;">Retour à l\'accueil</button>'
+    +'<button onclick="navigate(\'mes-resa\')" style="width:100%;padding:14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-bottom:8px;">📅 Voir mes réservations</button>'
+    +'<button onclick="navigate(\'home\')" style="width:100%;padding:12px;background:#F3F4F6;color:#374151;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Retour à l\'accueil</button>'
     +'</div>';
   _semainesSelectionnees={};_resaEnfantsSelectionnes=[];
 }
@@ -5655,6 +5681,7 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
 
 
 
