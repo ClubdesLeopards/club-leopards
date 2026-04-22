@@ -2329,6 +2329,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -5771,10 +5772,13 @@ function validerResa(resaId){
 
   // Remplir recap
   window._vrResaIdx=idx;
+  window._vrResaId=resaId;
   window._vrMode=null;
   var recap=document.getElementById('vr-recap');
+  var enfantsNoms=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ');
   if(recap) recap.innerHTML=
     '<div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:4px;">'+r.nom+'</div>'
+    +(enfantsNoms?'<div style="font-size:12px;color:#0099E6;margin-bottom:3px;">👶 '+enfantsNoms+'</div>':'')
     +'<div style="font-size:12px;color:#6B7280;">'+(r.saisonLabel||'')+(r.slot?' · '+r.slot.date:'')+' · '+(r.slot?r.slot.time:'')+'</div>'
     +'<div style="font-size:16px;font-weight:800;color:#0099E6;margin-top:6px;">'+(r.montant||r.paid||0)+' €</div>';
   var montEl=document.getElementById('vr-montant');
@@ -5791,60 +5795,85 @@ function vrSelectMode(btn, mode){
 }
 
 async function confirmerPaiementResa(){
-  var idx=window._vrResaIdx;
+  var resaId=window._vrResaId;
   var mode=window._vrMode;
   if(!mode){toast('Choisir un mode de paiement','ko');return;}
-  var montEl=document.getElementById('vr-montant');
-  var notesEl=document.getElementById('vr-notes');
-  var montant=parseFloat((montEl||{value:'0'}).value)||0;
-  var notes=(notesEl||{value:''}).value.trim();
-  
+  var montant=parseFloat((document.getElementById('vr-montant')||{value:'0'}).value)||0;
+  var notes=(document.getElementById('vr-notes')||{value:''}).value.trim();
+
+  // Trouver la résa par ID
   var all=[].concat(DEMO_RESAS,ST.reservations);
-  var r=all[idx]; if(!r) return;
+  var r=all.find(function(x){return String(x.id)===String(resaId);}); 
+  if(!r){toast('Réservation introuvable','ko');return;}
 
   // Mettre à jour statut local
-  r.statut='validé';r.paid=montant;r.mode_paiement=mode;
+  r.statut='validé'; r.paid=montant; r.mode_paiement=mode;
 
-  // Mettre à jour dans Supabase
-  if(r.id && typeof r.id !== 'string') {
-    await sb.from('reservations').update({statut:'valide', mode_paiement:mode, montant:montant}).eq('id',r.id);
-  }
+  // Mettre à jour dans Supabase reservations
+  try{
+    if(r.id && typeof r.id==='number'){
+      await sb.from('reservations').update({statut:'valide',mode_paiement:mode,montant:montant}).eq('id',r.id);
+    }
+  }catch(e){console.warn('resa update:',e);}
 
-  // Ajouter dans paiements Supabase
+  // Insérer dans paiements Supabase
   var paiData={
     membre_id:r.membre_id||null,
-    nom_famille:r.nom||'',
-    montant:montant,
-    mode:mode,
-    statut:'reçu',
-    notes:notes,
-    date_paiement:new Date().toISOString().slice(0,10)
+    nom_famille:r.nom||r.nom_famille||'',
+    montant:montant, mode:mode, statut:'reçu',
+    notes:notes, date_paiement:new Date().toISOString().slice(0,10)
   };
-  if(r.id && typeof r.id !== 'string') paiData.reservation_id=r.id;
-  
+  if(r.id && typeof r.id==='number') paiData.reservation_id=r.id;
   try{
     var res=await sb.from('paiements').insert(paiData);
-    if(res.error) console.warn('Paiement insert:', res.error.message);
+    if(res.error) console.warn('Paiement insert:',res.error.message);
     else console.log('Paiement enregistré ✅');
   }catch(e){console.warn(e);}
 
-  // Ajouter localement dans DEMO_PAYMENTS
+  // Insérer dans suivi_quotidien Supabase (comptabilité)
+  var today=new Date().toISOString().slice(0,10);
+  var sqData={date:today, reference:r.nom||'Famille', statut:'reçu'};
+  sqData[mode]=montant;
+  try{
+    await sb.from('suivi_quotidien').insert({
+      date:today, reference:(r.nom||'Famille'),
+      cb: mode==='cb'?montant:0,
+      virement: mode==='virement'?montant:0,
+      cheque: mode==='cheque'?montant:0,
+      cheque_vac: mode==='cheque_vac'?montant:0,
+      especes: mode==='especes'?montant:0
+    });
+  }catch(e){console.warn('suivi_quotidien:',e);}
+
+  // Mise à jour locale paiements
   DEMO_PAYMENTS.push({
-    nom:r.nom||'', initiale:(r.nom||'?').charAt(0),
-    color:'#0099E6', forme:mode, montant:montant,
-    date:new Date().toLocaleDateString('fr-FR'), notes:notes
+    nom:r.nom||'', initiale:(r.nom||'?').charAt(0).toUpperCase(),
+    color:'#10B981', forme:mode, mode:mode, montant:montant,
+    statut:'payé', date:new Date().toLocaleDateString('fr-FR'), notes:notes
   });
+
+  // Mise à jour locale suivi
+  var d=new Date().toLocaleDateString('fr-FR');
+  var sq={date:d,ref:r.nom||'Famille',cb:0,vir:0,chq:0,chqvac:0,esp:0,avoir24:0,remb25:0};
+  if(mode==='cb') sq.cb=montant;
+  else if(mode==='virement') sq.vir=montant;
+  else if(mode==='cheque') sq.chq=montant;
+  else if(mode==='cheque_vac') sq.chqvac=montant;
+  else if(mode==='especes') sq.esp=montant;
+  SUIVI_QUOTIDIEN.unshift(sq);
 
   var ov=document.getElementById('valider-resa-overlay');
   if(ov) ov.style.display='none';
-  toast('Réservation validée et paiement enregistré ✅','ok');
-  chargerDonnees();
+  toast('✅ Paiement validé et enregistré !','ok');
+  await chargerDonnees();
   renderAdminResas();
+  renderPaiements();
 }
 
 window.validerResa=validerResa;
 window.vrSelectMode=vrSelectMode;
 window.confirmerPaiementResa=confirmerPaiementResa;
+
 
 
 
