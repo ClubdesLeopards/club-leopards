@@ -2325,6 +2325,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -4299,7 +4300,7 @@ function renderAdminResas(){
       +'<div style="font-size:11px;color:#374151;font-weight:600;margin-bottom:3px;">'+(r.slot?r.slot.time+' - '+r.slot.date:'')+'</div>'
       +(ch?'<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:3px;">'+ch+'</div>':'')
       +(r.saisonLabel?'<div style="font-size:10px;color:#9CA3AF;margin-bottom:6px;">'+r.saisonLabel+'</div>':'')
-      +(!val?'<button onclick="ouvrirValidationResa('+i+')" style="width:100%;padding:7px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin-bottom:6px;">Valider</button>':'')
+      +(!val?'<button onclick="ouvrirValidationResa(\''+r.id+'\')" style="width:100%;padding:7px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin-bottom:6px;">Valider</button>':'')
       +'<div style="display:flex;gap:5px;">'
       +'<button onclick="modResa('+i+')" style="flex:1;padding:5px;background:#FFF7ED;color:#F97316;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Modifier</button>'
       +'<button onclick="delResa('+i+')" style="flex:1;padding:5px;background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Supprimer</button>'
@@ -5711,9 +5712,11 @@ window.confirmerNouvelleResa=confirmerNouvelleResa;
 
 
 // ── Overlay validation paiement ──
-function validerResa(idx){
+function validerResa(resaId){
   var all=[].concat(DEMO_RESAS, ST.reservations);
-  var r=all[idx]; if(!r) return;
+  var r=all.find(function(x){ return String(x.id)===String(resaId); });
+  if(!r){ console.warn('Resa not found:', resaId); return; }
+  var idx=all.indexOf(r);
   
   var ovId='valider-resa-overlay';
   var ov=document.getElementById(ovId);
@@ -5834,6 +5837,7 @@ window.confirmerPaiementResa=confirmerPaiementResa;
 
 
 window.ouvrirValidationResa=ouvrirValidationResa;
+
 
 
 </script>
