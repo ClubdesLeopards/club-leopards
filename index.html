@@ -2328,6 +2328,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -3316,14 +3317,8 @@ function setResaFilter(f){
 var _adminResas=[];
 
 
-function ouvrirValidationResa(idx) {
-  window._validatingResaIdx=idx;
-  var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='flex';
-  var r=_adminResas[idx];
-  var info=document.getElementById('validation-resa-info');
-  if(info&&r) info.innerHTML='<strong>'+r.nom+'</strong><br>'+(r.slot?r.slot.time+' · '+r.slot.date:'');
-  document.querySelectorAll('input[name="mode-paiement"]').forEach(function(el){if(el)el.checked=false;});
-  var err=document.getElementById('err-mode-paiement'); if(err) err.textContent='';
+function ouvrirValidationResa(resaId) {
+  validerResa(resaId);
 }
 function fermerValidationResa() {
   var ov=document.getElementById('validation-resa-overlay'); if(ov) ov.style.display='none';
@@ -5853,7 +5848,7 @@ window.confirmerPaiementResa=confirmerPaiementResa;
 
 
 
-window.ouvrirValidationResa=ouvrirValidationResa;
+
 
 
 
