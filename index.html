@@ -2321,6 +2321,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2539,8 +2540,6 @@ async function validerResaSB(resaData) {
       enfant_id: resaData.enfant_id,
       saison: resaData.saison,
       semaine_label: resaData.semaine_label,
-      semaine_debut: resaData.semaine_debut,
-      semaine_fin: resaData.semaine_fin,
       periode: resaData.periode,
       montant: resaData.montant || 120,
       statut: 'en_attente'
@@ -3112,8 +3111,6 @@ function envoyerDemandeReservation() {
           enfant_id: kid.id || null,
           saison: item.saison || 'ete',
           semaine_label: item.saisonLabel,
-          semaine_debut: item.sem.debut,
-          semaine_fin: item.sem.fin,
           periode: item.periode || 'matin',
           montant: item.prix || 120,
           statut: 'en_attente'
@@ -4939,13 +4936,11 @@ async function confirmerEnvoiReservation(){
       email:m?m.email:'',
       saison:currentSaison,
       semaine_label:wk.label,
-      semaine_debut:wk.debut,
-      semaine_fin:wk.fin,
       periode:item.periode,
       montant:prix,
       statut:'en_attente'
     }).then(function(res){
-      if(res.error){ console.error('Resa insert error:', res.error.message); toast('Erreur: '+res.error.message,'ko'); }
+      if(res.error){ console.error('Resa insert error:', res.error.message); }
       else{ console.log('Resa insérée ✅'); chargerDonnees(); }
     });
   });
@@ -5676,7 +5671,6 @@ function confirmerNouvelleResa(){
       nom:nom,email:g('nr-email'),tel:g('nr-tel'),
       slot:{time:periode,date:(sem.debut||'')+' au '+(sem.fin||'')},
       saisonLabel:sem.label||'',saison:saison,
-      semaine_debut:sem.debut||'',semaine_fin:sem.fin||'',
       periode:periode,montant:nbE*120,paid:0,statut:'en attente',
       children:enfants,date:new Date().toLocaleDateString('fr-FR')
     };
@@ -5684,7 +5678,6 @@ function confirmerNouvelleResa(){
     sb.from('reservations').insert({
       nom_famille:nom,email:g('nr-email'),
       saison:saison,semaine_label:sem.label||'',
-      semaine_debut:sem.debut||'',semaine_fin:sem.fin||'',
       periode:periode,montant:nbE*120,statut:'en_attente'
     }).then(function(r){if(r.error)console.warn(r.error.message);});
   });
@@ -5697,6 +5690,7 @@ window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
+
 
 
 
