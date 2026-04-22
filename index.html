@@ -2322,6 +2322,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -5705,6 +5706,128 @@ window.confirmerNouvelleResa=confirmerNouvelleResa;
 
 
 
+
+
+// ── Overlay validation paiement ──
+function validerResa(idx){
+  var all=[].concat(DEMO_RESAS, ST.reservations);
+  var r=all[idx]; if(!r) return;
+  
+  var ovId='valider-resa-overlay';
+  var ov=document.getElementById(ovId);
+  if(!ov){
+    ov=document.createElement('div');ov.id=ovId;
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:700;display:flex;align-items:center;justify-content:center;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#fff;border-radius:18px;max-width:420px;width:92%;max-height:88vh;overflow-y:auto;';
+    box.innerHTML='<div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">'
+      +'<div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">✅ Valider la réservation</div>'
+      +'<button id="vr-close" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:16px;">×</button>'
+      +'</div>'
+      +'<div style="padding:18px;display:flex;flex-direction:column;gap:12px;">'
+      +'<div id="vr-recap" style="background:#F9FAFB;border-radius:12px;padding:14px;"></div>'
+      +'<div>'
+      +'<label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:8px;">Mode de paiement</label>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="vr-modes">'
+      +'<button onclick="vrSelectMode(this,\'cb\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">💳 CB</button>'
+      +'<button onclick="vrSelectMode(this,\'virement\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">🏦 Virement</button>'
+      +'<button onclick="vrSelectMode(this,\'cheque\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">📝 Chèque</button>'
+      +'<button onclick="vrSelectMode(this,\'especes\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">💶 Espèces</button>'
+      +'<button onclick="vrSelectMode(this,\'cheque_vac\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">🎫 Chq Vac</button>'
+      +'<button onclick="vrSelectMode(this,\'avoir\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">🎟️ Avoir</button>'
+      +'</div>'
+      +'</div>'
+      +'<div>'
+      +'<label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Montant encaissé (€)</label>'
+      +'<input id="vr-montant" type="number" style="width:100%;padding:11px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:15px;box-sizing:border-box;">'
+      +'</div>'
+      +'<div>'
+      +'<label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Notes</label>'
+      +'<input id="vr-notes" placeholder="Optionnel" style="width:100%;padding:11px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;">'
+      +'</div>'
+      +'<button id="vr-confirm" style="padding:14px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:800;font-family:inherit;">✅ Confirmer le paiement</button>'
+      +'</div>';
+    ov.appendChild(box);document.body.appendChild(ov);
+    document.getElementById('vr-close').onclick=function(){ov.style.display='none';};
+    document.getElementById('vr-confirm').onclick=function(){ confirmerPaiementResa(); };
+  }
+
+  // Remplir recap
+  window._vrResaIdx=idx;
+  window._vrMode=null;
+  var recap=document.getElementById('vr-recap');
+  if(recap) recap.innerHTML=
+    '<div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:4px;">'+r.nom+'</div>'
+    +'<div style="font-size:12px;color:#6B7280;">'+(r.saisonLabel||'')+(r.slot?' · '+r.slot.date:'')+' · '+(r.slot?r.slot.time:'')+'</div>'
+    +'<div style="font-size:16px;font-weight:800;color:#0099E6;margin-top:6px;">'+(r.montant||r.paid||0)+' €</div>';
+  var montEl=document.getElementById('vr-montant');
+  if(montEl) montEl.value=r.montant||r.paid||0;
+  // Reset modes
+  document.querySelectorAll('.vr-mode-btn').forEach(function(b){b.style.borderColor='#E5E7EB';b.style.background='#fff';b.style.color='#374151';});
+  ov.style.display='flex';
+}
+
+function vrSelectMode(btn, mode){
+  document.querySelectorAll('.vr-mode-btn').forEach(function(b){b.style.borderColor='#E5E7EB';b.style.background='#fff';b.style.color='#374151';});
+  btn.style.borderColor='#0099E6';btn.style.background='#EFF6FF';btn.style.color='#0099E6';
+  window._vrMode=mode;
+}
+
+async function confirmerPaiementResa(){
+  var idx=window._vrResaIdx;
+  var mode=window._vrMode;
+  if(!mode){toast('Choisir un mode de paiement','ko');return;}
+  var montEl=document.getElementById('vr-montant');
+  var notesEl=document.getElementById('vr-notes');
+  var montant=parseFloat((montEl||{value:'0'}).value)||0;
+  var notes=(notesEl||{value:''}).value.trim();
+  
+  var all=[].concat(DEMO_RESAS,ST.reservations);
+  var r=all[idx]; if(!r) return;
+
+  // Mettre à jour statut local
+  r.statut='validé';r.paid=montant;r.mode_paiement=mode;
+
+  // Mettre à jour dans Supabase
+  if(r.id && typeof r.id !== 'string') {
+    await sb.from('reservations').update({statut:'valide', mode_paiement:mode, montant:montant}).eq('id',r.id);
+  }
+
+  // Ajouter dans paiements Supabase
+  var paiData={
+    membre_id:r.membre_id||null,
+    nom_famille:r.nom||'',
+    montant:montant,
+    mode:mode,
+    statut:'reçu',
+    notes:notes,
+    date_paiement:new Date().toISOString().slice(0,10)
+  };
+  if(r.id && typeof r.id !== 'string') paiData.reservation_id=r.id;
+  
+  try{
+    var res=await sb.from('paiements').insert(paiData);
+    if(res.error) console.warn('Paiement insert:', res.error.message);
+    else console.log('Paiement enregistré ✅');
+  }catch(e){console.warn(e);}
+
+  // Ajouter localement dans DEMO_PAYMENTS
+  DEMO_PAYMENTS.push({
+    nom:r.nom||'', initiale:(r.nom||'?').charAt(0),
+    color:'#0099E6', forme:mode, montant:montant,
+    date:new Date().toLocaleDateString('fr-FR'), notes:notes
+  });
+
+  var ov=document.getElementById('valider-resa-overlay');
+  if(ov) ov.style.display='none';
+  toast('Réservation validée et paiement enregistré ✅','ok');
+  chargerDonnees();
+  renderAdminResas();
+}
+
+window.validerResa=validerResa;
+window.vrSelectMode=vrSelectMode;
+window.confirmerPaiementResa=confirmerPaiementResa;
 
 </script>
 </body>
