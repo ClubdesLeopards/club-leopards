@@ -2332,6 +2332,7 @@ textarea{resize:vertical;}
 
 
 
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -4532,7 +4533,7 @@ async function confirmerSaisieQuotidienne(){
   SUIVI_QUOTIDIEN.unshift(entry);
   // Sauvegarder Supabase
   try {
-    var res=await sb.from('suivi_quotidien').insert({date:date,reference:ref,cb:entry.cb,virement:entry.vir,cheque:entry.chq,cheque_vac:entry.chqvac,especes:entry.esp,avoir_n1:entry.avoir24,remboursement:entry.remb25});
+    var res=await sb.from('suivi_quotidien').insert({date:date,reference:ref,cb:entry.cb,virement:entry.vir,cheque:entry.chq,cheques_vacances:entry.chqvac,especes:entry.esp,avoir_n_moins_1:entry.avoir24,remboursement:entry.remb25});
     if(res.error) throw res.error;
     toast('Saisie enregistrée ✅','ok');
   } catch(e){
@@ -5843,9 +5844,9 @@ async function confirmerPaiementResa(){
       cb: mode==='cb'?montant:0,
       virement: mode==='virement'?montant:0,
       cheque: mode==='cheque'?montant:0,
-      cheque_vac: mode==='cheque_vac'?montant:0,
+      cheques_vacances: mode==='cheque_vac'?montant:0,
       especes: mode==='especes'?montant:0,
-      avoir_n1: 0,
+      avoir_n_moins_1: 0,
       remboursement: 0
     };
     var sqRes=await sb.from('suivi_quotidien').insert(sqInsert);
@@ -5881,6 +5882,7 @@ async function confirmerPaiementResa(){
 window.validerResa=validerResa;
 window.vrSelectMode=vrSelectMode;
 window.confirmerPaiementResa=confirmerPaiementResa;
+
 
 
 
