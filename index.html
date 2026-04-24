@@ -2273,12 +2273,15 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5987,7 +5990,7 @@ async function envoyerEmailBrevo(to, toName, subject, htmlContent) {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        sender: { name: 'Club des Léopards', email: 'clubdesleopards@free.fr' },
+        sender: { name: 'Club des Léopards', email: 'clubdesleopards44.labaule@gmail.com' },
         to: [{ email: to, name: toName }],
         subject: subject,
         htmlContent: htmlContent
@@ -6083,7 +6086,7 @@ async function emailNotifAdmin(resa) {
     +'<p><strong>Montant :</strong> '+(resa.montant||0)+' €</p>'
     +'<a href="https://club-leopards.vercel.app" style="background:#0077C8;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px;">Voir dans l\'admin</a>'
     +'</div>';
-  await envoyerEmailBrevo('clubdesleopards@free.fr', 'Club des Léopards', '🆕 Nouvelle réservation - '+( resa.nom||''), html);
+  await envoyerEmailBrevo('clubdesleopards44.labaule@gmail.com', 'Club des Léopards', '🆕 Nouvelle réservation - '+( resa.nom||''), html);
 }
 
 window.envoyerEmailBrevo=envoyerEmailBrevo;
@@ -6091,6 +6094,7 @@ window.emailConfirmationInscription=emailConfirmationInscription;
 window.emailConfirmationReservation=emailConfirmationReservation;
 window.emailPaiementValide=emailPaiementValide;
 window.emailNotifAdmin=emailNotifAdmin;
+
 
 
 
