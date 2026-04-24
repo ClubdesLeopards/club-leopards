@@ -2270,6 +2270,12 @@ textarea{resize:vertical;}
 
 
 <script>
+/* config */
+window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
+</script>
+<script>
+
+
 
 
 
@@ -2934,6 +2940,7 @@ function submitInscription() {
   ST.members.push(membreData);
   ST.membreConnecte = membreData;
   sauvegarderInscriptionSB(membreData, pwd1);
+  emailConfirmationInscription(membreData);
 
   toast('Inscription enregistrée !', 'ok');
 
@@ -5016,6 +5023,12 @@ async function confirmerEnvoiReservation(){
     +'<button onclick="navigate(\'mes-resa\')" style="width:100%;padding:14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-bottom:8px;">📅 Voir mes réservations</button>'
     +'<button onclick="navigate(\'home\')" style="width:100%;padding:12px;background:#F3F4F6;color:#374151;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Retour à l\'accueil</button>'
     +'</div>';
+  // Email confirmation au client
+  if(m && m.email){
+    emailConfirmationReservation(m, resaObj||{saisonLabel:s.label,slot:{date:wk&&wk.debut,time:item&&item.periode}});
+  }
+  // Email notif admin
+  emailNotifAdmin({nom:nomFam,email:m?m.email:'',saisonLabel:s.label,semaine_label:wk&&wk.label,periode:item&&item.periode,montant:prix});
   _semainesSelectionnees={};_resaEnfantsSelectionnes=[];
 }
 
@@ -5915,6 +5928,11 @@ async function confirmerPaiementResa(){
 
   var ov=document.getElementById('valider-resa-overlay');
   if(ov) ov.style.display='none';
+  // Email confirmation paiement au client
+  var membreResa=ST.members.find(function(m){return m.id===r.membre_id;});
+  if(membreResa && membreResa.email){
+    emailPaiementValide(membreResa, r, mode, montant);
+  }
   toast('✅ Paiement validé et enregistré !','ok');
   await chargerDonnees();
   renderAdminResas();
@@ -5939,6 +5957,126 @@ window.confirmerPaiementResa=confirmerPaiementResa;
 
 
 
+
+
+
+// ═══ NOTIFICATIONS EMAIL BREVO ═══
+var BREVO_API_KEY = window.BREVO_KEY || '';
+
+async function envoyerEmailBrevo(to, toName, subject, htmlContent) {
+  try {
+    var res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: 'Club des Léopards', email: 'clubdesleopards@free.fr' },
+        to: [{ email: to, name: toName }],
+        subject: subject,
+        htmlContent: htmlContent
+      })
+    });
+    var data = await res.json();
+    if(data.messageId) console.log('Email envoyé ✅', data.messageId);
+    else console.warn('Email error:', JSON.stringify(data));
+    return data;
+  } catch(e) {
+    console.warn('Email Brevo error:', e);
+  }
+}
+
+// 1. Confirmation d'inscription
+async function emailConfirmationInscription(membre) {
+  var enfants = (membre.children||[]).map(function(k){
+    return '<li><strong>'+k.prenom+' '+k.nom+'</strong> — '+(k.age||0)+' ans</li>';
+  }).join('');
+  var html = '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">'
+    +'<div style="background:linear-gradient(135deg,#0077C8,#00C4FF);padding:30px;border-radius:12px 12px 0 0;text-align:center;">'
+    +'<h1 style="color:#fff;margin:0;font-size:24px;">🐆 Club des Léopards</h1>'
+    +'<p style="color:rgba(255,255,255,.8);margin:8px 0 0;">Bienvenue dans la famille !</p>'
+    +'</div>'
+    +'<div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #E5E7EB;">'
+    +'<h2 style="color:#0A0F1E;">Bonjour '+membre.prenom+' !</h2>'
+    +'<p style="color:#6B7280;">Votre inscription au Club des Léopards a bien été enregistrée.</p>'
+    +'<div style="background:#F0F9FF;border-radius:10px;padding:16px;margin:20px 0;">'
+    +'<h3 style="color:#0077C8;margin:0 0 12px;">Enfant(s) inscrit(s)</h3>'
+    +'<ul style="color:#374151;margin:0;padding-left:20px;">'+enfants+'</ul>'
+    +'</div>'
+    +'<p style="color:#6B7280;">Vous pouvez maintenant réserver vos semaines depuis l\'application.</p>'
+    +'<div style="text-align:center;margin:24px 0;">'
+    +'<a href="https://club-leopards.vercel.app" style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;">Accéder à l\'application</a>'
+    +'</div>'
+    +'<p style="color:#9CA3AF;font-size:12px;text-align:center;">Club des Léopards · La Baule</p>'
+    +'</div></div>';
+  if(membre.email) await envoyerEmailBrevo(membre.email, membre.prenom+' '+membre.nom, 'Bienvenue au Club des Léopards ! 🐆', html);
+}
+
+// 2. Confirmation de réservation
+async function emailConfirmationReservation(membre, resa) {
+  var html = '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">'
+    +'<div style="background:linear-gradient(135deg,#FF6B35,#FFB800);padding:30px;border-radius:12px 12px 0 0;text-align:center;">'
+    +'<h1 style="color:#fff;margin:0;font-size:24px;">🏖️ Demande de réservation</h1>'
+    +'<p style="color:rgba(255,255,255,.9);margin:8px 0 0;">Club des Léopards · La Baule</p>'
+    +'</div>'
+    +'<div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #E5E7EB;">'
+    +'<h2 style="color:#0A0F1E;">Bonjour '+membre.prenom+' !</h2>'
+    +'<p style="color:#6B7280;">Votre demande de réservation a bien été transmise à notre équipe.</p>'
+    +'<div style="background:#FFF7ED;border-radius:10px;padding:16px;margin:20px 0;border-left:4px solid #FF6B35;">'
+    +'<p style="margin:0;color:#92400E;font-weight:700;">⏳ En attente de confirmation</p>'
+    +'<p style="margin:8px 0 0;color:#374151;">'+(resa.saisonLabel||'')+(resa.slot?' · '+resa.slot.date:'')+' · '+(resa.slot?resa.slot.time:'')+'</p>'
+    +'<p style="margin:4px 0 0;color:#374151;font-weight:700;">'+(resa.montant||0)+' €</p>'
+    +'</div>'
+    +'<p style="color:#6B7280;">Notre équipe vous contactera sous 48h pour confirmer et organiser le paiement.</p>'
+    +'<p style="color:#9CA3AF;font-size:12px;text-align:center;">Club des Léopards · La Baule</p>'
+    +'</div></div>';
+  if(membre.email) await envoyerEmailBrevo(membre.email, membre.prenom+' '+membre.nom, '🏖️ Demande de réservation reçue - Club des Léopards', html);
+}
+
+// 3. Confirmation paiement validé
+async function emailPaiementValide(membre, resa, mode, montant) {
+  var modeLabel = {cb:'Carte bancaire',virement:'Virement',cheque:'Chèque',especes:'Espèces',cheque_vac:'Chèques Vacances',avoir:'Avoir'}[mode]||mode;
+  var html = '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">'
+    +'<div style="background:linear-gradient(135deg,#10B981,#059669);padding:30px;border-radius:12px 12px 0 0;text-align:center;">'
+    +'<h1 style="color:#fff;margin:0;font-size:24px;">✅ Réservation confirmée !</h1>'
+    +'<p style="color:rgba(255,255,255,.9);margin:8px 0 0;">Club des Léopards · La Baule</p>'
+    +'</div>'
+    +'<div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #E5E7EB;">'
+    +'<h2 style="color:#0A0F1E;">Bonjour '+membre.prenom+' !</h2>'
+    +'<p style="color:#6B7280;">Votre réservation est confirmée et votre paiement a été enregistré.</p>'
+    +'<div style="background:#F0FDF4;border-radius:10px;padding:16px;margin:20px 0;border-left:4px solid #10B981;">'
+    +'<p style="margin:0;color:#065F46;font-weight:700;">'+( resa.saisonLabel||'')+(resa.slot?' · '+resa.slot.date:'')+' · '+(resa.slot?resa.slot.time:'')+'</p>'
+    +'<p style="margin:8px 0 0;color:#374151;">Mode de paiement : <strong>'+modeLabel+'</strong></p>'
+    +'<p style="margin:4px 0 0;color:#374151;">Montant : <strong>'+montant+' €</strong></p>'
+    +'</div>'
+    +'<p style="color:#6B7280;">À très bientôt sur la plage ! 🏖️</p>'
+    +'<p style="color:#9CA3AF;font-size:12px;text-align:center;">Club des Léopards · La Baule</p>'
+    +'</div></div>';
+  if(membre.email) await envoyerEmailBrevo(membre.email, membre.prenom+' '+membre.nom, '✅ Réservation confirmée - Club des Léopards', html);
+}
+
+// 4. Notification admin nouvelle réservation
+async function emailNotifAdmin(resa) {
+  var html = '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;">'
+    +'<h2 style="color:#0077C8;">🆕 Nouvelle demande de réservation</h2>'
+    +'<p><strong>Famille :</strong> '+(resa.nom||resa.nom_famille||'')+'</p>'
+    +'<p><strong>Email :</strong> '+(resa.email||'')+'</p>'
+    +'<p><strong>Saison :</strong> '+(resa.saisonLabel||resa.saison||'')+'</p>'
+    +'<p><strong>Semaine :</strong> '+(resa.semaine_label||resa.slot&&resa.slot.date||'')+'</p>'
+    +'<p><strong>Période :</strong> '+(resa.periode||resa.slot&&resa.slot.time||'')+'</p>'
+    +'<p><strong>Montant :</strong> '+(resa.montant||0)+' €</p>'
+    +'<a href="https://club-leopards.vercel.app" style="background:#0077C8;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px;">Voir dans l\'admin</a>'
+    +'</div>';
+  await envoyerEmailBrevo('clubdesleopards@free.fr', 'Club des Léopards', '🆕 Nouvelle réservation - '+( resa.nom||''), html);
+}
+
+window.envoyerEmailBrevo=envoyerEmailBrevo;
+window.emailConfirmationInscription=emailConfirmationInscription;
+window.emailConfirmationReservation=emailConfirmationReservation;
+window.emailPaiementValide=emailPaiementValide;
+window.emailNotifAdmin=emailNotifAdmin;
 
 
 </script>
