@@ -2333,6 +2333,10 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2391,6 +2395,7 @@ async function chargerDonnees() {
           email: r.email || '',
           saisonLabel: r.saison==='ete'?'Ete 2026':r.saison==='automne'?'Automne 2026':'Printemps 2027',
           slot: { time: r.periode, date: r.semaine_label },
+          semaine_label: r.semaine_label,
           semaine_debut: r.semaine_debut,
           semaine_fin: r.semaine_fin,
           montant: r.montant,
@@ -2696,6 +2701,7 @@ function allKids() {
     (m.children||[]).forEach(function(ch) {
       kids.push({
         id: ch.id || null,
+        membre_id: m.id || null,
         prenom: ch.prenom || (ch.name?ch.name.split(' ')[0]:''),
         nom: ch.nom || (ch.name?ch.name.split(' ').slice(1).join(' '):''),
         name: ch.name || ((ch.prenom||'') + ' ' + (ch.nom||'')),
@@ -4209,7 +4215,41 @@ function renderAdminGroupes(){
   var wi=Math.max(0,Math.min((SAISONS.ete.semaines.length||9)-1,ST.adminWeekOffset));
   var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
   var awl=document.getElementById('admin-week-lbl');if(awl)awl.textContent=wk.label+' - '+wk.debut+' -> '+wk.fin;
-  var kids=allKids();
+  var allKidsList=allKids();
+  var allResas=[].concat(DEMO_RESAS, ST.reservations);
+  var wkLabel=wk.label||'';
+  var wkDebut=wk.debut||'';
+
+  // Réservations actives (valide ou en attente)
+  var resasActives=allResas.filter(function(r){
+    var s=r.statut||'';
+    return s==='valide'||s==='validé'||s==='en attente'||s==='en_attente';
+  });
+
+  // Réservations pour CETTE semaine (label ou debut)
+  var resasSem=resasActives.filter(function(r){
+    var rLabel=r.semaine_label||'';
+    var rDebut=r.semaine_debut||'';
+    if(!rLabel && !rDebut) return true; // semaine non renseignée → afficher sur toutes
+    return rLabel===wkLabel || (wkDebut && rDebut===wkDebut);
+  });
+
+  // IDs membres et noms pour cette semaine
+  var membreIdsResa=resasSem.map(function(r){return String(r.membre_id||'');}).filter(Boolean);
+  var nomsResa=resasSem.map(function(r){return (r.nom||r.nom_famille||'').toLowerCase().trim();}).filter(Boolean);
+
+  // Filtrer les enfants
+  var kids=allKidsList.filter(function(k){
+    if(resasSem.length===0) return false;
+    // Par membre_id
+    var kMid=String(k.membre_id||'');
+    if(kMid && membreIdsResa.indexOf(kMid)>=0) return true;
+    // Par nom famille (fallback)
+    var kParent=(k.parent||'').toLowerCase().trim();
+    return nomsResa.some(function(n){
+      return n && kParent && (n.indexOf(kParent.split(' ').pop())>=0 || kParent.indexOf(n.split(' ').pop())>=0);
+    });
+  });
   var active=ST.gPeriod==='aprem'?GROUPES_APREM:GROUPES_MATIN;
   el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">'
     +active.map(function(g){
@@ -4956,6 +4996,8 @@ async function confirmerEnvoiReservation(){
       email:m?m.email:'',
       saison:currentSaison,
       semaine_label:wk.label,
+      semaine_debut:wk.debut,
+      semaine_fin:wk.fin,
       periode:item.periode,
       montant:prix,
       statut:'en_attente'
@@ -5882,6 +5924,10 @@ async function confirmerPaiementResa(){
 window.validerResa=validerResa;
 window.vrSelectMode=vrSelectMode;
 window.confirmerPaiementResa=confirmerPaiementResa;
+
+
+
+
 
 
 
