@@ -2270,10 +2270,14 @@ textarea{resize:vertical;}
 
 
 <script>
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
+
 </script>
 <script>
+
 
 
 
@@ -4595,6 +4599,7 @@ var AVOIRS={nMoins1:[{id:1,membre:'Fam. Mouthet',somme:120,motif:'Annulation met
 function renderAvoirs(){
   var el=document.getElementById('admin-avoirs-content');if(!el)return;
   function makeTable(items,ni){
+    if(!items||!Array.isArray(items))items=[];
     var real=items.filter(function(a){return a.membre;});
     var restant=real.filter(function(a){return !a.solde;}).reduce(function(s,a){return s+a.somme;},0);
     var rows=real.length?real.map(function(a,i){return '<tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:9px 8px;font-size:12px;font-weight:600;">'+a.membre+'</td><td style="padding:9px 8px;font-size:12px;text-align:right;font-weight:700;color:#0099E6;">'+a.somme+'€</td><td style="padding:9px 8px;font-size:11px;">'+a.motif+'</td><td style="padding:9px 8px;text-align:center;">'+(a.solde?'<span style="background:#D1FAE5;color:#065F46;font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;">'+a.dateSolde+'</span>':'<button onclick="solderAvoir('+ni+','+i+')" style="background:#FEF3C7;color:#92400E;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Solder</button>')+'</td><td style="padding:9px 8px;text-align:center;"><button onclick="genererDocAvoir(\''+a.membre+'\','+a.somme+',\''+a.motif+'\','+ni+')" style="background:#EFF6FF;color:#0099E6;border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">Doc</button></td></tr>';}).join(''):'<tr><td colspan="5" style="text-align:center;color:#9CA3AF;padding:16px;font-style:italic;">Aucun avoir</td></tr>';
@@ -5023,12 +5028,17 @@ async function confirmerEnvoiReservation(){
     +'<button onclick="navigate(\'mes-resa\')" style="width:100%;padding:14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-bottom:8px;">📅 Voir mes réservations</button>'
     +'<button onclick="navigate(\'home\')" style="width:100%;padding:12px;background:#F3F4F6;color:#374151;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Retour à l\'accueil</button>'
     +'</div>';
-  // Email confirmation au client
-  if(m && m.email){
-    emailConfirmationReservation(m, resaObj||{saisonLabel:s.label,slot:{date:wk&&wk.debut,time:item&&item.periode}});
+  // Email confirmation au client (une seule fois pour la première semaine)
+  if(m && m.email && lignes.length > 0){
+    var premiereLigne = lignes[0];
+    emailConfirmationReservation(m, {
+      saisonLabel: s.label,
+      slot: {date: premiereLigne.wk.debut+' → '+premiereLigne.wk.fin, time: premiereLigne.periode==='matin'?'Matin':'Après-midi'},
+      montant: total
+    });
   }
   // Email notif admin
-  emailNotifAdmin({nom:nomFam,email:m?m.email:'',saisonLabel:s.label,semaine_label:wk&&wk.label,periode:item&&item.periode,montant:prix});
+  emailNotifAdmin({nom:nomFam, email:m?m.email:'', saisonLabel:s.label, semaine_label:lignes.length>0?lignes[0].wk.label:'', periode:lignes.length>0?lignes[0].periode:'', montant:total});
   _semainesSelectionnees={};_resaEnfantsSelectionnes=[];
 }
 
@@ -6077,6 +6087,8 @@ window.emailConfirmationInscription=emailConfirmationInscription;
 window.emailConfirmationReservation=emailConfirmationReservation;
 window.emailPaiementValide=emailPaiementValide;
 window.emailNotifAdmin=emailNotifAdmin;
+
+
 
 
 </script>
