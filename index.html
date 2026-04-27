@@ -2313,6 +2313,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2350,8 +2352,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -4709,7 +4715,7 @@ function renderPaiements(){
     +'</div>'
 
     // Liste
-    +'<div style="display:flex;flex-direction:column;gap:8px;">'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">'
     +paiesFilt.map(function(p){
       var isP=p.statut==='paye';
       var bc=isP?'#10B981':'#F97316';
@@ -4737,17 +4743,49 @@ function renderPaiements(){
 function setPFilter(f){window._pFilter=f;renderPaiements();}
 
 async function remettreEnAttente(resaId){
-  if(!confirm('Remettre cette réservation en attente ?')) return;
+  if(!confirm('Annuler le paiement et remettre en attente ?')) return;
   var r=ST.reservations.find(function(x){return String(x.id)===String(resaId);});
   if(!r) return;
-  r.statut='en attente';
+
+  // 1. Mettre à jour réservation Supabase → en_attente + supprimer mode_paiement
   try{
-    if(r.id) await sb.from('reservations').update({statut:'en_attente',mode_paiement:null}).eq('id',r.id);
-    console.log('Remise en attente ✅');
+    if(r.id){
+      var upRes=await sb.from('reservations').update({statut:'en_attente',mode_paiement:null}).eq('id',r.id);
+      if(upRes.error) console.warn('resa update:',upRes.error.message);
+      else console.log('Résa remise en attente ✅');
+    }
   }catch(e){console.warn(e);}
-  toast('Réservation remise en attente','ok');
+
+  // 2. Supprimer le paiement dans Supabase (paiements liés à cette résa)
+  try{
+    if(r.id){
+      var delRes=await sb.from('paiements').delete().eq('reservation_id',r.id);
+      if(delRes.error) console.warn('paiement delete:',delRes.error.message);
+      else console.log('Paiement supprimé ✅');
+    }
+  }catch(e){console.warn(e);}
+
+  // 3. Supprimer la ligne suivi_quotidien correspondante
+  // (chercher par date + reference = enfants de la résa)
+  try{
+    var enfNoms=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')||(r.nom||'');
+    if(enfNoms){
+      var sqDel=await sb.from('suivi_quotidien').delete().eq('reference',enfNoms);
+      if(sqDel.error) console.warn('suivi_quotidien delete:',sqDel.error.message);
+      else console.log('Suivi quotidien supprimé ✅');
+    }
+  }catch(e){console.warn(e);}
+
+  // 4. Mise à jour locale
+  r.statut='en attente';
+  r.paid=0;
+  r.mode_paiement=null;
+
+  toast('↩️ Remise en attente effectuée','ok');
+  await chargerDonnees();
   renderPaiements();
   renderAdminResas();
+  renderComptabilite();
 }
 
 window.setPFilter=setPFilter;
@@ -6305,6 +6343,11 @@ async function confirmerPaiementResa(){
     }
   }catch(e){console.warn('resa update:',e);}
 
+  // Supprimer paiement existant pour éviter doublons
+  try{
+    if(r.id) await sb.from('paiements').delete().eq('reservation_id',r.id);
+  }catch(e){}
+
   // Insérer dans paiements Supabase
   var paiData={
     nom_famille:r.nom||r.nom_famille||'',
@@ -6699,6 +6742,8 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
+
 
 
 
