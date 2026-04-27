@@ -2297,6 +2297,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2319,8 +2320,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4342,7 +4345,8 @@ function renderAdminGroupes(){
     var rLabel=r.semaine_label||'';
     var rDebut=r.semaine_debut||'';
     if(!rLabel && !rDebut) return true; // semaine non renseignée → afficher sur toutes
-    return rLabel===wkLabel || (wkDebut && rDebut===wkDebut);
+    // rLabel peut contenir plusieurs semaines ex: "Semaine 1, Semaine 2"
+    return rLabel.indexOf(wkLabel)>=0 || rLabel===wkLabel || (wkDebut && rDebut===wkDebut);
   });
 
   // IDs membres et noms pour cette semaine
@@ -6400,6 +6404,7 @@ window.emailNotifAdmin=emailNotifAdmin;
 
 window.nrSelectMembre=nrSelectMembre;
 window.nrPopulerMembres=nrPopulerMembres;
+
 
 
 
