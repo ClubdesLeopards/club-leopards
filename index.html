@@ -2332,6 +2332,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2388,8 +2389,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4850,6 +4853,10 @@ window.setPFilter=setPFilter;
 window.remettreEnAttente=remettreEnAttente;
 
 function setPaiFilter(f){window._pFilter=f;renderPaiements();}
+var freqWeekOffset=0;
+var freqMonthOffset=0;
+var freqSaisonIdx=0;
+var freqPeriod='semaine';
 function renderFrequentation(){
   var el=document.getElementById('frequentation-content');if(!el)return;
   var today=new Date();
@@ -6814,6 +6821,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
