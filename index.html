@@ -2291,6 +2291,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2307,8 +2308,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4394,7 +4397,15 @@ function renderAdminResas(){
     var bc=val?'#10B981':'#F97316';
     var ch=(r.children||[]).map(function(c){return '<span style="font-size:10px;background:#F3F4F6;color:#374151;padding:1px 5px;border-radius:4px;">'+c.name+'</span>';}).join('');
     return '<div style="background:#fff;border-radius:12px;padding:13px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:3px solid '+bc+';">'
-      +'<div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:13px;font-weight:700;">'+r.nom+'</div><div style="font-size:10px;font-weight:700;color:'+bc+';">'+(val?'Valide':'En attente')+'</div></div>'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:5px;">'
+      +'<div>'
+      +'<div style="font-size:13px;font-weight:700;">'+r.nom+'</div>'
+      +((r.children||[]).length>0?'<div style="font-size:11px;color:#0099E6;font-weight:600;">👶 '+(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')+'</div>':'')
+      +'</div>'
+      +'<div style="text-align:right;">'
+      +'<div style="font-size:10px;font-weight:700;color:'+bc+';">'+(val?'✅ Validée':'⏳ En attente')+'</div>'
+      +'<div style="font-size:13px;font-weight:800;color:#0099E6;">'+(r.montant||r.paid||0)+' €</div>'
+      +'</div></div>'
       +'<div style="font-size:12px;color:#374151;font-weight:700;margin-bottom:2px;">'
       +((r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')||r.nom||'')
       +'</div>'
@@ -4483,7 +4494,20 @@ function renderPaiements(){
     +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:6px;">'+barParts+'</div></div>'
     +'<div style="display:flex;gap:8px;margin-bottom:10px;"><button onclick="setPaiFilter(\'toutes\')" id="pf-toutes" class="btn btn-sm active" style="flex:1;">Toutes</button><button onclick="setPaiFilter(\'attente\')" id="pf-attente" class="btn btn-sm btn-ghost" style="flex:1;">En attente</button><button onclick="setPaiFilter(\'payees\')" id="pf-payees" class="btn btn-sm btn-ghost" style="flex:1;">Payees</button></div>'
     +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;">'
-    +paies.map(function(p){var isPaye=p.statut==='paye'||p.statut==='paye';var bc=isPaye?'#10B981':'#F97316';return '<div style="background:#fff;border-radius:11px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:3px solid '+bc+';"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><div style="font-size:12px;font-weight:800;">'+p.nom+'</div><div style="font-size:14px;font-weight:800;color:'+bc+';">'+p.montant+'€</div></div><div style="font-size:11px;color:#9CA3AF;margin-bottom:6px;">'+(p.forme||p.formule||'')+(p.mode?' · '+p.mode:'')+'</div><div style="display:flex;align-items:center;justify-content:space-between;"><span style="background:'+(isPaye?'#D1FAE5':'#FEF3C7')+';color:'+(isPaye?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">'+(isPaye?'Payé':'En attente')+'</span>'+((!isPaye&&p.resaId)?'<button onclick="ouvrirValidationResa(\''+p.resaId+'\')" style="padding:4px 10px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider →</button>':'')+'</div></div>';}).join('')+'</div>';
+    +paies.map(function(p){var isPaye=p.statut==='paye'||p.statut==='paye';var bc=isPaye?'#10B981':'#F97316';return '<div style="background:#fff;border-radius:11px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:3px solid '+bc+';">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+      +'<div>'
+      +'<div style="font-size:12px;font-weight:800;">'+p.nom+'</div>'
+      +(p.enfants?'<div style="font-size:11px;color:#0099E6;font-weight:600;">👶 '+p.enfants+'</div>':'')
+      +(p.semaine?'<div style="font-size:10px;color:#9CA3AF;">'+p.semaine+'</div>':'')
+      +'</div>'
+      +'<div style="font-size:16px;font-weight:800;color:'+bc+';">'+p.montant+' €</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">'
+      +'<span style="background:'+(isPaye?'#D1FAE5':'#FEF3C7')+';color:'+(isPaye?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;">'+(isPaye?'✅ Payé':'⏳ En attente')+'</span>'
+      +((!isPaye&&p.resaId)?'<button onclick="ouvrirValidationResa(\''+p.resaId+'\')" style="padding:5px 12px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider →</button>':'')
+      +'</div>'
+      +'</div>';}).join('')+'</div>';
 }
 function setPaiFilter(f){['toutes','attente','payees'].forEach(function(x){var b=document.getElementById('pf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});}
 
@@ -4497,9 +4521,18 @@ function renderFrequentation(){
 
   // ── Vraies données d'abord ──
   var kids=allKids();
-  var totM=kids.filter(function(k){var p=k.periode;return Array.isArray(p)?p.indexOf('matin')>=0:p==='matin';}).length;
-  var totA=kids.filter(function(k){var p=k.periode;return Array.isArray(p)?p.indexOf('aprem')>=0:p==='aprem';}).length;
-  if(totM===0&&totA===0){totM=Math.ceil(kids.length/2);totA=kids.length-totM;}
+  // Compter depuis les réservations validées/en attente
+  var allResasFreq=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
+    var s=r.statut||'';
+    return s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
+  });
+  var totM=allResasFreq.filter(function(r){return r.periode==='matin'||( r.slot&&r.slot.time==='Matin');}).length;
+  var totA=allResasFreq.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
+  if(totM===0&&totA===0){
+    totM=kids.filter(function(k){var p=k.periode;return Array.isArray(p)?p.indexOf('matin')>=0:p==='matin';}).length;
+    totA=kids.filter(function(k){var p=k.periode;return Array.isArray(p)?p.indexOf('aprem')>=0:p==='aprem';}).length;
+    if(totM===0&&totA===0){totM=Math.ceil(kids.length/2);totA=kids.length-totM;}
+  }
 
   // ── Données graphique ──
   var baseM=totM||0, baseA=totA||0;
@@ -6309,6 +6342,7 @@ window.emailNotifAdmin=emailNotifAdmin;
 
 window.nrSelectMembre=nrSelectMembre;
 window.nrPopulerMembres=nrPopulerMembres;
+
 
 
 
