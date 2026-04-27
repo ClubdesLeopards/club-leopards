@@ -2315,6 +2315,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2354,8 +2356,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -4860,11 +4866,17 @@ function renderFrequentation(){
     if(!ok) return false;
     var rLabel=r.semaine_label||'';
     var wkLabel=wk.label||'';
-    return !rLabel||rLabel===wkLabel;
+    return !rLabel||rLabel.indexOf(wkLabel)>=0||wkLabel.indexOf(rLabel)>=0;
   });
   var kidsValides=[];
   resasValSem.forEach(function(r){
-    (r.children||[]).forEach(function(k){kidsValides.push(k);});
+    var enfants=r.children||[];
+    // Si r.children vide, chercher dans ST.members via membre_id
+    if(!enfants.length && r.membre_id){
+      var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id||r._memberId);});
+      if(m) enfants=m.children||[];
+    }
+    enfants.forEach(function(k){kidsValides.push(k);});
   });
   // Si pas d'enfants dans les réservations, utiliser kids filtré
   var kidsShow=kidsValides; // 0 si pas de résa validée cette semaine
@@ -6742,6 +6754,8 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
+
 
 
 
