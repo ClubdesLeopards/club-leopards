@@ -2276,6 +2276,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2283,8 +2286,14 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
 </script>
 <script>
+
+
+
 
 
 
@@ -5048,7 +5057,8 @@ async function confirmerEnvoiReservation(){
     emailConfirmationReservation(m, {
       saisonLabel: s.label,
       slot: {date: (premierWk.debut||'')+' → '+(premierWk.fin||''), time: premierSel.periode==='matin'?'Matin':'Après-midi'},
-      montant: totalEmail
+      montant: totalEmail,
+      nbSemaines: allSel.length
     });
     emailNotifAdmin({nom:nomFam, email:m?m.email:'', saisonLabel:s.label, semaine_label:premierWk.label||'', periode:premierSel.periode, montant:totalEmail});
   }
@@ -6043,18 +6053,16 @@ async function emailConfirmationReservation(membre, resa) {
   var semaine = resa.slot ? resa.slot.date : '';
   var periode = resa.slot ? resa.slot.time : '';
   var saison = resa.saisonLabel || '';
-  var enfants = (membre.children||[]).map(function(k){
-    return '<tr>'
-      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards</td>'
-      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+(k.prenom||k.name||'')+'</td>'
-      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+semaine+'</td>'
-      +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#FF6B35;text-align:right;">'+montant+' €</td>'
-      +'</tr>';
-  }).join('');
-  if(!enfants) enfants = '<tr>'
-    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards</td>'
-    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+membre.prenom+'</td>'
-    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+semaine+'</td>'
+  // Nombre de semaines réservées
+  var nbSemaines = resa.nbSemaines || 1;
+  // 1 seule ligne : tous les enfants regroupés sur la semaine
+  var nomsEnfants = (membre.children||[]).map(function(k){ return k.prenom||(k.name||'').split(' ')[0]; }).filter(Boolean).join(', ');
+  if(!nomsEnfants) nomsEnfants = membre.prenom;
+  var nbEnf = (membre.children||[]).length || 1;
+  var enfants = '<tr>'
+    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards<br><span style="font-size:11px;color:#9CA3AF;">'+nbSemaines+' semaine'+(nbSemaines>1?'s':'')+'</span></td>'
+    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+nomsEnfants+'</td>'
+    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+semaine+'<br><span style="font-size:11px;color:#9CA3AF;">'+periode+'</span></td>'
     +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#FF6B35;text-align:right;">'+montant+' €</td>'
     +'</tr>';
 
@@ -6117,7 +6125,7 @@ async function emailConfirmationReservation(membre, resa) {
     +'<tr><td style="padding:4px 0;font-size:12px;font-weight:700;color:#374151;width:30%;">Titulaire</td><td style="padding:4px 0;font-size:12px;color:#374151;">EURL MLEP</td></tr>'
     +'<tr><td style="padding:4px 0;font-size:12px;font-weight:700;color:#374151;">IBAN</td><td style="padding:4px 0;font-size:12px;color:#374151;font-family:monospace;">FR76 3004 7141 6500 0200 9170 180</td></tr>'
     +'<tr><td style="padding:4px 0;font-size:12px;font-weight:700;color:#374151;">BIC</td><td style="padding:4px 0;font-size:12px;color:#374151;font-family:monospace;">CMCIFRPP</td></tr>'
-    +'<tr><td style="padding:4px 0;font-size:12px;font-weight:700;color:#374151;">Référence</td><td style="padding:4px 0;font-size:12px;color:#374151;">'+membre.prenom+' '+membre.nom+' - '+saison+'</td></tr>'
+    +'<tr><td style="padding:4px 0;font-size:12px;font-weight:700;color:#374151;">Référence</td><td style="padding:4px 0;font-size:12px;color:#374151;">'+nomsEnfants+' - '+saison+'</td></tr>'
     +'</table>'
     +'</div>'
     +'</div>'
@@ -6196,6 +6204,9 @@ window.emailConfirmationInscription=emailConfirmationInscription;
 window.emailConfirmationReservation=emailConfirmationReservation;
 window.emailPaiementValide=emailPaiementValide;
 window.emailNotifAdmin=emailNotifAdmin;
+
+
+
 
 
 
