@@ -1947,7 +1947,13 @@ textarea{resize:vertical;}
           </div>
           <div style="padding:18px;display:flex;flex-direction:column;gap:10px;">
             <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Famille *</label>
-            <input id="nr-nom" placeholder="DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            <select id="nr-membre-select" onchange="nrSelectMembre(this.value)" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;box-sizing:border-box;">
+              <option value="">-- Choisir un membre --</option>
+            </select></div>
+            <div id="nr-enfants-section" style="display:none;">
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;margin-top:8px;">Enfants *</label>
+              <div id="nr-enfants-checkboxes" style="display:flex;flex-direction:column;gap:6px;padding:8px;background:#F9FAFB;border-radius:9px;border:1.5px solid #E5E7EB;"></div>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label>
               <input id="nr-email" type="email" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
@@ -2281,6 +2287,10 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2293,8 +2303,16 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
 </script>
 <script>
+
+
+
+
 
 
 
@@ -4348,7 +4366,8 @@ function ouvrirFicheEnfantGroupe(nom){
 var resaAdminSaison='ete',resaFilter='all',_adminResas=[];
 function setResaAdminSaison(s){resaAdminSaison=s;['ete','automne','printemps'].forEach(function(x){var b=document.getElementById('rs-admin-'+x);if(b){b.classList.toggle('active',x===s);b.classList.toggle('btn-ghost',x!==s);}});renderAdminResas();}
 function setResaFilter(f){resaFilter=f;['all','attente','valide'].forEach(function(x){var b=document.getElementById('rf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});renderAdminResas();}
-function nouvelleResaManuelle(){var ov=document.getElementById('nouvelle-resa-overlay');if(ov){ov.style.display='flex';updateResaSemaines();}}
+function nouvelleResaManuelle(){
+  setTimeout(function(){nrPopulerMembres();updateResaSemaines();},100);var ov=document.getElementById('nouvelle-resa-overlay');if(ov){ov.style.display='flex';updateResaSemaines();}}
 function fermerNouvelleResa(){var ov=document.getElementById('nouvelle-resa-overlay');if(ov)ov.style.display='none';}
 
 function ajouterEnfantResa(){
@@ -4376,7 +4395,11 @@ function renderAdminResas(){
     var ch=(r.children||[]).map(function(c){return '<span style="font-size:10px;background:#F3F4F6;color:#374151;padding:1px 5px;border-radius:4px;">'+c.name+'</span>';}).join('');
     return '<div style="background:#fff;border-radius:12px;padding:13px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:3px solid '+bc+';">'
       +'<div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:13px;font-weight:700;">'+r.nom+'</div><div style="font-size:10px;font-weight:700;color:'+bc+';">'+(val?'Valide':'En attente')+'</div></div>'
-      +'<div style="font-size:11px;color:#374151;font-weight:600;margin-bottom:3px;">'+(r.slot?r.slot.time+' - '+r.slot.date:'')+'</div>'
+      +'<div style="font-size:12px;color:#374151;font-weight:700;margin-bottom:2px;">'
+      +((r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')||r.nom||'')
+      +'</div>'
+      +'<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">'+(r.slot?r.slot.time:'')+'</div>'
+      +'<div style="font-size:10px;color:#0099E6;margin-bottom:3px;">'+(r.semaine_label||r.slot&&r.slot.date||'')+'</div>'
       +(ch?'<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:3px;">'+ch+'</div>':'')
       +(r.saisonLabel?'<div style="font-size:10px;color:#9CA3AF;margin-bottom:6px;">'+r.saisonLabel+'</div>':'')
       +(!val?'<button onclick="ouvrirValidationResa(\''+r.id+'\')" style="width:100%;padding:7px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin-bottom:6px;">Valider</button>':'')
@@ -5022,47 +5045,57 @@ async function confirmerEnvoiReservation(){
   var nbEnf=Math.max(1,(_resaEnfantsSelectionnes||[]).length);
 
   // Enregistrer chaque semaine dans ST.reservations + Supabase
-  allSel.forEach(function(item,i){
-    var wk=(s.semaines||[])[item.wi];if(!wk)return;
-    var prix=calculerPrixSemaine(nbEnf,i);
-    var resaObj={
-      id:'R'+Date.now()+i,
-      membre_id:m?m.id:null,
-      nom:nomFam,
-      email:m?m.email:'',
-      slot:{time:item.periode==='matin'?'Matin':'Après-midi',date:wk.debut+' → '+wk.fin},
-      saisonLabel:s.label||currentSaison,
-      saison:currentSaison,
-      semaine_debut:wk.debut,
-      semaine_fin:wk.fin,
-      semaine_label:wk.label,
-      periode:item.periode,
-      montant:prix,
-      paid:0,
-      statut:'en attente',
-      children:_resaEnfantsSelectionnes.slice(),
-      date:new Date().toLocaleDateString('fr-FR'),
-      created_at:new Date().toISOString()
-    };
-    ST.reservations.push(resaObj);
+  // Grouper toutes les semaines en 1 seule réservation
+  var semLabels = allSel.map(function(item){
+    var wk=(s.semaines||[])[item.wi]||{};
+    return wk.label||'';
+  }).filter(Boolean).join(', ');
+  var semDates = allSel.map(function(item){
+    var wk=(s.semaines||[])[item.wi]||{};
+    return (wk.debut||'') + ' → ' + (wk.fin||'');
+  }).filter(Boolean).join(' | ');
+  var totalPrix = allSel.reduce(function(sum,item,idx){return sum+calculerPrixSemaine(nbEnf,idx);},0);
+  var periodeLabel = allSel.length>0?(allSel[0].periode==='matin'?'Matin':'Après-midi'):'';
+  var premierWk = (s.semaines||[])[allSel[0].wi]||{};
 
-    // Sauvegarder dans Supabase
-    sb.from('reservations').insert({
-      membre_id:m?m.id:null,
-      nom_famille:nomFam,
-      email:m?m.email:'',
-      saison:currentSaison,
-      semaine_label:wk.label,
-      semaine_debut:wk.debut,
-      semaine_fin:wk.fin,
-      periode:item.periode,
-      montant:prix,
-      statut:'en_attente'
-    }).then(function(res){
-      if(res.error){ console.error('Resa insert error:', res.error.message); }
-      else{ console.log('Resa insérée ✅'); chargerDonnees(); }
-    });
+  var resaObj = {
+    id: 'R'+Date.now(),
+    membre_id: m?m.id:null,
+    nom: nomFam,
+    email: m?m.email:'',
+    slot: {time: periodeLabel, date: semDates},
+    saisonLabel: s.label||currentSaison,
+    saison: currentSaison,
+    semaine_label: semLabels,
+    semaine_debut: premierWk.debut||'',
+    semaine_fin: premierWk.fin||'',
+    periode: allSel[0]?allSel[0].periode:'matin',
+    montant: totalPrix,
+    paid: 0,
+    statut: 'en attente',
+    children: m?(m.children||[]):[],
+    date: new Date().toLocaleDateString('fr-FR'),
+    created_at: new Date().toISOString()
+  };
+  ST.reservations.push(resaObj);
+
+  // 1 seul insert Supabase
+  sb.from('reservations').insert({
+    membre_id: m?m.id:null,
+    nom_famille: nomFam,
+    email: m?m.email:'',
+    saison: currentSaison,
+    semaine_label: semLabels,
+    semaine_debut: premierWk.debut||'',
+    semaine_fin: premierWk.fin||'',
+    periode: allSel[0]?allSel[0].periode:'matin',
+    montant: totalPrix,
+    statut: 'en_attente'
+  }).then(function(res){
+    if(res.error) console.error('Resa insert:', res.error.message);
+    else{ console.log('Resa insérée ✅'); chargerDonnees(); }
   });
+
 
   // Page de confirmation — sans ouvrir de mail
   var el=document.getElementById('resa-semaines-content');if(!el)return;
@@ -5226,7 +5259,7 @@ function renderFactureTab(){
   var famsFilt=q?fams.filter(function(m){return(m.nom+' '+m.prenom+' '+(m.email||'')).toLowerCase().includes(q);}):fams;
   var cardsHTML=famsFilt.map(function(m,mi){
     var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
-    var total=famResas.reduce(function(s,r){return s+(r.paid||120);},0);
+    var total=famResas.reduce(function(s,r){return s+(r.montant||r.paid||120);},0);
     var kids=(m.children||[]);
     var kidsHTML=kids.map(function(ch,ki){
       var g=getGroupe(parseFloat(ch.age)||0);
@@ -5248,7 +5281,7 @@ function renderFactureTab(){
       +'<div style="flex:1;"><div style="font-size:15px;font-weight:800;color:#0A0F1E;">'+m.prenom+' '+(m.nom||'').toUpperCase()+'</div>'
       +'<div style="font-size:12px;color:#9CA3AF;">'+(m.email||'—')+'</div></div>'
       +'<div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:#0A0F1E;">'+(total||'—')+' €</div>'
-      +'<div style="font-size:10px;color:#9CA3AF;">sur '+(total||'—')+' €</div></div></div>'
+      +'<div style="font-size:10px;color:#10B981;">Prestation : '+(total||'—')+' €</div></div></div>'
       +(kidsHTML?'<div style="margin-bottom:8px;">'+kidsHTML+'</div>':'')
       +(seancesHTML?'<div style="margin-bottom:12px;">'+seancesHTML+'</div>':'')
       +'<div style="display:flex;gap:8px;">'
@@ -5766,6 +5799,41 @@ function nrCalculerMontant(){
   if(det)det.textContent=nbE+' enfant'+(nbE>1?'s':'')+' × '+nbS+' semaine'+(nbS>1?'s':'')+' × 120 €';
 }
 
+function nrPopulerMembres(){
+  var sel=document.getElementById('nr-membre-select');
+  if(!sel) return;
+  sel.innerHTML='<option value="">-- Choisir un membre --</option>';
+  ST.members.forEach(function(m,idx){
+    var opt=document.createElement('option');
+    opt.value=idx;
+    opt.textContent=m.prenom+' '+m.nom.toUpperCase();
+    sel.appendChild(opt);
+  });
+}
+
+function nrSelectMembre(idx){
+  var section=document.getElementById('nr-enfants-section');
+  var checks=document.getElementById('nr-enfants-checkboxes');
+  if(!section||!checks) return;
+  if(idx===''){section.style.display='none';return;}
+  var m=ST.members[parseInt(idx)];
+  if(!m){section.style.display='none';return;}
+  section.style.display='';
+  var kids=m.children||[];
+  if(kids.length===0){
+    checks.innerHTML='<div style="font-size:12px;color:#9CA3AF;">Aucun enfant inscrit</div>';
+  } else {
+    checks.innerHTML=kids.map(function(k,ki){
+      return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;">'
+        +'<input type="checkbox" name="nr-enfant" value="'+ki+'" checked style="width:16px;height:16px;accent-color:#0099E6;">'
+        +'<span style="font-size:13px;color:#374151;font-weight:600;">'+(k.prenom||k.name||'')+'</span>'
+        +'<span style="font-size:11px;color:#9CA3AF;">'+(k.age?' · '+k.age+' ans':'')+'</span>'
+        +'</label>';
+    }).join('');
+  }
+  nrCalculerMontant();
+}
+
 function updateResaSemaines(){
   var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
   var cont=document.getElementById('nr-semaines-checks');if(!cont)return;
@@ -5870,10 +5938,7 @@ function validerResa(resaId){
       +'<button onclick="vrSelectMode(this,\'avoir\')" class="vr-mode-btn" style="padding:10px 6px;border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;background:#fff;font-family:inherit;">🎟️ Avoir</button>'
       +'</div>'
       +'</div>'
-      +'<div>'
-      +'<label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Montant encaissé (€)</label>'
-      +'<input id="vr-montant" type="number" style="width:100%;padding:11px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:15px;box-sizing:border-box;">'
-      +'</div>'
+
       +'<div>'
       +'<label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:4px;">Notes</label>'
       +'<input id="vr-notes" placeholder="Optionnel" style="width:100%;padding:11px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:13px;box-sizing:border-box;">'
@@ -5896,8 +5961,7 @@ function validerResa(resaId){
     +(enfantsNoms?'<div style="font-size:12px;color:#0099E6;margin-bottom:3px;">👶 '+enfantsNoms+'</div>':'')
     +'<div style="font-size:12px;color:#6B7280;">'+(r.saisonLabel||'')+(r.slot?' · '+r.slot.date:'')+' · '+(r.slot?r.slot.time:'')+'</div>'
     +'<div style="font-size:16px;font-weight:800;color:#0099E6;margin-top:6px;">'+(r.montant||r.paid||0)+' €</div>';
-  var montEl=document.getElementById('vr-montant');
-  if(montEl) montEl.value=r.montant||r.paid||0;
+
   // Reset modes
   document.querySelectorAll('.vr-mode-btn').forEach(function(b){b.style.borderColor='#E5E7EB';b.style.background='#fff';b.style.color='#374151';});
   ov.style.display='flex';
@@ -5913,7 +5977,7 @@ async function confirmerPaiementResa(){
   var resaId=window._vrResaId;
   var mode=window._vrMode;
   if(!mode){toast('Choisir un mode de paiement','ko');return;}
-  var montant=parseFloat((document.getElementById('vr-montant')||{value:'0'}).value)||0;
+  var montant=r?parseFloat(r.montant||r.paid||0):0;
   var notes=(document.getElementById('vr-notes')||{value:''}).value.trim();
 
   // Trouver la résa par ID
@@ -5952,7 +6016,7 @@ async function confirmerPaiementResa(){
   try{
     var sqInsert={
       date:today,
-      reference:(r.nom||r.nom_famille||'Famille'),
+      reference:(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')||(r.nom||r.nom_famille||'Famille'),
       cb: mode==='cb'?montant:0,
       virement: mode==='virement'?montant:0,
       cheque: mode==='cheque'?montant:0,
@@ -6238,6 +6302,13 @@ window.emailNotifAdmin=emailNotifAdmin;
 
 
 
+
+
+
+
+
+window.nrSelectMembre=nrSelectMembre;
+window.nrPopulerMembres=nrPopulerMembres;
 
 
 
