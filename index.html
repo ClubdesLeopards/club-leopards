@@ -2279,6 +2279,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2289,8 +2291,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -4359,8 +4365,8 @@ function renderAdminResas(){
   var all=[].concat(DEMO_RESAS,ST.reservations);
   var sLabel=resaAdminSaison==='ete'?'Ete':resaAdminSaison==='automne'?'Automne':'Printemps';
   all=all.filter(function(r){if(!r.saisonLabel) return true; return r.saisonLabel.toLowerCase().indexOf(resaAdminSaison.toLowerCase())>=0||r.saisonLabel.indexOf(sLabel)>=0;});
-  if(resaFilter==='attente')all=all.filter(function(r){return r.statut==='en attente';});
-  if(resaFilter==='valide')all=all.filter(function(r){return r.statut==='valide'||r.statut==='valide'||r.statut==='validé';});
+  if(resaFilter==='attente')all=all.filter(function(r){return (r.statut==='en attente'||r.statut==='en_attente'||r.statut==='attente');});
+  if(resaFilter==='valide')all=all.filter(function(r){return r.statut==='valide'||r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
   _adminResas=all;
   if(!all.length){el.innerHTML='<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;margin-bottom:12px;">+ Créer une réservation</button>'+
   '<div class="empty"><div class="empty-icon">📅</div><p>Aucune reservation</p></div>';return;}
@@ -4384,7 +4390,25 @@ function renderAdminResas(){
     +'<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:12px;">+ Nouvelle reservation</button>';
 }
 function modResa(i){var r=_adminResas[i];if(!r)return;var nom=prompt('Nom :',r.nom);if(!nom)return;r.nom=nom;toast('Modifie','ok');renderAdminResas();}
-function delResa(i){if(!confirm('Supprimer ?'))return;var r=_adminResas[i];DEMO_RESAS=DEMO_RESAS.filter(function(x){return x!==r;});ST.reservations=ST.reservations.filter(function(x){return x!==r;});toast('Supprime','ok');renderAdminResas();}
+async function delResa(i){
+  if(!confirm('Supprimer cette réservation ?')) return;
+  var r=_adminResas[i];
+  if(!r) return;
+  // Supprimer dans Supabase
+  if(r.id && typeof r.id !== 'string' || (typeof r.id === 'string' && r.id.length > 5)){
+    try{
+      var res = await sb.from('reservations').delete().eq('id', r.id);
+      if(res.error) console.warn('Delete error:', res.error.message);
+      else console.log('Réservation supprimée de Supabase ✅');
+    }catch(e){ console.warn(e); }
+  }
+  // Supprimer localement
+  DEMO_RESAS = DEMO_RESAS.filter(function(x){return x!==r;});
+  ST.reservations = ST.reservations.filter(function(x){return x!==r;});
+  toast('Réservation supprimée','ok');
+  renderAdminResas();
+  renderDashboard();
+}
 function relanceResa2(nom,email){var subj=encodeURIComponent('Relance - Club des Leopards');var body=encodeURIComponent('Bonjour '+nom+',\n\nNous attendons votre paiement.\n\nCordialement,\nClub des Leopards');window.location.href='mailto:'+(email||'')+'?subject='+subj+'&body='+body;}
 
 // ═══ PAIEMENTS ═══
@@ -4395,7 +4419,7 @@ function renderPaiements(){
   var paies=[].concat(DEMO_PAYMENTS);
   // Ajouter les réservations en attente comme paiements à encaisser
   [].concat(DEMO_RESAS, ST.reservations).forEach(function(r){
-    if(r.statut==='en attente'||r.statut==='en_attente'){
+    if((r.statut==='en attente'||r.statut==='en_attente'||r.statut==='attente')||r.statut==='en_attente'){
       paies.push({
         nom: r.nom||r.nom_famille||'Famille',
         initiale: (r.nom||r.nom_famille||'?').charAt(0).toUpperCase(),
@@ -5100,8 +5124,8 @@ function renderDashboard(){
   var kids=allKids(),fams=[].concat(DEMO_FAMS,ST.members);
   var allResas=[].concat(DEMO_RESAS,ST.reservations);
   var enc=DEMO_PAYMENTS.reduce(function(s,p){return s+(p.statut==='paye'||p.statut==='paye'?p.montant:0);},0);
-  var attResas=allResas.filter(function(r){return r.statut==='en attente';});
-  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé';}).length;
+  var attResas=allResas.filter(function(r){return (r.statut==='en attente'||r.statut==='en_attente'||r.statut==='attente');});
+  var val=allResas.filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';}).length;
   var today=new Date();
   var jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -5196,7 +5220,7 @@ function renderFactureTab(){
   var el=document.getElementById('fac-content');if(!el)return;
   var fams=[].concat(DEMO_FAMS,ST.members);
   var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
-    return r.statut==='valide'||r.statut==='validé';
+    return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
   });
   var q=(document.getElementById('fac-search')||{value:''}).value.toLowerCase();
   var famsFilt=q?fams.filter(function(m){return(m.nom+' '+m.prenom+' '+(m.email||'')).toLowerCase().includes(q);}):fams;
@@ -5255,7 +5279,7 @@ function toutDecocherFac(){
 }
 function genererFacturePDF(mi){
   var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
   var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
   var selectedKids=[];
   document.querySelectorAll('[id^="fac-kid-'+mi+'-"]').forEach(function(el){
@@ -5280,7 +5304,7 @@ function genererFacturePDF(mi){
 }
 function envoyerFactureEmail(mi){
   var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m||!m.email)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
   var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
   var total=famResas.reduce(function(s,r){return s+(r.paid||120);},0)||120;
   var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
@@ -5311,7 +5335,7 @@ function toutDecocherFac(){
 
 function genererFacturePDF(mi){
   var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
   var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
   // Kids sélectionnés (ceux avec dataset.checked='1')
   var selectedKids=[];
@@ -5400,7 +5424,7 @@ function genererFacturePDF(mi){
 
 function envoyerFactureEmail(mi){
   var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m||!m.email)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé';});
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
   var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
   var total=famResas.reduce(function(s,r){return s+(r.paid||120);},0)||120;
   var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
@@ -6204,6 +6228,8 @@ window.emailConfirmationInscription=emailConfirmationInscription;
 window.emailConfirmationReservation=emailConfirmationReservation;
 window.emailPaiementValide=emailPaiementValide;
 window.emailNotifAdmin=emailNotifAdmin;
+
+
 
 
 
