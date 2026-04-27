@@ -2304,6 +2304,11 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2332,8 +2337,18 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
+
 </script>
 <script>
+
+
+
+
+
 
 
 
@@ -4493,7 +4508,7 @@ function renderAdminResas(){
       +'</div></div>';
   }).join('');
   el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">'+cards+'</div>'
-    +'<button onclick="nouvelleResaManuelle()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-top:12px;">+ Nouvelle reservation</button>';
+    ;
 }
 function modResa(i){
   var r=_adminResas[i]; if(!r) return;
@@ -4597,10 +4612,16 @@ var paiPeriod='semaine';
 function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
 function renderPaiements(){
   var el=document.getElementById('paiements-content');if(!el)return;
-  var allR2=[].concat(DEMO_RESAS,ST.reservations);
-  var paies=allR2.map(function(r){
+  // Source unique : ST.reservations seulement (pas de DEMO_RESAS qui duplique)
+  var allR2=ST.reservations.length?ST.reservations:[].concat(DEMO_RESAS);
+  // Dédoublonner par ID
+  var seen={}; 
+  var paies=allR2.filter(function(r){
+    var key=String(r.id||r.nom||'');
+    if(seen[key]) return false; seen[key]=true; return true;
+  }).map(function(r){
     var isV=r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
-    var enf=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0]||'';}).filter(Boolean).join(', ')||r.nom||'';
+    var enf=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0]||'';}).filter(Boolean).join(', ')||'';
     return {nom:r.nom||r.nom_famille||'',enfants:enf,initiale:(r.nom||'?').charAt(0).toUpperCase(),
       color:isV?'#10B981':'#F97316',forme:r.mode_paiement||'—',montant:r.montant||r.paid||0,
       statut:isV?'paye':'attente',date:r.date||'',resaId:r.id,semaine:r.semaine_label||''};
@@ -4739,10 +4760,10 @@ function renderFrequentation(){
     (r.children||[]).forEach(function(k){kidsValides.push(k);});
   });
   // Si pas d'enfants dans les réservations, utiliser kids filtré
-  var kidsToShow=kidsValides; // 0 si pas de résa validée cette semaine
+  var kidsShow=kidsValides; // 0 si pas de résa validée cette semaine
 
   function groupeRow(g){
-    var cnt=kidsToShow.filter(function(k){
+    var cnt=kidsShow.filter(function(k){
       var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
       return age>=g.min&&age<=g.max;
     }).length;
@@ -4763,8 +4784,8 @@ function renderFrequentation(){
 
   var matinRows=GROUPES_MATIN.map(groupeRow).join('');
   var apremRows=GROUPES_APREM.map(groupeRow).join('');
-  var totEnfM=GROUPES_MATIN.reduce(function(s,g){return s+kidsToShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
-  var totEnfA=GROUPES_APREM.reduce(function(s,g){return s+kidsToShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var totEnfM=GROUPES_MATIN.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var totEnfA=GROUPES_APREM.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
 
   el.innerHTML=
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
@@ -4824,7 +4845,7 @@ function setComptaTab(t){
 function renderComptabilite(){
   var el=document.getElementById('comptabilite-content');if(!el)return;
   var saisons=[{key:'ete',label:'Ete 2026',emoji:'☀️',color:'#F97316'},{key:'automne',label:'Automne 2026',emoji:'🍂',color:'#F59E0B'},{key:'printemps',label:'Printemps 2027',emoji:'🌸',color:'#10B981'}];
-  el.innerHTML=saisons.map(function(s){var enc=DEMO_PAYMENTS.filter(function(p){return p.statut==='paye'||p.statut==='paye';}).reduce(function(a,p){return a+p.montant;},0);var att=DEMO_PAYMENTS.filter(function(p){return p.statut!=='paye'&&p.statut!=='payé';}).reduce(function(a,p){return a+p.montant;},0);return '<div class="wcard" style="margin-bottom:12px;border-left:4px solid '+s.color+';"><div class="wcard-title"><span>'+s.emoji+'</span> '+s.label+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="background:#D1FAE5;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#065F46;text-transform:uppercase;">Encaisse</div><div style="font-size:19px;font-weight:800;color:#065F46;">'+enc+'€</div></div><div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:19px;font-weight:800;color:#92400E;">'+(enc+att)+'€</div></div></div></div>';}).join('');
+  el.innerHTML=saisons.map(function(s){var enc=ST.reservations.filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';}).reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0);var att=ST.reservations.filter(function(r){var s=r.statut||'';return s==='en attente'||s==='en_attente';}).reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0);return '<div class="wcard" style="margin-bottom:12px;border-left:4px solid '+s.color+';"><div class="wcard-title"><span>'+s.emoji+'</span> '+s.label+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="background:#D1FAE5;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#065F46;text-transform:uppercase;">Encaisse</div><div style="font-size:19px;font-weight:800;color:#065F46;">'+enc+'€</div></div><div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:19px;font-weight:800;color:#92400E;">'+(enc+att)+'€</div></div></div></div>';}).join('');
 }
 function renderSuiviQuotidien(){
   var el=document.getElementById('suivi-quotidien-content');if(!el)return;
@@ -5504,7 +5525,7 @@ function renderFactureTab(){
     +'<div style="font-size:11px;color:#9CA3AF;">'+famsFilt.length+' membre'+(famsFilt.length>1?'s':'')+' · '+resasVal.length+' réservation'+(resasVal.length>1?'s':'')+' validée'+(resasVal.length>1?'s':'')+' en base</div></div>'
     +'<button onclick="toutDecocherFac()" style="font-size:11px;color:#9CA3AF;background:none;border:none;cursor:pointer;">✕ Tout dé-cocher</button></div>'
     +'<input id="fac-search" placeholder="🔍 Rechercher un membre…" oninput="renderFactureTab()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:12px;">'
-    +(cardsHTML||'<div style="text-align:center;color:#9CA3AF;padding:30px;font-size:13px;">Aucune réservation validée</div>')
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+(cardsHTML||'<div style="text-align:center;color:#9CA3AF;padding:30px;font-size:13px;grid-column:1/-1;">Aucune réservation validée</div>')+'</div>'
     +'<div id="facture-preview"></div>';
 }
 
@@ -6528,52 +6549,85 @@ function renderAdminRecherche(){
   var el=document.getElementById('recherche-content');if(!el)return;
   var inp=document.getElementById('admin-search-input');
   var q=inp?(inp.value||'').toLowerCase().trim():'';
+
   if(!q){
-    el.innerHTML='<div style="text-align:center;padding:48px 20px;">'
-      +'<div style="font-size:72px;margin-bottom:16px;">🔍</div>'
-      +'<div style="font-size:20px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;margin-bottom:8px;">Recherche</div>'
-      +'<div style="font-size:14px;color:#9CA3AF;margin-bottom:24px;">Membres · Enfants · Réservations</div>'
-      +'<input id="admin-search-input" oninput="renderAdminRecherche()" placeholder="🔍  Tapez un nom, prénom..." '
-      +'style="width:100%;max-width:360px;padding:14px 18px;border:2px solid #E5E7EB;border-radius:14px;font-family:inherit;font-size:15px;box-sizing:border-box;outline:none;" '
-      +'onfocus="this.style.borderColor=\'#0099E6\'" onblur="this.style.borderColor=\'#E5E7EB\'">'
-      +'</div>';
+    el.innerHTML='<div style="text-align:center;padding:40px 16px;">'
+      +'<div style="font-size:80px;margin-bottom:12px;animation:none;">🔍</div>'
+      +'<div style="font-size:22px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;margin-bottom:6px;">Recherche</div>'
+      +'<div style="font-size:13px;color:#9CA3AF;margin-bottom:24px;">Membres · Enfants · Réservations</div>'
+      +'<input id="admin-search-input" oninput="renderAdminRecherche()" placeholder="Tapez un nom, prénom..." autofocus '
+      +'style="width:100%;max-width:360px;padding:14px 18px;border:2.5px solid #E5E7EB;border-radius:16px;font-family:inherit;font-size:15px;box-sizing:border-box;outline:none;transition:all .2s;" '
+      +'onfocus="this.style.borderColor=\'#0099E6\';this.style.boxShadow=\'0 0 0 4px rgba(0,153,230,.15)\'" '
+      +'onblur="this.style.borderColor=\'#E5E7EB\';this.style.boxShadow=\'none\'">'
+      +'<div style="display:flex;justify-content:center;gap:8px;margin-top:20px;flex-wrap:wrap;">'
+      +'<span style="background:#EFF6FF;color:#0077C8;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;">👤 Membres</span>'
+      +'<span style="background:#ECFDF5;color:#059669;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;">👶 Enfants</span>'
+      +'<span style="background:#FFF7ED;color:#EA580C;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;">📅 Réservations</span>'
+      +'</div></div>';
     return;
   }
+
   var results=[];
   [].concat(DEMO_FAMS,ST.members).forEach(function(m){
-    if((m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')).toLowerCase().indexOf(q)>=0)
-      results.push({type:'membre',icon:'👤',color:'#0077C8',label:'Membre',
-        title:m.prenom+' '+NOM(m.nom||''),sub:m.email||m.tel||'',data:m});
+    if((m.prenom+' '+m.nom+' '+(m.email||'')+' '+(m.tel||'')).toLowerCase().indexOf(q)>=0){
+      var kids=(m.children||[]);
+      results.push({type:'membre',icon:'👤',bg:'#EFF6FF',color:'#0077C8',label:'Membre',
+        title:m.prenom+' '+NOM(m.nom||''),
+        sub:(m.email||m.tel||'—')+(kids.length?' · '+kids.length+' enfant'+(kids.length>1?'s':''):''),
+        action:''});
+    }
   });
   allKids().forEach(function(k){
     if(((k.prenom||k.name||'')+' '+(k.nom||'')+' '+(k.parent||'')).toLowerCase().indexOf(q)>=0)
-      results.push({type:'enfant',icon:'👶',color:'#10B981',label:'Enfant',
-        title:(k.prenom||k.name||'')+' '+NOM(k.nom||''),sub:'Parent: '+(k.parent||'')+(k.age?' · '+k.age+' ans':''),data:k});
+      results.push({type:'enfant',icon:'👶',bg:'#ECFDF5',color:'#059669',label:'Enfant',
+        title:(k.prenom||k.name||'')+' '+NOM(k.nom||''),
+        sub:'Parent: '+(k.parent||'')+(k.age?' · '+k.age+' ans':''),action:''});
   });
   [].concat(DEMO_RESAS,ST.reservations).forEach(function(r){
-    if(((r.nom||'')+' '+(r.email||'')+' '+(r.semaine_label||'')).toLowerCase().indexOf(q)>=0){
+    if(((r.nom||'')+' '+(r.email||'')+' '+(r.semaine_label||'')+' '+(r.nom_famille||'')).toLowerCase().indexOf(q)>=0){
       var isV=r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
-      results.push({type:'resa',icon:'📅',color:isV?'#10B981':'#F97316',label:isV?'Validée':'En attente',
-        title:r.nom||r.nom_famille||'',sub:(r.semaine_label||'')+(r.montant?' · '+r.montant+' €':''),data:r});
+      var enf=(r.children||[]).map(function(k){return k.prenom||'';}).filter(Boolean).join(', ');
+      results.push({type:'resa',icon:isV?'✅':'⏳',bg:isV?'#ECFDF5':'#FFF7ED',color:isV?'#059669':'#EA580C',
+        label:isV?'Validée':'En attente',
+        title:r.nom||r.nom_famille||'',
+        sub:(enf?'👶 '+enf+' · ':'')+(r.semaine_label||'')+(r.montant?' · '+r.montant+' €':''),
+        resaId:r.id});
     }
   });
+
+  var catCount={membre:0,enfant:0,resa:0};
+  results.forEach(function(r){catCount[r.type]++;});
+
   el.innerHTML='<div style="margin-bottom:16px;">'
     +'<input id="admin-search-input" oninput="renderAdminRecherche()" value="'+q.replace(/"/g,'&quot;')+'" '
-    +'placeholder="🔍 Tapez un nom, prénom..." '
-    +'style="width:100%;padding:12px 16px;border:2px solid #0099E6;border-radius:12px;font-family:inherit;font-size:14px;box-sizing:border-box;outline:none;">'
-    +'<div style="font-size:12px;color:#9CA3AF;margin-top:8px;font-weight:600;">'+results.length+' résultat'+(results.length>1?'s':'')+' pour &laquo; '+q+' &raquo;</div></div>'
+    +'placeholder="Tapez un nom, prénom..." '
+    +'style="width:100%;padding:13px 18px;border:2.5px solid #0099E6;border-radius:14px;font-family:inherit;font-size:15px;box-sizing:border-box;outline:none;box-shadow:0 0 0 4px rgba(0,153,230,.1);">'
+    +'<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">'
+    +(catCount.membre?'<span style="background:#EFF6FF;color:#0077C8;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">👤 '+catCount.membre+' membre'+(catCount.membre>1?'s':'')+'</span>':'')
+    +(catCount.enfant?'<span style="background:#ECFDF5;color:#059669;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">👶 '+catCount.enfant+' enfant'+(catCount.enfant>1?'s':'')+'</span>':'')
+    +(catCount.resa?'<span style="background:#FFF7ED;color:#EA580C;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">📅 '+catCount.resa+' résa'+(catCount.resa>1?'s':'')+'</span>':'')
+    +'</div></div>'
     +(results.length?results.map(function(r){
-      return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
-        +'<div style="width:42px;height:42px;border-radius:12px;background:'+r.color+'1A;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">'+r.icon+'</div>'
+      return '<div style="background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:8px;display:flex;align-items:center;gap:12px;border-left:4px solid '+r.color+';">'
+        +'<div style="width:44px;height:44px;border-radius:12px;background:'+r.bg+';display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">'+r.icon+'</div>'
         +'<div style="flex:1;min-width:0;">'
-        +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+r.title+'</div>'
-        +'<div style="font-size:11px;color:#9CA3AF;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+r.sub+'</div>'
+        +'<div style="font-size:14px;font-weight:800;color:#0A0F1E;margin-bottom:2px;">'+r.title+'</div>'
+        +'<div style="font-size:11px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+r.sub+'</div>'
         +'</div>'
-        +'<span style="background:'+r.color+'1A;color:'+r.color+';font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;">'+r.label+'</span>'
+        +'<span style="background:'+r.bg+';color:'+r.color+';font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;white-space:nowrap;">'+r.label+'</span>'
         +'</div>';
-    }).join(''):'<div style="text-align:center;padding:40px;color:#9CA3AF;">Aucun résultat pour &laquo; '+q+' &raquo; 🤷</div>');
+    }).join(''):
+    '<div style="text-align:center;padding:40px;"><div style="font-size:48px;margin-bottom:12px;">🤷</div><div style="font-size:15px;font-weight:700;color:#9CA3AF;">Aucun résultat pour « '+q+' »</div></div>');
 }
 window.renderAdminRecherche=renderAdminRecherche;
+window.renderAdminRecherche=renderAdminRecherche;
+
+
+
+
+window.relanceResa2=relanceResa2;
+
+
 
 
 </script>
