@@ -2317,6 +2317,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2358,8 +2359,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4830,11 +4833,14 @@ function renderFrequentation(){
   ];
   var data=DEMO_FREQ.jours.length?DEMO_FREQ.jours:defaultJours;
   var navHTML='';
+  // wk défini globalement pour tous les modes
+  var _sems=SAISONS.ete.semaines;
+  var _wi=Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0));
+  var wk=_sems[_wi]||{label:'Semaine 1',debut:'',fin:''};
 
   if(freqPeriod==='semaine'){
-    var sems=SAISONS.ete.semaines;
-    var wi=Math.max(0,Math.min(sems.length-1,freqWeekOffset||0));
-    var wk=sems[wi]||{label:'S1',debut:'',fin:''};
+    var sems=_sems;
+    var wi=_wi;
     navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
       +'<button onclick="freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
       +'<div style="font-size:12px;font-weight:700;color:#374151;">'+wk.label+' · '+wk.debut+' → '+wk.fin+'</div>'
@@ -6754,6 +6760,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
