@@ -2311,6 +2311,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2346,8 +2347,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4505,12 +4508,10 @@ function renderAdminResas(){
       +'<div style="font-size:10px;font-weight:700;color:'+bc+';">'+(val?'✅ Validée':'⏳ En attente')+'</div>'
       +'<div style="font-size:13px;font-weight:800;color:#0099E6;">'+(r.montant||r.paid||0)+' €</div>'
       +'</div></div>'
-      +'<div style="font-size:12px;color:#374151;font-weight:700;margin-bottom:2px;">'
-      +((r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')||r.nom||'')
-      +'</div>'
+
       +'<div style="font-size:10px;color:#6B7280;margin-bottom:3px;">'+(r.slot?r.slot.time:'')+'</div>'
       +'<div style="font-size:10px;color:#0099E6;margin-bottom:3px;">'+(r.semaine_label||r.slot&&r.slot.date||'')+'</div>'
-      +(ch?'<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:3px;">'+ch+'</div>':'')
+      
       +(r.saisonLabel?'<div style="font-size:10px;color:#9CA3AF;margin-bottom:6px;">'+r.saisonLabel+'</div>':'')
       +(!val?'<button onclick="ouvrirValidationResa(\''+r.id+'\')" style="width:100%;padding:7px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin-bottom:6px;">Valider</button>':'')
       +'<div style="display:flex;gap:5px;">'
@@ -6642,6 +6643,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
