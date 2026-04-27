@@ -1875,11 +1875,11 @@ textarea{resize:vertical;}
 
       <!-- FREQUENTATION -->
       <div id="at-frequentation" style="display:none;">
-        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-          <button class="btn btn-sm active"    id="fp-jour"    onclick="setFreqPeriod('jour')">Jour</button>
-          <button class="btn btn-sm btn-ghost" id="fp-semaine" onclick="setFreqPeriod('semaine')">Semaine</button>
-          <button class="btn btn-sm btn-ghost" id="fp-mois"    onclick="setFreqPeriod('mois')">Mois</button>
-          <button class="btn btn-sm btn-ghost" id="fp-saison"  onclick="setFreqPeriod('saison')">Saison</button>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center;padding:4px;">
+          <button id="fp-jour"    onclick="setFreqPeriod('jour')"    style="flex:1;padding:9px 4px;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:800;font-family:inherit;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;box-shadow:0 2px 6px rgba(0,119,200,.3);">☀️ Jour</button>
+          <button id="fp-semaine" onclick="setFreqPeriod('semaine')" style="flex:1;padding:9px 4px;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:800;font-family:inherit;background:#F3F4F6;color:#374151;">📅 Semaine</button>
+          <button id="fp-mois"    onclick="setFreqPeriod('mois')"    style="flex:1;padding:9px 4px;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:800;font-family:inherit;background:#F3F4F6;color:#374151;">📆 Mois</button>
+          <button id="fp-saison"  onclick="setFreqPeriod('saison')"  style="flex:1;padding:9px 4px;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:800;font-family:inherit;background:#F3F4F6;color:#374151;">🌊 Saison</button>
         </div>
         <div id="frequentation-content"></div>
       </div>
@@ -2322,6 +2322,14 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2368,8 +2376,24 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
+
+
+
+
 </script>
 <script>
+
+
+
+
+
+
+
+
 
 
 
@@ -3495,7 +3519,14 @@ function setPaiPeriod(p){
 var freqPeriod='semaine';
 function setFreqPeriod(p){
   freqPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('fp-'+x);if(btn)btn.classList.toggle('active',x===p);});
+  var colors={jour:'linear-gradient(135deg,#0077C8,#0099E6)',semaine:'linear-gradient(135deg,#10B981,#059669)',mois:'linear-gradient(135deg,#F97316,#EA580C)',saison:'linear-gradient(135deg,#8B5CF6,#7C3AED)'};
+  var emojis={jour:'☀️ Jour',semaine:'📅 Semaine',mois:'📆 Mois',saison:'🌊 Saison'};
+  ['jour','semaine','mois','saison'].forEach(function(x){
+    var btn=document.getElementById('fp-'+x);
+    if(!btn) return;
+    if(x===p){btn.style.background=colors[p];btn.style.color='#fff';btn.style.boxShadow='0 2px 8px rgba(0,0,0,.2)';}
+    else{btn.style.background='#F3F4F6';btn.style.color='#374151';btn.style.boxShadow='none';}
+  });
   renderFrequentation();
 }
 
@@ -4812,11 +4843,7 @@ async function remettreEnAttente(resaId){
 window.setPFilter=setPFilter;
 window.remettreEnAttente=remettreEnAttente;
 
-function setPaiFilter(f){['toutes','attente','payees'].forEach(function(x){var b=document.getElementById('pf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});}
-
-// ═══ FRÉQUENTATION ═══
-var freqPeriod='semaine',freqWeekOffset=0,freqMonthOffset=0,freqSaisonIdx=0;
-function setFreqPeriod(p){freqPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('fp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderFrequentation();}
+function setPaiFilter(f){window._pFilter=f;renderPaiements();}
 function renderFrequentation(){
   var el=document.getElementById('frequentation-content');if(!el)return;
   var today=new Date();
@@ -4824,6 +4851,11 @@ function renderFrequentation(){
 
   // ── Vraies données d'abord ──
   var kids=allKids();
+  // wk défini globalement pour tous les modes
+  var _saisons=typeof SAISONS!=='undefined'?SAISONS:{ete:{semaines:[{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}]}};
+  var _sems=(_saisons.ete&&_saisons.ete.semaines)||[{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}];
+  var _wi=Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0));
+  var wk=_sems[_wi]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
   // Compter depuis les réservations validées/en attente
   var allResasFreq=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
     var s=r.statut||'';
@@ -4853,18 +4885,14 @@ function renderFrequentation(){
     });
     var matin=resasSemaine.filter(function(r){return r.periode==='matin'||(r.slot&&r.slot.time==='Matin');}).length;
     var aprem=resasSemaine.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
-    return {jour:j,matin:matin,aprem:aprem};
+    return {label:j,matin:matin,aprem:aprem};
   });
   var data=dataReelle;
   var navHTML='';
-  // wk défini globalement pour tous les modes
-  var _sems=(SAISONS&&SAISONS.ete&&SAISONS.ete.semaines)||[];
-  var _wi=_sems.length?Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0)):0;
-  var wk=_sems[_wi]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
+
 
   if(freqPeriod==='semaine'){
-    var sems=_sems;
-    var wi=_wi;
+    var sems=_sems; var wi=_wi;
     navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
       +'<button onclick="freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
       +'<div style="font-size:12px;font-weight:700;color:#374151;">'+wk.label+' · '+wk.debut+' → '+wk.fin+'</div>'
@@ -4968,6 +4996,14 @@ function renderFrequentation(){
     +'<div class="wcard">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
     +'<div class="wcard-title" style="margin-bottom:0;"><span>🌅</span> Matin</div>'
+    +'<span style="font-size:11px;font-weight:700;color:#F97316;">'+totEnfM+' enfants</span>'
+    +'</div>'+matinRows+'</div>'
+    +'<div class="wcard">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div class="wcard-title" style="margin-bottom:0;"><span>🌞</span> Après-midi</div>'
+    +'<span style="font-size:11px;font-weight:700;color:#0099E6;">'+totEnfA+' enfants</span>'
+    +'</div>'+apremRows+'</div>'
+    +'</div>'
     +'<span style="font-size:11px;font-weight:700;color:#F97316;">'+totEnfM+' enfants</span>'
     +'</div>'+matinRows+'</div>'
     +'<div class="wcard">'
@@ -6780,6 +6816,14 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
+
+
+
+
+
+
+
 
 
 
