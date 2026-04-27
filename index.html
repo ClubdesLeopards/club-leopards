@@ -2309,7 +2309,6 @@ textarea{resize:vertical;}
 
 
 
-
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2343,10 +2342,8 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
-
 </script>
 <script>
-
 
 
 
@@ -5302,54 +5299,22 @@ async function confirmerEnvoiReservation(){
   };
   ST.reservations.push(resaObj);
 
-  // 1 insert PAR ENFANT et par semaine
-  var enfants=m?(m.children||[]):[];
-  if(!enfants.length) enfants=[{id:null,prenom:nomFam,nom:'',age:0}]; // si aucun enfant, 1 résa générique
-
-  enfants.forEach(function(enf){
-    allSel.forEach(function(item,idx){
-      var wk=(s.semaines||[])[item.wi]||{};
-      var prixEnf=calculerPrixSemaine(1,idx); // prix pour 1 enfant par semaine
-      var resaLocal={
-        id:'R'+Date.now()+Math.random(),
-        membre_id:m?m.id:null,
-        nom:nomFam,
-        nom_famille:nomFam,
-        email:m?m.email:'',
-        saison:currentSaison,
-        saisonLabel:s.label||currentSaison,
-        semaine_label:wk.label||'',
-        semaine_debut:wk.debut||'',
-        semaine_fin:wk.fin||'',
-        periode:item.periode,
-        slot:{time:item.periode==='matin'?'Matin':'Après-midi',date:wk.debut+' → '+wk.fin},
-        montant:prixEnf,
-        paid:0,
-        statut:'en attente',
-        children:[enf],
-        date:new Date().toLocaleDateString('fr-FR')
-      };
-      ST.reservations.push(resaLocal);
-
-      sb.from('reservations').insert({
-        membre_id:m?m.id:null,
-        nom_famille:nomFam,
-        email:m?m.email:'',
-        saison:currentSaison,
-        semaine_label:wk.label||'',
-        semaine_debut:wk.debut||'',
-        semaine_fin:wk.fin||'',
-        periode:item.periode,
-        montant:prixEnf,
-        statut:'en_attente',
-        enfant_id:enf.id||null
-      }).then(function(res){
-        if(res.error) console.error('Resa insert error:', res.error.message);
-        else console.log('Résa insérée pour', enf.prenom, '✅');
-      });
-    });
+  // 1 seul insert Supabase
+  sb.from('reservations').insert({
+    membre_id: m?m.id:null,
+    nom_famille: nomFam,
+    email: m?m.email:'',
+    saison: currentSaison,
+    semaine_label: semLabels,
+    semaine_debut: premierWk.debut||'',
+    semaine_fin: premierWk.fin||'',
+    periode: allSel[0]?allSel[0].periode:'matin',
+    montant: totalPrix,
+    statut: 'en_attente'
+  }).then(function(res){
+    if(res.error) console.error('Resa insert:', res.error.message);
+    else{ console.log('Resa insérée ✅'); chargerDonnees(); }
   });
-
 
 
   // Page de confirmation — sans ouvrir de mail
@@ -6661,7 +6626,6 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
-
 
 
 
