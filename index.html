@@ -2318,6 +2318,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2360,8 +2363,14 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
 </script>
 <script>
+
+
+
 
 
 
@@ -4831,7 +4840,19 @@ function renderFrequentation(){
   var defaultMois=[
     {label:'Juil',matin:baseM,aprem:baseA},{label:'Août',matin:baseM,aprem:baseA}
   ];
-  var data=DEMO_FREQ.jours.length?DEMO_FREQ.jours:defaultJours;
+  // Construire data depuis les vraies réservations
+  var joursSem=['Lun','Mar','Mer','Jeu','Ven'];
+  var dataReelle=joursSem.map(function(j,idx){
+    // Compter les enfants par jour (basé sur les réservations de la semaine)
+    var resasSemaine=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
+      var s=r.statut||''; return (s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente')
+        &&(!r.semaine_label||(r.semaine_label||'').indexOf(wk.label||'')>=0);
+    });
+    var matin=resasSemaine.filter(function(r){return r.periode==='matin'||(r.slot&&r.slot.time==='Matin');}).length;
+    var aprem=resasSemaine.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
+    return {jour:j,matin:matin,aprem:aprem};
+  });
+  var data=dataReelle;
   var navHTML='';
   // wk défini globalement pour tous les modes
   var _sems=SAISONS.ete.semaines;
@@ -4921,11 +4942,7 @@ function renderFrequentation(){
     +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:2px;">🌞 APRÈS-MIDI</div>'
     +'<div style="font-size:28px;font-weight:800;color:#1565C0;">'+totA+'</div></div>'
     +'</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:12px;">'
-    +'<button onclick="setFreqPeriod(\'semaine\')" class="btn btn-sm '+(freqPeriod==='semaine'?'active':'btn-ghost')+'" style="flex:1;">Semaine</button>'
-    +'<button onclick="setFreqPeriod(\'mois\')" class="btn btn-sm '+(freqPeriod==='mois'?'active':'btn-ghost')+'" style="flex:1;">Mois</button>'
-    +'<button onclick="setFreqPeriod(\'saison\')" class="btn btn-sm '+(freqPeriod==='saison'?'active':'btn-ghost')+'" style="flex:1;">Saison</button>'
-    +'</div>'
+    
     +'<div class="wcard" style="margin-bottom:12px;">'
     +'<div class="wcard-title"><span>📊</span> Évolution</div>'
     +navHTML
@@ -6760,6 +6777,9 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
+
+
 
 
 
