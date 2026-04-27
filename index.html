@@ -2312,6 +2312,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2348,8 +2349,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4625,78 +4628,131 @@ var paiPeriod='semaine';
 function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
 function renderPaiements(){
   var el=document.getElementById('paiements-content');if(!el)return;
-  // Source unique : ST.reservations seulement (pas de DEMO_RESAS qui duplique)
   var allR2=ST.reservations.length?ST.reservations:[].concat(DEMO_RESAS);
-  // Dédoublonner par ID
-  var seen={}; 
+  var seen={};
   var paies=allR2.filter(function(r){
     var key=String(r.id||r.nom||'');
     if(seen[key]) return false; seen[key]=true; return true;
   }).map(function(r){
     var isV=r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
     var enf=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0]||'';}).filter(Boolean).join(', ')||'';
-    return {nom:r.nom||r.nom_famille||'',enfants:enf,initiale:(r.nom||'?').charAt(0).toUpperCase(),
-      color:isV?'#10B981':'#F97316',forme:r.mode_paiement||'—',montant:r.montant||r.paid||0,
-      statut:isV?'paye':'attente',date:r.date||'',resaId:r.id,semaine:r.semaine_label||''};
+    return {nom:r.nom||r.nom_famille||'',enfants:enf,
+      forme:r.mode_paiement||'—',montant:parseFloat(r.montant||0),
+      statut:isV?'paye':'attente',resaId:r.id,
+      semaine:r.semaine_label||''};
   });
-  // Ajouter les réservations en attente comme paiements à encaisser
-  [].concat(DEMO_RESAS, ST.reservations).forEach(function(r){
-    if((r.statut==='en attente'||r.statut==='en_attente'||r.statut==='attente')||r.statut==='en_attente'){
-      paies.push({
-        nom: r.nom||r.nom_famille||'Famille',
-        initiale: (r.nom||r.nom_famille||'?').charAt(0).toUpperCase(),
-        color: '#F97316',
-        forme: r.mode_paiement||'—',
-        montant: r.montant||0,
-        statut: 'en attente',
-        date: r.date||'',
-        resaId: r.id
-      });
-    }
+
+  // Filtre
+  var pFilter=window._pFilter||'toutes';
+  var paiesFilt=pFilter==='payees'?paies.filter(function(p){return p.statut==='paye';}):
+                pFilter==='attente'?paies.filter(function(p){return p.statut!=='paye';}):paies;
+
+  var payees=paies.filter(function(p){return p.statut==='paye';});
+  var enAttente=paies.filter(function(p){return p.statut!=='paye';});
+  var totalPaye=payees.reduce(function(s,p){return s+p.montant;},0);
+  var totalAtt=enAttente.reduce(function(s,p){return s+p.montant;},0);
+  var total=paies.length;
+
+  // Répartition par mode
+  var modes={cb:0,virement:0,cheque:0,cheques_vacances:0,especes:0,avoir:0,inconnu:0};
+  var modeLabels={cb:'💳 CB',virement:'🏦 Virement',cheque:'📝 Chèque',cheques_vacances:'🎫 Chq Vac',especes:'💶 Espèces',avoir:'🎟️ Avoir',inconnu:'—'};
+  var modeColors={cb:'#0077C8',virement:'#10B981',cheque:'#F59E0B',cheques_vacances:'#8B5CF6',especes:'#F97316',avoir:'#EC4899',inconnu:'#9CA3AF'};
+  payees.forEach(function(p){
+    var m=p.forme||'inconnu';
+    m=m.replace('cheque_vac','cheques_vacances');
+    if(modes[m]!==undefined) modes[m]+=p.montant; else modes.inconnu+=p.montant;
   });
-  var payees=paies.filter(function(p){return p.statut==='paye'||p.statut==='paye';});
-  var attente=paies.filter(function(p){return p.statut!=='paye'&&p.statut!=='payé';});
-  var enc=payees.reduce(function(s,p){return s+p.montant;},0);
-  var att=attente.reduce(function(s,p){return s+p.montant;},0);
-  var total=enc+att;var pct=total>0?Math.round(enc/total*100):0;
-  var byMode={};payees.forEach(function(p){if(p.mode){byMode[p.mode]=(byMode[p.mode]||{cnt:0,amt:0});byMode[p.mode].cnt++;byMode[p.mode].amt+=p.montant;}});
-  var mC={'Virement':'#10B981','Carte bleue':'#3B82F6','Cheque':'#8B5CF6','Cheques vacances':'#F97316','Especes':'#E9B10D','Avoirs':'#EC4899','Offert':'#6B7280'};
-  var modes=Object.keys(byMode).sort(function(a,b){return byMode[b].amt-byMode[a].amt;});
-  var donut='',ang=-90,r=44,cx=60,cy=60;
-  modes.forEach(function(m){var sw2=enc>0?byMode[m].amt/enc*360:0;if(sw2<2)return;var a1=ang*Math.PI/180,a2=(ang+sw2)*Math.PI/180;var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);donut+='<path d="M'+x1.toFixed(1)+','+y1.toFixed(1)+' A'+r+','+r+' 0 '+(sw2>180?1:0)+',1 '+x2.toFixed(1)+','+y2.toFixed(1)+'" fill="none" stroke="'+(mC[m]||'#9CA3AF')+'" stroke-width="18"/>';ang+=sw2;});
-  var barParts=modes.map(function(m){var p2=enc>0?Math.round(byMode[m].amt/enc*100):0;return '<div style="flex:'+p2+';background:'+(mC[m]||'#9CA3AF')+';height:100%;min-width:'+(byMode[m].cnt?'4px':'0')+'"></div>';}).join('');
+  var totalModes=Object.values(modes).reduce(function(s,v){return s+v;},0);
+
+  // Barre répartition
+  var barSegments=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){
+    var pct=totalModes>0?Math.round(modes[k]/totalModes*100):0;
+    return '<div title="'+modeLabels[k]+': '+modes[k]+' €" style="flex:'+modes[k]+';background:'+modeColors[k]+';height:100%;min-width:'+(pct>0?'2px':'0')+';" ></div>';
+  }).join('');
+
+  var barLegend=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){
+    return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#374151;margin-right:12px;">'
+      +'<span style="width:10px;height:10px;border-radius:3px;background:'+modeColors[k]+';display:inline-block;"></span>'
+      +modeLabels[k]+' · '+modes[k]+' €</span>';
+  }).join('');
+
   el.innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">'
-    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #F97316;"><div style="font-size:20px;font-weight:800;color:#F97316;">'+attente.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;">En attente</div></div>'
-    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #10B981;"><div style="font-size:20px;font-weight:800;color:#10B981;">'+payees.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;">Confirmees</div></div>'
-    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #0099E6;"><div style="font-size:20px;font-weight:800;color:#0099E6;">'+paies.length+'</div><div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;">Total</div></div>'
+    // KPIs
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">'
+    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #F97316;">'
+    +'<div style="font-size:22px;font-weight:800;color:#F97316;">'+enAttente.length+'</div>'
+    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">En attente</div>'
+    +'<div style="font-size:11px;color:#F97316;font-weight:700;">'+totalAtt+' €</div></div>'
+    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #10B981;">'
+    +'<div style="font-size:22px;font-weight:800;color:#10B981;">'+payees.length+'</div>'
+    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Confirmées</div>'
+    +'<div style="font-size:11px;color:#10B981;font-weight:700;">'+totalPaye+' €</div></div>'
+    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #0099E6;">'
+    +'<div style="font-size:22px;font-weight:800;color:#0099E6;">'+total+'</div>'
+    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Total</div></div>'
     +'</div>'
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📊</span> Repartition des paiements</div>'
-    +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">'
-    +'<svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#F3F4F6" stroke-width="18"/>'+donut
-    +'<text x="60" y="55" text-anchor="middle" font-size="16" font-weight="800" fill="#0A0F1E">'+pct+'%</text>'
-    +'<text x="60" y="70" text-anchor="middle" font-size="10" fill="#9CA3AF">encaisse</text></svg>'
-    +'<div style="flex:1;display:flex;flex-direction:column;gap:6px;">'
-    +modes.map(function(m){var p2=enc>0?Math.round(byMode[m].amt/enc*100):0;return '<div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:50%;background:'+(mC[m]||'#9CA3AF')+';flex-shrink:0;"></div><div style="flex:1;font-size:11px;">'+m+'</div><div style="font-size:11px;font-weight:700;color:'+(mC[m]||'#9CA3AF')+';">'+byMode[m].amt+'€</div></div>';}).join('')+'</div></div>'
-    +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:6px;">'+barParts+'</div></div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:10px;"><button onclick="setPaiFilter(\'toutes\')" id="pf-toutes" class="btn btn-sm active" style="flex:1;">Toutes</button><button onclick="setPaiFilter(\'attente\')" id="pf-attente" class="btn btn-sm btn-ghost" style="flex:1;">En attente</button><button onclick="setPaiFilter(\'payees\')" id="pf-payees" class="btn btn-sm btn-ghost" style="flex:1;">Payees</button></div>'
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;">'
-    +paies.map(function(p){var isPaye=p.statut==='paye'||p.statut==='valide'||p.statut==='validé';var bc=isPaye?'#10B981':'#F97316';return '<div style="background:#fff;border-radius:11px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:3px solid '+bc+';">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
-      +'<div>'
-      +'<div style="font-size:12px;font-weight:800;">'+p.nom+'</div>'
-      +(p.enfants?'<div style="font-size:11px;color:#0099E6;font-weight:600;">👶 '+p.enfants+'</div>':'')
-      +(p.semaine?'<div style="font-size:10px;color:#9CA3AF;">'+p.semaine+'</div>':'')
-      +'</div>'
-      +'<div style="font-size:16px;font-weight:800;color:'+bc+';">'+p.montant+' €</div>'
-      +'</div>'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">'
-      +'<span style="background:'+(isPaye?'#D1FAE5':'#FEF3C7')+';color:'+(isPaye?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;">'+(isPaye?'✅ Payé':'⏳ En attente')+'</span>'
-      +((!isPaye&&p.resaId)?'<button onclick="ouvrirValidationResa(\''+p.resaId+'\')" style="padding:5px 12px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">Valider →</button>':'')
-      +'</div>'
-      +'</div>';}).join('')+'</div>';
+
+    // Répartition paiements
+    +'<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:14px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:12px;">💳 Répartition des paiements</div>'
+    +'<div style="height:16px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:10px;background:#F3F4F6;">'
+    +(totalModes>0?barSegments:'<div style="flex:1;background:#F3F4F6;height:100%;"></div>')
+    +'</div>'
+    +(totalModes>0?'<div>'+barLegend+'</div>':'<div style="font-size:12px;color:#9CA3AF;">Aucun paiement enregistré</div>')
+    +'</div>'
+
+    // Filtres
+    +'<div style="display:flex;gap:6px;margin-bottom:12px;">'
+    +'<button onclick="setPFilter(\'toutes\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='toutes'?'linear-gradient(135deg,#0077C8,#0099E6)':'#F3F4F6')+';color:'+(pFilter==='toutes'?'#fff':'#374151')+';">Toutes</button>'
+    +'<button onclick="setPFilter(\'attente\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='attente'?'#FEF3C7':'#F3F4F6')+';color:'+(pFilter==='attente'?'#92400E':'#374151')+';">⏳ Attente</button>'
+    +'<button onclick="setPFilter(\'payees\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='payees'?'#D1FAE5':'#F3F4F6')+';color:'+(pFilter==='payees'?'#065F46':'#374151')+';">✅ Payées</button>'
+    +'</div>'
+
+    // Liste
+    +'<div style="display:flex;flex-direction:column;gap:8px;">'
+    +paiesFilt.map(function(p){
+      var isP=p.statut==='paye';
+      var bc=isP?'#10B981':'#F97316';
+      return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid '+bc+';">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
+        +'<div>'
+        +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+p.nom+'</div>'
+        +(p.enfants?'<div style="font-size:11px;color:#0099E6;font-weight:600;margin-top:1px;">👶 '+p.enfants+'</div>':'')
+        +(p.semaine?'<div style="font-size:10px;color:#9CA3AF;margin-top:2px;">'+p.semaine+'</div>':'')
+        +'</div>'
+        +'<div style="font-size:18px;font-weight:800;color:'+bc+';">'+p.montant+' €</div>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+        +'<span style="background:'+(isP?'#D1FAE5':'#FEF3C7')+';color:'+(isP?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;">'+(isP?'✅ Payé':'⏳ En attente')+'</span>'
+        +'<div style="display:flex;gap:6px;">'
+        +(!isP&&p.resaId?'<button onclick="ouvrirValidationResa(\''+p.resaId+'\')" style="padding:5px 12px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">✅ Valider</button>':'')
+        +(isP&&p.resaId?'<button onclick="remettreEnAttente(\''+p.resaId+'\')" style="padding:5px 12px;background:#F3F4F6;color:#6B7280;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">↩️ Remettre en attente</button>':'')
+        +'</div>'
+        +'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>';
 }
+
+function setPFilter(f){window._pFilter=f;renderPaiements();}
+
+async function remettreEnAttente(resaId){
+  if(!confirm('Remettre cette réservation en attente ?')) return;
+  var r=ST.reservations.find(function(x){return String(x.id)===String(resaId);});
+  if(!r) return;
+  r.statut='en attente';
+  try{
+    if(r.id) await sb.from('reservations').update({statut:'en_attente',mode_paiement:null}).eq('id',r.id);
+    console.log('Remise en attente ✅');
+  }catch(e){console.warn(e);}
+  toast('Réservation remise en attente','ok');
+  renderPaiements();
+  renderAdminResas();
+}
+
+window.setPFilter=setPFilter;
+window.remettreEnAttente=remettreEnAttente;
+
 function setPaiFilter(f){['toutes','attente','payees'].forEach(function(x){var b=document.getElementById('pf-'+x);if(b){b.classList.toggle('active',x===f);b.classList.toggle('btn-ghost',x!==f);}});}
 
 // ═══ FRÉQUENTATION ═══
@@ -6643,6 +6699,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
