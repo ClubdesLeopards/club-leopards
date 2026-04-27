@@ -2310,6 +2310,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2344,8 +2345,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -2513,8 +2516,14 @@ async function chargerDonnees() {
           statut: r.statut === 'en_attente' ? 'en attente' : r.statut,
           mode_paiement: r.mode_paiement,
           notes_admin: r.notes_admin,
-          children: []
+          children: [],
+          _memberId: r.membre_id
         };
+      });
+      // Joindre les enfants depuis ST.members
+      ST.reservations.forEach(function(r){
+        var m=ST.members.find(function(mb){return String(mb.id)===String(r._memberId);});
+        if(m) r.children=m.children||[];
       });
       DEMO_RESAS = [];
     }
@@ -6633,6 +6642,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
