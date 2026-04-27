@@ -1160,7 +1160,7 @@ textarea{resize:vertical;}
       <div class="hero-sub">Plage · Soleil · Bonne humeur !</div>
     </div>
     <div class="content">
-      <div class="new-member-card">
+      <div class="new-member-card" id="nouveau-au-club-card">
         <div class="nmc-title">Nouveau au club ? 🎉</div>
         <div class="nmc-sub">Vos enfants accueillis par catégories d'âge, encadrés par des moniteurs diplômés !</div>
         <button class="btn-coral" onclick="navigate('inscription')">📋 S'inscrire maintenant</button>
@@ -2293,6 +2293,10 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2311,8 +2315,16 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
 </script>
 <script>
+
+
+
+
 
 
 
@@ -2600,6 +2612,8 @@ async function sauvegarderInscriptionSB(membreData, password) {
       else toast('Compte créé ! Vérifiez votre email pour confirmer.','ok');
     }
     ST.membreConnecte = membre;
+    var _ncc2=document.getElementById('nouveau-au-club-card');
+    if(_ncc2) _ncc2.style.display='none';
     chargerDonnees();
     return membre;
   } catch(err) {
@@ -3211,17 +3225,50 @@ function envoyerDemandeReservation() {
 // ═══ MES RÉSA ═══
 function renderMesResa() {
   var el=document.getElementById('mes-resa-content'); if(!el) return;
-  var dot=document.getElementById('resa-dot'); if(dot) dot.classList.toggle('show',ST.reservations.length>0);
-  if(!ST.reservations.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune reservation.<br>Reservez une semaine !</p></div>';
+  var m=ST.membreConnecte;
+  var dot=document.getElementById('resa-dot');
+
+  // Filtrer les réservations du membre connecté
+  var mesResas=[];
+  if(m){
+    // Depuis ST.reservations chargées depuis Supabase
+    mesResas=ST.reservations.filter(function(r){
+      return String(r.membre_id)===String(m.id)||r.nom===(m.prenom+' '+m.nom)||r.nom===(m.prenom+' '+(m.nom||'').toUpperCase());
+    });
+    // Si rien trouvé par membre_id, prendre toutes (session courante)
+    if(!mesResas.length && m.id===undefined){
+      mesResas=ST.reservations;
+    }
+  }
+
+  if(dot) dot.classList.toggle('show', mesResas.length>0);
+
+  if(!m){
+    el.innerHTML='<div class="empty"><div class="empty-icon">🔐</div><p>Connectez-vous pour voir vos réservations.</p></div>';
     return;
   }
-  el.innerHTML=ST.reservations.map(function(r){
-    return '<div class="resa-item"><div class="resa-dot">🏖️</div>'
-      +'<div class="resa-main"><div class="resa-title">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
-      +'<div class="resa-sub">'+(r.saisonLabel||r.nom||'')+'</div></div>'
-      +'<div style="text-align:right;"><div class="resa-amt">'+(r.paid||0)+'€</div>'
-      +'<div class="resa-ok">'+(r.statut==='validé'?'✅ Validé':'⏳ En attente')+'</div></div></div>';
+  if(!mesResas.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Aucune réservation.<br>Réservez une semaine !</p></div>';
+    return;
+  }
+
+  el.innerHTML=mesResas.map(function(r){
+    var isVal=r.statut==='validé'||r.statut==='valide'||r.statut==='paye';
+    var enfants=(r.children||[]).map(function(k){
+      return k.prenom||(k.name||'').split(' ')[0]||'';
+    }).filter(Boolean).join(', ');
+    var borderColor=isVal?'#10B981':'#F97316';
+    return '<div class="resa-item" style="border-left:3px solid '+borderColor+';padding-left:10px;">'
+      +'<div class="resa-dot">'+(isVal?'✅':'⏳')+'</div>'
+      +'<div class="resa-main">'
+      +'<div class="resa-title">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
+      +(enfants?'<div style="font-size:12px;color:#0099E6;font-weight:600;margin-top:2px;">👶 '+enfants+'</div>':'')
+      +'<div class="resa-sub">'+(r.saisonLabel||r.semaine_label||'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0;">'
+      +'<div class="resa-amt">'+(r.montant||r.paid||0)+' €</div>'
+      +'<div class="resa-ok" style="color:'+borderColor+';">'+(isVal?'✅ Confirmée':'⏳ En attente')+'</div>'
+      +'</div></div>';
   }).join('');
 }
 
@@ -3472,6 +3519,8 @@ function _navigateTo(name){
   document.documentElement.scrollTop=0;
   if(pg) pg.scrollTop=0;
   if(name==='reservation') renderReservation();
+  var _ncc=document.getElementById('nouveau-au-club-card');
+  if(_ncc) _ncc.style.display=ST.membreConnecte?'none':'';
   if(name==='mes-resa') renderMesResa();
   if(name==='admin') renderAdmin();
   if(name==='profil') renderProfil();
@@ -4574,8 +4623,24 @@ function renderFrequentation(){
   var maxAll=Math.max.apply(null,data.map(function(d){return Math.max(d.matin||0,d.aprem||0);}));
   if(!maxAll||maxAll<1)maxAll=1;
 
+  // Enfants des réservations validées pour cette semaine et période
+  var resasValSem=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
+    var s=r.statut||'';
+    var ok=s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
+    if(!ok) return false;
+    var rLabel=r.semaine_label||'';
+    var wkLabel=wk.label||'';
+    return !rLabel||rLabel===wkLabel;
+  });
+  var kidsValides=[];
+  resasValSem.forEach(function(r){
+    (r.children||[]).forEach(function(k){kidsValides.push(k);});
+  });
+  // Si pas d'enfants dans les réservations, utiliser kids filtré
+  var kidsToShow=kidsValides.length>0?kidsValides:kids;
+
   function groupeRow(g){
-    var cnt=kids.filter(function(k){
+    var cnt=kidsToShow.filter(function(k){
       var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
       return age>=g.min&&age<=g.max;
     }).length;
@@ -4596,8 +4661,8 @@ function renderFrequentation(){
 
   var matinRows=GROUPES_MATIN.map(groupeRow).join('');
   var apremRows=GROUPES_APREM.map(groupeRow).join('');
-  var totEnfM=GROUPES_MATIN.reduce(function(s,g){return s+kids.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
-  var totEnfA=GROUPES_APREM.reduce(function(s,g){return s+kids.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var totEnfM=GROUPES_MATIN.reduce(function(s,g){return s+kidsToShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var totEnfA=GROUPES_APREM.reduce(function(s,g){return s+kidsToShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
 
   el.innerHTML=
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
@@ -6083,6 +6148,7 @@ async function confirmerPaiementResa(){
   await chargerDonnees();
   renderAdminResas();
   renderPaiements();
+  renderFrequentation();
 }
 
 window.validerResa=validerResa;
@@ -6334,6 +6400,10 @@ window.emailNotifAdmin=emailNotifAdmin;
 
 window.nrSelectMembre=nrSelectMembre;
 window.nrPopulerMembres=nrPopulerMembres;
+
+
+
+
 
 
 
