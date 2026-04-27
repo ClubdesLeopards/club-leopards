@@ -2309,6 +2309,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2342,8 +2343,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5427,10 +5430,14 @@ function renderDashboard(){
     +'<span style="font-size:20px;">📊</span>'
     +'<span style="font-size:14px;font-weight:800;color:#006064;font-family:Syne,sans-serif;">Taux de remplissage</span>'
     +'</div>'
-    +[{label:'🌸 Printemps',color:'#00BFA5',pct:Math.min(100,Math.round(kids.length*0.5/maxPlaces*100))},
-      {label:'☀️ Été',color:'#FF6B35',pct:Math.min(100,Math.round(kids.length/maxPlaces*100))},
-      {label:'🍂 Automne',color:'#FFB300',pct:Math.min(100,Math.round(kids.length*0.3/maxPlaces*100))},
-    ].map(function(s){return '<div style="margin-bottom:10px;">'
+    +[
+      {label:'🌸 Printemps',color:'#00BFA5',key:'printemps'},
+      {label:'☀️ Été',color:'#FF6B35',key:'ete'},
+      {label:'🍂 Automne',color:'#FFB300',key:'automne'}
+    ].map(function(s){
+      var resasSaison=allResas2.filter(function(r){return (r.saison||'')=== s.key||(r.saisonLabel||'').toLowerCase().indexOf(s.key.substring(0,3))>=0;});
+      var nbPlacesSaison=resasSaison.reduce(function(sum,r){return sum+(r.children||[]).length||sum+1;},0);
+      s.pct=maxPlaces>0?Math.min(100,Math.round(nbPlacesSaison/maxPlaces*100)):0;return '<div style="margin-bottom:10px;">'
       +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:4px;color:#004D40;"><span>'+s.label+'</span><span style="color:'+s.color+';">'+s.pct+'%</span></div>'
       +'<div style="background:rgba(255,255,255,.6);border-radius:6px;height:8px;overflow:hidden;"><div style="background:'+s.color+';height:100%;width:'+s.pct+'%;border-radius:6px;"></div></div></div>';}).join('')
     +'</div>'
@@ -6626,6 +6633,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
