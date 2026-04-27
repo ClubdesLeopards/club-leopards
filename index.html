@@ -2321,6 +2321,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2366,8 +2367,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4846,7 +4849,7 @@ function renderFrequentation(){
     // Compter les enfants par jour (basé sur les réservations de la semaine)
     var resasSemaine=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
       var s=r.statut||''; return (s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente')
-        &&(!r.semaine_label||(r.semaine_label||'').indexOf(wk.label||'')>=0);
+        &&(!r.semaine_label||(r.semaine_label||'').indexOf((wk&&wk.label)||'')>=0);
     });
     var matin=resasSemaine.filter(function(r){return r.periode==='matin'||(r.slot&&r.slot.time==='Matin');}).length;
     var aprem=resasSemaine.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
@@ -4855,9 +4858,9 @@ function renderFrequentation(){
   var data=dataReelle;
   var navHTML='';
   // wk défini globalement pour tous les modes
-  var _sems=SAISONS.ete.semaines;
-  var _wi=Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0));
-  var wk=_sems[_wi]||{label:'Semaine 1',debut:'',fin:''};
+  var _sems=(SAISONS&&SAISONS.ete&&SAISONS.ete.semaines)||[];
+  var _wi=_sems.length?Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0)):0;
+  var wk=_sems[_wi]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
 
   if(freqPeriod==='semaine'){
     var sems=_sems;
@@ -4892,8 +4895,8 @@ function renderFrequentation(){
     var ok=s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
     if(!ok) return false;
     var rLabel=r.semaine_label||'';
-    var wkLabel=wk.label||'';
-    return !rLabel||rLabel.indexOf(wkLabel)>=0||wkLabel.indexOf(rLabel)>=0;
+    var wkLabel=(wk&&wk.label)||'';
+    return !rLabel||!wkLabel||rLabel.indexOf(wkLabel)>=0||wkLabel.indexOf(rLabel)>=0;
   });
   var kidsValides=[];
   resasValSem.forEach(function(r){
@@ -6777,6 +6780,7 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
 
 
 
