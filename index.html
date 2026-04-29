@@ -2333,6 +2333,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2390,8 +2393,14 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
 </script>
 <script>
+
+
+
 
 
 
@@ -2723,11 +2732,36 @@ async function sauvegarderInscriptionSB(membreData, password) {
       if(authRes.error) console.warn('Auth signUp:', authRes.error.message);
       else toast('Compte créé ! Vérifiez votre email pour confirmer.','ok');
     }
-    ST.membreConnecte = membre;
+    // Construire l'objet membre complet avec enfants pour usage immédiat
+    var membreComplet = {
+      id: membre.id,
+      prenom: membre.prenom || membreData.prenom,
+      nom: membre.nom || membreData.nom,
+      email: membre.email || membreData.email,
+      tel: membre.tel || membreData.tel,
+      children: (membreData.children||[]).map(function(ch, idx){
+        return {
+          id: null, // sera récupéré par chargerDonnees
+          membre_id: membre.id,
+          prenom: ch.prenom || ch.nom.split(' ')[0],
+          nom: ch.nom.split(' ').slice(1).join(' ') || ch.nom,
+          name: ch.nom,
+          age: parseFloat(ch.age)||0,
+          dob: ch.dob||'',
+          medical: ch.medical||'RAS'
+        };
+      })
+    };
+    ST.membreConnecte = membreComplet;
+    // Ajouter dans ST.members pour que renderReservation trouve les enfants
+    ST.members = ST.members.filter(function(m){return m.id !== membre.id;});
+    ST.members.push(membreComplet);
     var _ncc2=document.getElementById('nouveau-au-club-card');
     if(_ncc2) _ncc2.style.display='none';
+    var _bni2=document.getElementById('bn-inscription');
+    if(_bni2) _bni2.style.display='none';
     chargerDonnees();
-    return membre;
+    return membreComplet;
   } catch(err) {
     console.error('Erreur inscription SB:', err);
     toast('Erreur sauvegarde: ' + err.message, 'ko');
@@ -3640,6 +3674,9 @@ function _navigateTo(name){
   if(name==='reservation') renderReservation();
   var _ncc=document.getElementById('nouveau-au-club-card');
   if(_ncc) _ncc.style.display=ST.membreConnecte?'none':'';
+  // Cacher bouton Inscription nav si connecté
+  var _bni=document.getElementById('bn-inscription');
+  if(_bni) _bni.style.display=ST.membreConnecte?'none':'';
   if(name==='mes-resa') renderMesResa();
   if(name==='admin') renderAdmin();
   if(name==='profil') renderProfil();
@@ -4858,161 +4895,155 @@ var freqMonthOffset=0;
 var freqSaisonIdx=0;
 var freqPeriod='semaine';
 function renderFrequentation(){
-  var el=document.getElementById('frequentation-content');if(!el)return;
-  var today=new Date();
-  var moisNoms=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  var el=document.getElementById('frequentation-content'); if(!el) return;
 
-  // ── Vraies données d'abord ──
-  var kids=allKids();
-  // wk défini globalement pour tous les modes
-  var _saisons=typeof SAISONS!=='undefined'?SAISONS:{ete:{semaines:[{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}]}};
-  var _sems=(_saisons.ete&&_saisons.ete.semaines)||[{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}];
+  // ── wk : semaine sélectionnée ──
+  var _sems=(typeof SAISONS!=='undefined'&&SAISONS.ete&&SAISONS.ete.semaines)||
+            [{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}];
   var _wi=Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0));
   var wk=_sems[_wi]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
-  // Compter depuis les réservations validées/en attente
-  var allResasFreq=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
+
+  // ── Réservations actives ──
+  var allResas=[].concat(ST.reservations).filter(function(r){
     var s=r.statut||'';
     return s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
   });
-  var totM=allResasFreq.filter(function(r){return r.periode==='matin'||( r.slot&&r.slot.time==='Matin');}).length;
-  var totA=allResasFreq.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
-  // 0 si aucune réservation — ne pas inventer de données
 
-  // ── Données graphique ──
-  var baseM=totM||0, baseA=totA||0;
-  var defaultJours=[
-    {label:'Lun',matin:baseM,aprem:baseA},{label:'Mar',matin:baseM,aprem:baseA},
-    {label:'Mer',matin:baseM,aprem:baseA},{label:'Jeu',matin:baseM,aprem:baseA},
-    {label:'Ven',matin:baseM,aprem:baseA}
-  ];
-  var defaultMois=[
-    {label:'Juil',matin:baseM,aprem:baseA},{label:'Août',matin:baseM,aprem:baseA}
-  ];
-  // Construire data depuis les vraies réservations
-  var joursSem=['Lun','Mar','Mer','Jeu','Ven'];
-  var dataReelle=joursSem.map(function(j,idx){
-    // Compter les enfants par jour (basé sur les réservations de la semaine)
-    var resasSemaine=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
-      var s=r.statut||''; return (s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente')
-        &&(!r.semaine_label||(r.semaine_label||'').indexOf((wk&&wk.label)||'')>=0);
+  // ── Filtrer selon mode ──
+  var resasFilt=allResas;
+  if(freqPeriod==='semaine'||freqPeriod==='jour'){
+    resasFilt=allResas.filter(function(r){
+      var rLabel=r.semaine_label||'';
+      return !rLabel||rLabel.indexOf(wk.label)>=0;
     });
-    var matin=resasSemaine.filter(function(r){return r.periode==='matin'||(r.slot&&r.slot.time==='Matin');}).length;
-    var aprem=resasSemaine.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
-    return {label:j,matin:matin,aprem:aprem};
-  });
-  var data=dataReelle;
-  var navHTML='';
-
-
-  if(freqPeriod==='semaine'){
-    var sems=_sems; var wi=_wi;
-    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<button onclick="freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
-      +'<div style="font-size:12px;font-weight:700;color:#374151;">'+wk.label+' · '+wk.debut+' → '+wk.fin+'</div>'
-      +'<button onclick="freqWeekOffset=Math.min('+(sems.length-1)+',freqWeekOffset+1);renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
-  } else if(freqPeriod==='mois'){
-    data=DEMO_FREQ.mois.length?DEMO_FREQ.mois:defaultMois;
-    var moidx=((today.getMonth()+(freqMonthOffset||0))%12+12)%12;
-    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<button onclick="freqMonthOffset=(freqMonthOffset||0)-1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
-      +'<div style="font-size:12px;font-weight:700;color:#374151;">'+moisNoms[moidx]+'</div>'
-      +'<button onclick="freqMonthOffset=(freqMonthOffset||0)+1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
-  } else {
-    data=DEMO_FREQ.mois.length?DEMO_FREQ.mois:defaultMois;
-    var sss=['Été 2026','Automne 2026','Printemps 2027'];
-    var si=(((freqSaisonIdx||0)%3)+3)%3;
-    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-      +'<button onclick="freqSaisonIdx=(freqSaisonIdx||0)-1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">‹</button>'
-      +'<div style="font-size:12px;font-weight:700;color:#374151;">'+sss[si]+'</div>'
-      +'<button onclick="freqSaisonIdx=(freqSaisonIdx||0)+1;renderFrequentation();" style="padding:6px 14px;background:#F3F4F6;border:none;border-radius:8px;cursor:pointer;font-size:16px;">›</button></div>';
   }
 
-  var maxAll=Math.max.apply(null,data.map(function(d){return Math.max(d.matin||0,d.aprem||0);}));
-  if(!maxAll||maxAll<1)maxAll=1;
+  // ── Compteurs ──
+  var totM=resasFilt.filter(function(r){return r.periode==='matin'||(r.slot&&r.slot.time==='Matin');}).length;
+  var totA=resasFilt.filter(function(r){return r.periode==='aprem'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
 
-  // Enfants des réservations validées pour cette semaine et période
-  var resasValSem=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
-    var s=r.statut||'';
-    var ok=s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
-    if(!ok) return false;
-    var rLabel=r.semaine_label||'';
-    var wkLabel=(wk&&wk.label)||'';
-    return !rLabel||!wkLabel||rLabel.indexOf(wkLabel)>=0||wkLabel.indexOf(rLabel)>=0;
-  });
-  var kidsValides=[];
-  resasValSem.forEach(function(r){
+  // ── Enfants pour les modules (depuis ST.members via membre_id) ──
+  var kidsShow=[];
+  resasFilt.forEach(function(r){
     var enfants=r.children||[];
-    // Si r.children vide, chercher dans ST.members via membre_id
-    if(!enfants.length && r.membre_id){
+    if(!enfants.length&&r.membre_id){
       var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id||r._memberId);});
       if(m) enfants=m.children||[];
     }
-    enfants.forEach(function(k){kidsValides.push(k);});
+    enfants.forEach(function(k){kidsShow.push(k);});
   });
-  // Si pas d'enfants dans les réservations, utiliser kids filtré
-  var kidsShow=kidsValides; // 0 si pas de résa validée cette semaine
 
-  function groupeRow(g){
+  // ── Navigation ──
+  var navHTML='';
+  if(freqPeriod==='semaine'){
+    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:#F9FAFB;border-radius:10px;padding:10px 14px;">'
+      +'<button onclick="freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;">‹</button>'
+      +'<div style="text-align:center;">'
+      +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+wk.label+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF;">'+wk.debut+' → '+wk.fin+'</div>'
+      +'</div>'
+      +'<button onclick="freqWeekOffset=Math.min('+(_sems.length-1)+',freqWeekOffset+1);renderFrequentation();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;">›</button>'
+      +'</div>';
+  }
+  if(freqPeriod==='jour'){
+    var dateVal=window._freqDate||new Date().toISOString().slice(0,10);
+    navHTML='<div style="margin-bottom:12px;">'
+      +'<input type="date" id="freq-date-input" value="'+dateVal+'" '
+      +'onchange="window._freqDate=this.value;renderFrequentation();" '
+      +'style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;">'
+      +'</div>';
+  }
+
+  // ── Graphique (barres Lun-Ven) ──
+  var jours=['Lun','Mar','Mer','Jeu','Ven'];
+  var graphData=jours.map(function(j){
+    return {label:j, matin:totM, aprem:totA};
+  });
+  var maxAll=Math.max(1,totM,totA);
+  var barHTML=graphData.map(function(d){
+    var hM=Math.round((d.matin||0)/maxAll*64);
+    var hA=Math.round((d.aprem||0)/maxAll*64);
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'
+      +'<div style="display:flex;gap:2px;align-items:flex-end;height:64px;width:100%;">'
+      +'<div style="flex:1;background:#F97316;border-radius:3px 3px 0 0;height:'+Math.max(2,hM)+'px;"></div>'
+      +'<div style="flex:1;background:#0099E6;border-radius:3px 3px 0 0;height:'+Math.max(2,hA)+'px;"></div>'
+      +'</div>'
+      +'<div style="font-size:9px;color:#9CA3AF;margin-top:3px;">'+d.label+'</div></div>';
+  }).join('');
+
+  // ── Modules groupes ──
+  var GROUPES_MATIN2=[
+    {name:'GM1',emoji:'🐠',min:3,max:5.4,color:'#FF6B35'},
+    {name:'GM2',emoji:'🐬',min:5.5,max:6.4,color:'#8B5CF6'},
+    {name:'GM3',emoji:'🦈',min:6.5,max:7.9,color:'#0099E6'},
+    {name:'GM4',emoji:'🦈',min:8,max:13,color:'#10B981'}
+  ];
+  var GROUPES_APREM2=[
+    {name:'GA1',emoji:'🐠',min:3,max:5.4,color:'#FF6B35'},
+    {name:'GA2',emoji:'🐬',min:5.5,max:6.4,color:'#8B5CF6'},
+    {name:'GA3',emoji:'🦈',min:7,max:8,color:'#0099E6'},
+    {name:'GA4',emoji:'🦈',min:9,max:10,color:'#10B981'},
+    {name:'GA5',emoji:'🏄',min:11,max:13,color:'#F59E0B'}
+  ];
+  var MAX_G2=20;
+
+  function groupRow(g){
     var cnt=kidsShow.filter(function(k){
       var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
       return age>=g.min&&age<=g.max;
     }).length;
-    var pct=Math.round(cnt/MAX_G*100);
-    var full=cnt>=MAX_G;
-    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #F9FAFB;">'
-      +'<span style="font-size:16px;">'+g.emoji+'</span>'
-      +'<div style="flex:1;min-width:0;">'
+    var pct=Math.round(cnt/MAX_G2*100);
+    var full=cnt>=MAX_G2;
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F3F4F6;">'
+      +'<span style="font-size:18px;">'+g.emoji+'</span>'
+      +'<div style="flex:1;">'
       +'<div style="font-size:12px;font-weight:700;color:#0A0F1E;">'+g.name+'</div>'
-      +'<div style="font-size:10px;color:#9CA3AF;">'+g.ages+'</div>'
-      +'</div>'
-      +'<div style="text-align:right;flex-shrink:0;">'
-      +'<div style="font-size:14px;font-weight:800;color:'+(full?'#EF4444':g.color)+';">'+cnt+'<span style="font-size:9px;color:#9CA3AF;">/'+MAX_G+'</span></div>'
-      +'<div style="background:#F3F4F6;border-radius:3px;height:4px;width:44px;margin-top:2px;">'
-      +'<div style="background:'+g.color+';height:4px;border-radius:3px;width:'+pct+'%;"></div></div>'
-      +'</div></div>';
+      +'<div style="height:5px;background:#F3F4F6;border-radius:3px;margin-top:3px;overflow:hidden;">'
+      +'<div style="height:5px;background:'+(full?'#EF4444':g.color)+';border-radius:3px;width:'+pct+'%;"></div>'
+      +'</div></div>'
+      +'<div style="font-size:13px;font-weight:800;color:'+(full?'#EF4444':cnt>0?g.color:'#D1D5DB')+';">'+cnt+'<span style="font-size:10px;color:#9CA3AF;font-weight:400;">/'+MAX_G2+'</span></div>'
+      +'</div>';
   }
 
-  var matinRows=GROUPES_MATIN.map(groupeRow).join('');
-  var apremRows=GROUPES_APREM.map(groupeRow).join('');
-  var totEnfM=GROUPES_MATIN.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
-  var totEnfA=GROUPES_APREM.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var totEnfM=GROUPES_MATIN2.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var totEnfA=GROUPES_APREM2.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
+  var matinRows=GROUPES_MATIN2.map(groupRow).join('');
+  var apremRows=GROUPES_APREM2.map(groupRow).join('');
 
   el.innerHTML=
+    // KPIs matin/aprem
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-    +'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:12px;text-align:center;">'
-    +'<div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:2px;">🌅 MATIN</div>'
-    +'<div style="font-size:28px;font-weight:800;color:#92400E;">'+totM+'</div></div>'
-    +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:12px;text-align:center;">'
-    +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:2px;">🌞 APRÈS-MIDI</div>'
-    +'<div style="font-size:28px;font-weight:800;color:#1565C0;">'+totA+'</div></div>'
+    +'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:14px;text-align:center;">'
+    +'<div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:4px;">🌅 MATIN</div>'
+    +'<div style="font-size:32px;font-weight:800;color:#92400E;">'+totM+'</div>'
+    +'<div style="font-size:10px;color:#B45309;">réservation'+(totM>1?'s':'')+'</div></div>'
+    +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;">'
+    +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:4px;">🌞 APRÈS-MIDI</div>'
+    +'<div style="font-size:32px;font-weight:800;color:#1565C0;">'+totA+'</div>'
+    +'<div style="font-size:10px;color:#1D4ED8;">réservation'+(totA>1?'s':'')+'</div></div>'
     +'</div>'
-    
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📊</span> Évolution</div>'
+
+    // Navigation
     +navHTML
-    +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:6px;">'
-    +data.map(function(d){
-      var hM=Math.round((d.matin||0)/maxAll*72),hA=Math.round((d.aprem||0)/maxAll*72);
-      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'
-        +'<div style="display:flex;gap:2px;align-items:flex-end;width:100%;height:72px;">'
-        +'<div style="flex:1;background:#F97316;border-radius:3px 3px 0 0;height:'+hM+'px;min-height:2px;"></div>'
-        +'<div style="flex:1;background:#0099E6;border-radius:3px 3px 0 0;height:'+hA+'px;min-height:2px;"></div>'
-        +'</div>'
-        +'<div style="font-size:9px;color:#9CA3AF;margin-top:2px;">'+d.label+'</div></div>';
-    }).join('')
-    +'</div>'
+
+    // Graphique
+    +'<div class="wcard" style="margin-bottom:12px;">'
+    +'<div class="wcard-title"><span>📊</span> Évolution semaine '+wk.label+'</div>'
+    +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:8px;">'+barHTML+'</div>'
     +'<div style="display:flex;gap:12px;">'
-    +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin</div>'
-    +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#0099E6;"></div>Après-midi</div>'
+    +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin ('+totM+')</div>'
+    +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#0099E6;"></div>Après-midi ('+totA+')</div>'
     +'</div></div>'
+
+    // Modules
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
     +'<div class="wcard">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
     +'<div class="wcard-title" style="margin-bottom:0;"><span>🌅</span> Matin</div>'
     +'<span style="font-size:11px;font-weight:700;color:#F97316;">'+totEnfM+' enfants</span>'
     +'</div>'+matinRows+'</div>'
     +'<div class="wcard">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
     +'<div class="wcard-title" style="margin-bottom:0;"><span>🌞</span> Après-midi</div>'
     +'<span style="font-size:11px;font-weight:700;color:#0099E6;">'+totEnfA+' enfants</span>'
     +'</div>'+apremRows+'</div>'
@@ -6821,6 +6852,9 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
+
+
 
 
 
