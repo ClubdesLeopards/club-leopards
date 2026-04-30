@@ -2362,6 +2362,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2437,8 +2438,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -2853,8 +2856,9 @@ async function sauvegarderInscriptionSB(membreData, password) {
     ST.members = ST.members.filter(function(m){return String(m.id) !== String(membre.id) && m.email !== membreComplet.email;});
     ST.members.push(ST.membreConnecte);
     updateConnectedUI();
-    chargerDonnees();
-    return membreComplet;
+    // Recharger après 3s pour laisser le temps à l'auth
+    setTimeout(chargerDonnees, 3000);
+    return ST.membreConnecte||membreComplet;
   } catch(err) {
     console.error('Erreur inscription SB:', err);
     toast('Erreur sauvegarde: ' + err.message, 'ko');
@@ -3294,7 +3298,12 @@ function submitInscription() {
   var ri2=document.getElementById('i-accept-ri'); if(ri2) ri2.checked=false;
   var cgv2=document.getElementById('i-accept-cgv'); if(cgv2) cgv2.checked=false;
   var resp2=document.getElementById('i-accept-resp'); if(resp2) resp2.checked=false;
-  renderProfil(); navigate('profil'); // Montrer le profil avec les enfants
+  renderProfil();
+  navigate('profil');
+  // Recharger le profil après que Supabase ait fini
+  setTimeout(function(){
+    if(ST.membreConnecte) renderProfil();
+  }, 2000);
 }
 
 function addInscChild(){}
@@ -7045,6 +7054,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
