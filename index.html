@@ -2375,6 +2375,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2468,8 +2469,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -3579,21 +3582,27 @@ function renderMesResa() {
 
   el.innerHTML=mesResas.map(function(r){
     var isVal=r.statut==='validé'||r.statut==='valide'||r.statut==='paye';
-    var enfants=(r.children||[]).map(function(k){
-      return k.prenom||(k.name||'').split(' ')[0]||'';
-    }).filter(Boolean).join(', ');
     var borderColor=isVal?'#10B981':'#F97316';
-    return '<div class="resa-item" style="border-left:3px solid '+borderColor+';padding-left:10px;">'
-      +'<div class="resa-dot">'+(isVal?'✅':'⏳')+'</div>'
-      +'<div class="resa-main">'
-      +'<div class="resa-title">'+(r.slot?r.slot.time+' · '+r.slot.date:'')+'</div>'
-      +(enfants?'<div style="font-size:12px;color:#0099E6;font-weight:600;margin-top:2px;">👶 '+enfants+'</div>':'')
-      +'<div class="resa-sub">'+(r.semaine_label||r.saisonLabel||'')+(r.semaine_debut&&r.semaine_fin?' · '+r.semaine_debut+' → '+r.semaine_fin:'')+'</div>'
-      +'</div>'
-      +'<div style="text-align:right;flex-shrink:0;">'
-      +'<div class="resa-amt">'+(r.montant||r.paid||0)+' €</div>'
-      +'<div class="resa-ok" style="color:'+borderColor+';">'+(isVal?'✅ Confirmée':'⏳ En attente')+'</div>'
-      +'</div></div>';
+    var enfants=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0]||'';}).filter(Boolean).join(', ');
+    // Période
+    var periode=r.periode||'';
+    if(periode==='aprem'||periode==='après-midi') periode='Après-midi';
+    else if(periode==='matin') periode='Matin';
+    else if(r.slot&&r.slot.time) periode=r.slot.time.replace('Aprèm','Après-midi').replace('aprem','Après-midi');
+    // Semaines avec dates — 1 ligne par semaine
+    var semainesLabels=[];
+    var sLabel=r.semaine_label||'';
+    // Chercher les semaines dans SAISONS pour trouver les dates
+    var sems=(typeof SAISONS!=='undefined'&&SAISONS.ete)?SAISONS.ete.semaines:[];
+    sLabel.split(',').map(function(s){return s.trim();}).forEach(function(lbl){
+      if(!lbl) return;
+      var wk=sems.find(function(w){return w.label===lbl;});
+      semainesLabels.push('<div style="font-size:11px;color:#6B7280;margin-top:1px;">📅 '+lbl+(wk?' · '+wk.debut+' → '+wk.fin:'')+'</div>');
+    });
+    if(!semainesLabels.length && r.semaine_debut && r.semaine_fin)
+      semainesLabels.push('<div style="font-size:11px;color:#6B7280;margin-top:1px;">📅 '+sLabel+' · '+r.semaine_debut+' → '+r.semaine_fin+'</div>');
+
+    return '<div class="resa-item" style="border-left:3px solid '+borderColor+';padding-left:10px;">'      +'<div class="resa-dot">'+(isVal?'✅':'⏳')+'</div>'      +'<div class="resa-main">'      +'<div class="resa-title">'+periode+(r.saisonLabel?' · '+r.saisonLabel:'')+'</div>'      +(enfants?'<div style="font-size:12px;color:#0099E6;font-weight:600;margin-top:2px;">👶 '+enfants+'</div>':'')      +semainesLabels.join('')      +'</div>'      +'<div style="text-align:right;flex-shrink:0;">'      +'<div class="resa-amt">'+(r.montant||r.paid||0)+' €</div>'      +'<div class="resa-ok" style="color:'+borderColor+';">'+(isVal?'✅ Confirmée':'⏳ En attente')+'</div>'      +'</div></div>';
   }).join('');
 }
 
@@ -7113,6 +7122,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
