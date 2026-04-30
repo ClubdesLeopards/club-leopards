@@ -2386,6 +2386,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2490,8 +2492,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -4002,56 +4008,93 @@ function fermerDocModal() {
 // ═══ DASHBOARD ═══
 
 function buildDashFreqNew(kids){
-  // Filtrer selon la semaine sélectionnée si filtre actif
-  var dashWkFilter=window._dashWkFilter||'all';
-  if(dashWkFilter!=='all'){
-    kids=kids.filter(function(k){
-      return ST.reservations.some(function(r){
-        return String(r.membre_id)===String(k.membre_id)&&
-          (r.semaine_label||'').indexOf(dashWkFilter)>=0;
-      });
-    });
-  }
+  var sems=(SAISONS&&SAISONS.ete&&SAISONS.ete.semaines)||[];
+  var dashWkOffset=window._dashWkOffset||0;
+  dashWkOffset=Math.max(0,Math.min(sems.length-1,dashWkOffset));
+  window._dashWkOffset=dashWkOffset;
+  var wk=sems[dashWkOffset]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
+
+  // Filtrer les enfants de cette semaine
+  var resasSem=ST.reservations.filter(function(r){
+    var s=r.statut||'';
+    var ok=s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
+    return ok && (r.semaine_label||'').indexOf(wk.label)>=0;
+  });
+  var kidsSem=[];
+  resasSem.forEach(function(r){
+    var enfants=r.children||[];
+    if(!enfants.length&&r.membre_id){
+      var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id);});
+      if(m) enfants=m.children||[];
+    }
+    enfants.forEach(function(k){kidsSem.push(Object.assign({},k,{periode:r.periode}));});
+  });
+
+  // ── Navigation semaine ──
+  var navHTML='<div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border-radius:12px;padding:10px 14px;margin-bottom:14px;">'
+    +'<button onclick="window._dashWkOffset=Math.max(0,(window._dashWkOffset||0)-1);renderDashboard();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:700;'+(dashWkOffset===0?'opacity:.3;':'')+'">‹</button>'
+    +'<div style="text-align:center;">'
+    +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+wk.label+'</div>'
+    +'<div style="font-size:11px;color:#9CA3AF;">'+wk.debut+' → '+wk.fin+'</div>'
+    +'</div>'
+    +'<button onclick="window._dashWkOffset=Math.min('+(sems.length-1)+',( window._dashWkOffset||0)+1);renderDashboard();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:700;'+(dashWkOffset>=sems.length-1?'opacity:.3;':'')+'">›</button>'
+    +'</div>';
+
+  // ── Tableau par jour ──
+  var jours=['Lun','Mar','Mer','Jeu','Ven'];
+  var maxJ=Math.max(1,kidsSem.length);
+  var joursHTML='<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px;">'
+    +'<div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:10px;">Présences par jour</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
+    +jours.map(function(j){
+      // Pour l'instant, tous les jours = même effectif (pas de suivi quotidien individuel)
+      var cnt=kidsSem.length;
+      var pct=Math.round(cnt/Math.max(1,resasSem.length>0?kidsSem.length:1)*100);
+      var barH=Math.max(4,Math.round(cnt/Math.max(1,maxJ)*48));
+      return '<div style="text-align:center;">'
+        +'<div style="font-size:16px;font-weight:800;color:#0077C8;">'+cnt+'</div>'
+        +'<div style="height:48px;display:flex;align-items:flex-end;justify-content:center;margin:4px 0;">'
+        +'<div style="width:20px;height:'+barH+'px;background:linear-gradient(135deg,#0077C8,#0099E6);border-radius:4px 4px 0 0;"></div>'
+        +'</div>'
+        +'<div style="font-size:11px;font-weight:700;color:#374151;">'+j+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div></div>';
+
+  // ── Répartition par âge ──
   var groups=[
     {id:'g35',label:'3–5 ans',min:3,max:5.9,color:'#F97316',bg:'#FFF7ED',emoji:'🐥'},
     {id:'g68',label:'6–8 ans',min:6,max:8.9,color:'#0099E6',bg:'#EFF6FF',emoji:'🐬'},
     {id:'g912',label:'9–12 ans',min:9,max:12.9,color:'#8B5CF6',bg:'#F5F3FF',emoji:'🏅'},
   ];
-  var total=kids.length;
-  // Filtres semaine
-  var semsBtns=(SAISONS.ete.semaines||[]).map(function(s){
-    var active=dashWkFilter===s.label;
-    var bg=active?'#0077C8':'#F3F4F6'; var col=active?'#fff':'#374151';
-    return '<button onclick="window._dashWkFilter=&apos;'+s.label+'&apos;;renderDashboard();" style="padding:4px 10px;border:none;border-radius:20px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;margin:2px;background:'+bg+';color:'+col+';">'+s.label+'</button>';
-  }).join('');
-  var allActive=dashWkFilter==='all'; var allBg=allActive?'#0077C8':'#F3F4F6'; var allCol=allActive?'#fff':'#374151';
-  var allBtn='<button onclick="window._dashWkFilter=&apos;all&apos;;renderDashboard();" style="padding:4px 10px;border:none;border-radius:20px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;margin:2px;background:'+allBg+';color:'+allCol+';">Toutes</button>';
-  var filtersBar='<div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:2px;">'+allBtn+semsBtns+'</div>';
-
+  var total=kidsSem.length;
   var cardsHTML=groups.map(function(g){
-    var cnt=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
+    var cnt=kidsSem.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
     var pct=total>0?Math.round(cnt/total*100):0;
-    return '<div onclick="setDashAgeFilter(\''+g.id+'\')" id="dash-age-'+g.id+'" style="background:'+g.bg+';border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;flex:1;min-width:0;transition:all .15s;">'
-      +'<div style="font-size:26px;margin-bottom:6px;">'+g.emoji+'</div>'
-      +'<div style="font-size:24px;font-weight:800;color:'+g.color+';font-family:Syne,sans-serif;line-height:1;">'+cnt+'</div>'
-      +'<div style="font-size:11px;font-weight:700;color:'+g.color+';margin-top:3px;">'+g.label+'</div>'
+    return '<div style="background:'+g.bg+';border-radius:12px;padding:14px;text-align:center;flex:1;min-width:0;">'
+      +'<div style="font-size:24px;margin-bottom:4px;">'+g.emoji+'</div>'
+      +'<div style="font-size:22px;font-weight:800;color:'+g.color+';font-family:Syne,sans-serif;">'+cnt+'</div>'
+      +'<div style="font-size:10px;font-weight:700;color:'+g.color+';margin-top:2px;">'+g.label+'</div>'
       +'<div style="font-size:10px;color:#9CA3AF;">'+pct+'%</div>'
       +'</div>';
   }).join('');
-  var totalCard='<div onclick="setDashAgeFilter(\'tout\')" id="dash-age-tout" style="background:#1E2A3A;border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;flex:1;min-width:0;transition:all .15s;">'
-    +'<div style="font-size:26px;margin-bottom:6px;">👥</div>'
-    +'<div style="font-size:24px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+total+'</div>'
-    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:3px;">Total</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">100%</div>'
+  var totalCard='<div style="background:#1E2A3A;border-radius:12px;padding:14px;text-align:center;flex:1;min-width:0;">'
+    +'<div style="font-size:24px;margin-bottom:4px;">👥</div>'
+    +'<div style="font-size:22px;font-weight:800;color:#fff;font-family:Syne,sans-serif;">'+total+'</div>'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.7);margin-top:2px;">Total</div>'
     +'</div>';
   var barParts=groups.map(function(g){
-    var cnt=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
+    var cnt=kidsSem.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
     var pct=total>0?Math.round(cnt/total*100):0;
-    return '<div style="flex:'+pct+';background:'+g.color+';height:100%;min-width:'+(cnt?'4px':'0')+';"></div>';
+    return '<div style="flex:'+Math.max(pct,0)+';background:'+g.color+';height:100%;min-width:'+(cnt?'4px':'0')+'"></div>';
   }).join('');
-  return filtersBar+'<div style="display:flex;gap:8px;margin-bottom:10px;">'+cardsHTML+totalCard+'</div>'
+
+  return navHTML
+    +joursHTML
+    +'<div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Répartition par âge</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:8px;">'+cardsHTML+totalCard+'</div>'
     +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:12px;">'+barParts+'</div>'
-    +'<div id="dash-kids-list">'+buildDashKidsList('tout',kids)+'</div>';
+    +'<div id="dash-kids-list">'+buildDashKidsList('tout',kidsSem)+'</div>';
 }
 
 function buildDashKidsList(filter,kids){
@@ -4813,7 +4856,7 @@ function renderAdminGroupes(){
         +'<div style="font-size:11px;color:'+g.color+';font-weight:600;">'+g.ages+'</div></div></div>'
         +'<div style="display:flex;align-items:center;gap:6px;">'
         +(enf.length>=MAX_G?'<span style="background:#FEF2F2;color:#EF4444;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">COMPLET</span>':'')
-        +'<button onclick="imprimerGroupe(\''+g.id+'\')" style="background:#0077C8;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;color:#fff;font-weight:700;font-family:inherit;">📄 PDF</button>'
+        +'<button onclick="imprimerGroupe(\''+g.id+'\')" style="background:#F3F4F6;border:none;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:14px;">🖨️</button>'
         +'</div></div>'
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
         +'<div style="flex:1;background:#F3F4F6;border-radius:5px;height:5px;overflow:hidden;"><div style="background:'+g.color+';height:100%;width:'+pct+'%;"></div></div>'
@@ -7248,6 +7291,8 @@ function capitalize(s){
   return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
 }
 window.capitalize=capitalize;
+
+
 
 
 
