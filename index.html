@@ -2366,6 +2366,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2445,8 +2446,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5405,7 +5408,8 @@ function renderResaEnfants(){
       all.push({
         name: (ch.prenom&&ch.nom) ? ch.prenom+' '+ch.nom : (ch.name||''),
         age: ch.age||0,
-        id: ch.id||null
+        id: ch.id||null,
+        genre: ch.genre||''
       });
     });
   }
@@ -7063,6 +7067,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
