@@ -1856,8 +1856,8 @@ textarea{resize:vertical;}
       <div id="at-reservations" style="display:none;">
         <button onclick="nouvelleResaManuelle()" style="width:100%;padding:11px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:11px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;margin-bottom:10px;">+ Nouvelle réservation</button>
         <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:center;">
-          <button class="btn btn-sm active"   id="rs-admin-ete"       onclick="setResaAdminSaison('ete')">☀️ Été</button>
           <button class="btn btn-sm btn-ghost" id="rs-admin-printemps" onclick="setResaAdminSaison('printemps')">🌸 Printemps</button>
+          <button class="btn btn-sm active"   id="rs-admin-ete"       onclick="setResaAdminSaison('ete')">☀️ Été</button>
           <button class="btn btn-sm btn-ghost" id="rs-admin-automne"   onclick="setResaAdminSaison('automne')">🍂 Automne</button>
         </div>
         <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
@@ -1874,7 +1874,7 @@ textarea{resize:vertical;}
           <button class="btn btn-sm active"    id="pp-jour"    onclick="setPaiPeriod('jour')">Jour</button>
           <button class="btn btn-sm btn-ghost" id="pp-semaine" onclick="setPaiPeriod('semaine')">Semaine</button>
           <button class="btn btn-sm btn-ghost" id="pp-mois"    onclick="setPaiPeriod('mois')">Mois</button>
-          <button class="btn btn-sm btn-ghost" id="pp-saison"  onclick="setPaiPeriod('saison')">Saison</button>
+          <button class="btn btn-sm btn-ghost" id="pp-saison"  onclick="setPaiPeriod('saison')">Saisons</button>
         </div>
         <div id="paiements-content"></div>
       </div>
@@ -1978,7 +1978,7 @@ textarea{resize:vertical;}
               <select id="nr-periode" onchange="nrCalculerMontant()" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
                 <option value="matin">Matin</option><option value="aprem">Après-midi</option>
               </select></div>
-              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Saison</label>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Saisons</label>
               <select id="nr-saison" onchange="updateResaSemaines();nrCalculerMontant();" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
                 <option value="ete">Été 2026</option><option value="automne">Automne 2026</option><option value="printemps">Printemps 2027</option>
               </select></div>
@@ -2377,6 +2377,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2472,8 +2473,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -3025,6 +3028,8 @@ function formatDate(iso){
   var p=iso.slice(0,10).split('-');
   return p[2]+'/'+p[1]+'/'+p[0];
 }
+function cap(s){ if(!s) return ""; return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(); }
+window.cap=cap;
 function NOM(s){ return s ? String(s).toUpperCase() : ''; }
 var ST = {
   adminTab:'dashboard', gPeriod:'matin',
@@ -3754,7 +3759,7 @@ var freqPeriod='semaine';
 function setFreqPeriod(p){
   freqPeriod=p;
   var colors={jour:'linear-gradient(135deg,#0077C8,#0099E6)',semaine:'linear-gradient(135deg,#10B981,#059669)',mois:'linear-gradient(135deg,#F97316,#EA580C)',saison:'linear-gradient(135deg,#8B5CF6,#7C3AED)'};
-  var emojis={jour:'☀️ Jour',semaine:'📅 Semaine',mois:'📆 Mois',saison:'🌊 Saison'};
+  var emojis={jour:'☀️ Jour',semaine:'📅 Semaine',mois:'📆 Mois',saison:'🌊 Saisons'};
   ['jour','semaine','mois','saison'].forEach(function(x){
     var btn=document.getElementById('fp-'+x);
     if(!btn) return;
@@ -4411,7 +4416,7 @@ function renderMembres(){
     return '<div onclick="voirFicheMembre('+i+')" style="background:#fff;border-radius:13px;padding:13px;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;border-top:3px solid '+col+';">'
       +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
       +'<div style="width:38px;height:38px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">'+ini+'</div>'
-      +'<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+m.prenom+' '+NOM(m.nom)+'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+cap(m.prenom)+' '+NOM(m.nom)+'</div>'
       +'<div style="font-size:11px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+m.email+'</div></div></div>'
       +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
       +'<span style="background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">'+nbK+' enfant'+(nbK>1?'s':'')+'</span>'
@@ -4889,6 +4894,7 @@ async function delResa(i){
 }
 async function relanceResa2(nom, email){
   if(!email){ toast('Pas d\'email pour ce membre','ko'); return; }
+  if(!confirm('Confirmer l\'envoi du mail de relance à '+nom+' ?')) return;
   var html='<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F3F4F6;font-family:Arial,sans-serif;">'
     +'<div style="max-width:600px;margin:0 auto;padding:20px;">'
     +'<div style="background:linear-gradient(135deg,#F97316,#FFB800);border-radius:12px 12px 0 0;padding:24px 28px;">'
@@ -4940,7 +4946,7 @@ function renderPaiements(){
   });
 
   // Filtre
-  var pFilter=window._pFilter||'toutes';
+  var pFilter=window._pFilter||'attente';
   var paiesFilt=pFilter==='payees'?paies.filter(function(p){return p.statut==='paye';}):
                 pFilter==='attente'?paies.filter(function(p){return p.statut!=='paye';}):paies;
 
@@ -5000,7 +5006,7 @@ function renderPaiements(){
 
     // Filtres
     +'<div style="display:flex;gap:6px;margin-bottom:12px;">'
-    +'<button onclick="setPFilter(\'toutes\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='toutes'?'linear-gradient(135deg,#0077C8,#0099E6)':'#F3F4F6')+';color:'+(pFilter==='toutes'?'#fff':'#374151')+';">Toutes</button>'
+    ''
     +'<button onclick="setPFilter(\'attente\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='attente'?'#FEF3C7':'#F3F4F6')+';color:'+(pFilter==='attente'?'#92400E':'#374151')+';">⏳ Attente</button>'
     +'<button onclick="setPFilter(\'payees\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='payees'?'#D1FAE5':'#F3F4F6')+';color:'+(pFilter==='payees'?'#065F46':'#374151')+';">✅ Payées</button>'
     +'</div>'
@@ -5221,7 +5227,7 @@ function renderFrequentation(){
 
     // Graphique
     +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📊</span> Évolution semaine '+wk.label+'</div>'
+    +'<div class="wcard-title"><span>📊</span> Graphique '+wk.label+'</div>'
     +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:8px;">'+barHTML+'</div>'
     +'<div style="display:flex;gap:12px;">'
     +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin ('+totM+')</div>'
@@ -6703,7 +6709,7 @@ async function confirmerPaiementResa(){
   // Email confirmation paiement
   var membreResa=ST.members.find(function(m){return String(m.id)===String(r.membre_id);});
   if(membreResa&&membreResa.email){
-    emailPaiementValide(membreResa,r,mode,montant);
+    if(confirm('Confirmer l\'envoi du mail de confirmation au client ?')) emailPaiementValide(membreResa,r,mode,montant);
   }
 
   var ov=document.getElementById('valider-resa-overlay');
@@ -7136,6 +7142,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
