@@ -2390,6 +2390,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2498,8 +2499,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4028,8 +4031,9 @@ function buildDashFreqNew(kids){
     if(!ok) return false;
     var rLabel=r.semaine_label||''; if(rLabel && rLabel.indexOf(wk.label)<0) return false;
     if(periodeFilter!=='tout'){
-      if(periodeFilter==='matin'&&r.periode!=='matin') return false;
-      if(periodeFilter==='aprem'&&r.periode!=='aprem'&&r.periode!=='après-midi') return false;
+      var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+      if(periodeFilter==='matin'&&rPer!=='matin') return false;
+      if(periodeFilter==='aprem'&&rPer!=='aprem'&&rPer!=='après-midi') return false;
     }
     return true;
   });
@@ -7329,6 +7333,7 @@ function capitalize(s){
   return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
 }
 window.capitalize=capitalize;
+
 
 
 
