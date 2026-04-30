@@ -2336,6 +2336,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2396,8 +2398,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -3040,7 +3046,7 @@ function buildInscRecap() {
   html+='<div style="font-size:11px;font-weight:700;color:#0099E6;margin-bottom:6px;">Enfant 1</div>';
   html+='<div class="recap-row"><span>Prénom Nom</span><span>'+prenom+' '+NOM(nom)+'</span></div>';
   html+='<div class="recap-row"><span>Naissance</span><span>'+dob+' · '+ageD+'</span></div>';
-  if(grp) html+='<div class="recap-row"><span>Groupe</span><span style="color:'+grp.color+';">'+grp.emoji+' '+grp.name+'</span></div>';
+  // Groupe non affiché (dépend du créneau choisi)
   if(medical&&medical!=='RAS') html+='<div class="recap-row"><span>Médical</span><span>'+medical+'</span></div>';
   // Enfants supplémentaires
   var extras=document.querySelectorAll('#extra-enfants-list [data-extra]');
@@ -3156,7 +3162,13 @@ function submitInscription() {
   ST.membreConnecte = membreData;
   sauvegarderInscriptionSB(membreData, pwd1);
   emailConfirmationInscription(membreData);
-
+  // Mettre à jour localement le membre connecté avec les enfants saisis
+  if(membreData.children&&membreData.children.length){
+    if(!ST.membreConnecte) ST.membreConnecte={};
+    ST.membreConnecte.children=(membreData.children||[]).map(function(ch){
+      return {id:null,prenom:ch.prenom||'',nom:ch.nom||'',age:parseFloat(ch.age)||0,dob:ch.dob||'',medical:ch.medical||'RAS'};
+    });
+  }
   toast('Inscription enregistrée !', 'ok');
 
   // ── Reset ──
@@ -3674,6 +3686,8 @@ function _navigateTo(name){
   if(name==='reservation') renderReservation();
   var _ncc=document.getElementById('nouveau-au-club-card');
   if(_ncc) _ncc.style.display=ST.membreConnecte?'none':'';
+  var _bni=document.getElementById('bn-inscription');
+  if(_bni) _bni.style.display=ST.membreConnecte?'none':'';
   // Cacher bouton Inscription nav si connecté
   var _bni=document.getElementById('bn-inscription');
   if(_bni) _bni.style.display=ST.membreConnecte?'none':'';
@@ -6852,6 +6866,8 @@ window.renderAdminRecherche=renderAdminRecherche;
 
 
 window.relanceResa2=relanceResa2;
+
+
 
 
 
