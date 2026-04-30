@@ -2397,6 +2397,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2512,8 +2513,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -2817,6 +2820,29 @@ async function chargerDonnees() {
     }
 
     console.log('✅ Données Supabase chargées — membres:', ST.members.length, 'resas:', ST.reservations.length);
+
+    // Mettre à jour enfants_ids pour les anciennes réservations sans enfants_ids
+    try {
+      var resasSansEnfIds = ST.reservations.filter(function(r){
+        return !r.enfants_ids || r.enfants_ids.length===0;
+      });
+      for(var ri=0; ri<resasSansEnfIds.length; ri++){
+        var resa = resasSansEnfIds[ri];
+        var membre = ST.members.find(function(m){ return String(m.id)===String(resa.membre_id); });
+        if(!membre || !(membre.children||[]).length) continue;
+        var ids = membre.children.map(function(k){ return k.id; }).filter(Boolean);
+        if(!ids.length) continue;
+        // Mettre à jour localement
+        resa.enfants_ids = ids.map(String);
+        // Mettre à jour dans Supabase
+        if(resa.id){
+          await sb.from('reservations').update({
+            enfants_ids: JSON.stringify(ids)
+          }).eq('id', resa.id).is('enfants_ids', null);
+        }
+      }
+      if(resasSansEnfIds.length>0) console.log('✅ enfants_ids mis à jour pour', resasSansEnfIds.length, 'réservations');
+    } catch(e){ console.warn('enfants_ids update:', e); }
     if (typeof renderAdmin === 'function') renderAdmin();
   } catch(err) {
     console.error('❌ Erreur chargement Supabase:', err);
@@ -7445,6 +7471,7 @@ function capitalize(s){
   return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
 }
 window.capitalize=capitalize;
+
 
 
 
