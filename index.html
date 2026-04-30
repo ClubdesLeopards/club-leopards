@@ -2363,6 +2363,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2439,8 +2440,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -6234,7 +6237,7 @@ function renderProfil(){
         +kids.map(function(k){
           var g=getGroupe(parseFloat(k.age)||0);
           return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6;">'
-            +'<div style="width:36px;height:36px;border-radius:10px;background:'+(g?g.color+'15':'#F3F4F6')+';display:flex;align-items:center;justify-content:center;font-size:18px;">'+(ch.genre==='fille'?'👧':ch.genre==='garcon'?'👦':'🧒')+'</div>'
+            +'<div style="width:36px;height:36px;border-radius:10px;background:'+(g?g.color+'15':'#F3F4F6')+';display:flex;align-items:center;justify-content:center;font-size:18px;">'+(k.genre==='fille'?'👧':k.genre==='garcon'?'👦':'🧒')+'</div>'
             +'<div><div style="font-size:13px;font-weight:700;color:#0A0F1E;">'+(k.prenom||k.name||'')+'</div>'
             +'<div style="font-size:11px;color:#9CA3AF;">'+(k.age?k.age+' ans':'')+(g?' · '+g.name:'')+'</div></div>'
             +'</div>';
@@ -7054,6 +7057,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
