@@ -2395,8 +2395,12 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
+
+
 
 
 
@@ -2690,6 +2694,8 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2744,6 +2750,7 @@ async function chargerDonnees() {
           id: r.id,
           membre_id: r.membre_id,
           enfant_id: r.enfant_id,
+          enfants_ids: r.enfants_ids ? JSON.parse(r.enfants_ids) : [],
           nom: r.nom_famille || '',
           email: r.email || '',
           saisonLabel: r.saison==='ete'?'Ete 2026':r.saison==='automne'?'Automne 2026':'Printemps 2027',
@@ -5712,26 +5719,28 @@ function renderEtape3(saison) {
     var wkLbl = (s.semaines||[])[wi] ? (s.semaines||[])[wi].label : '';
     // Vérifier si TOUS les enfants sélectionnés sont déjà réservés sur cette semaine/période
     var enfsSelLocal = _resaEnfantsSelectionnes||[];
-    var dejaMatin = !matinSel && enfsSelLocal.length>0 && enfsSelLocal.some(function(enf){
-      var enfNom=(enf.prenom||enf.name||'').toLowerCase();
-      return ST.reservations.some(function(r){
+    var membreIdLocal = ST.membreConnecte ? String(ST.membreConnecte.id) : '';
+    function dejaReserve(periode2){
+      return enfsSelLocal.length>0 && ST.reservations.some(function(r){
         var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
         var s2=r.statut||'';
-        return (s2==='valide'||s2==='validé'||s2==='paye'||s2==='en attente'||s2==='en_attente')
-          && (r.semaine_label||'').indexOf(wkLbl)>=0 && rPer==='matin'
-          && (r.children||[]).some(function(k){return (k.prenom||k.name||'').toLowerCase()===enfNom;});
+        var ok=s2==='valide'||s2==='validé'||s2==='paye'||s2==='en attente'||s2==='en_attente';
+        var semOk=(r.semaine_label||'').indexOf(wkLbl)>=0;
+        var perOk=periode2==='matin'?rPer==='matin':(rPer==='aprem'||rPer==='après-midi');
+        var mbrOk=membreIdLocal&&String(r.membre_id)===membreIdLocal;
+        if(!ok||!semOk||!perOk||!mbrOk) return false;
+        var children=r.children||[];
+        if(children.length>0){
+          return enfsSelLocal.some(function(enf){
+            var n=(enf.prenom||enf.name||'').toLowerCase();
+            return children.some(function(k){return (k.prenom||k.name||'').toLowerCase()===n;});
+          });
+        }
+        return true;
       });
-    });
-    var dejaAprem = !apremSel && enfsSelLocal.length>0 && enfsSelLocal.some(function(enf){
-      var enfNom=(enf.prenom||enf.name||'').toLowerCase();
-      return ST.reservations.some(function(r){
-        var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
-        var s2=r.statut||'';
-        return (s2==='valide'||s2==='validé'||s2==='paye'||s2==='en attente'||s2==='en_attente')
-          && (r.semaine_label||'').indexOf(wkLbl)>=0 && (rPer==='aprem'||rPer==='après-midi')
-          && (r.children||[]).some(function(k){return (k.prenom||k.name||'').toLowerCase()===enfNom;});
-      });
-    });
+    }
+    var dejaMatin = !matinSel && dejaReserve('matin');
+    var dejaAprem = !apremSel && dejaReserve('aprem');
 
     return '<div style="background:#fff;border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);">'
       // Header semaine
@@ -5779,20 +5788,44 @@ function toggleSemaine(wi, periode) {
   var enfantsSel = _resaEnfantsSelectionnes || [];
 
   // Vérifier les réservations existantes
-  // Vérifier uniquement les enfants sélectionnés (pas toute la famille)
-  var dejaPris = enfantsSel.length > 0 && enfantsSel.some(function(enf){
-    var enfNom = (enf.prenom||enf.name||'').toLowerCase();
-    return ST.reservations.some(function(r){
-      var rLabel = r.semaine_label||'';
-      var rPer = (r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
-      // Même enfant = même prénom dans les children de la résa
-      var memeEnfant = (r.children||[]).some(function(k){
-        return (k.prenom||k.name||'').toLowerCase()===enfNom;
+  var membreId = ST.membreConnecte ? String(ST.membreConnecte.id) : '';
+  // Trouver les ids des enfants sélectionnés
+  var enfantsSelIds = enfantsSel.map(function(enf){
+    if(enf.id) return String(enf.id);
+    if(ST.membreConnecte){
+      var found=(ST.membreConnecte.children||[]).find(function(k){
+        return (k.prenom||k.name||'').toLowerCase()===(enf.prenom||enf.name||'').toLowerCase();
       });
-      var memeSemaine = wkLabel && rLabel.indexOf(wkLabel)>=0;
-      var memePeriode = (periode==='matin'&&rPer==='matin')||(periode==='aprem'&&(rPer==='aprem'||rPer==='après-midi'));
-      return memeEnfant && memeSemaine && memePeriode;
-    });
+      return found ? String(found.id) : null;
+    }
+    return null;
+  }).filter(Boolean);
+
+  var dejaPris = enfantsSel.length > 0 && ST.reservations.some(function(r){
+    var rLabel = r.semaine_label||'';
+    var rPer = (r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+    var memeSemaine = wkLabel && rLabel.indexOf(wkLabel)>=0;
+    var memePeriode = (periode==='matin'&&rPer==='matin')||(periode==='aprem'&&(rPer==='aprem'||rPer==='après-midi'));
+    var membreBon = membreId && String(r.membre_id)===membreId;
+    if(!memeSemaine||!memePeriode||!membreBon) return false;
+    // Vérifier par enfants_ids si disponible
+    var rEnfIds = r.enfants_ids||[];
+    var rEnfId = r.enfant_id ? String(r.enfant_id) : null;
+    if(rEnfIds.length>0||rEnfId){
+      return enfantsSelIds.some(function(id){
+        return rEnfIds.indexOf(id)>=0 || id===rEnfId;
+      });
+    }
+    // Sinon vérifier par prénom (children)
+    var children=r.children||[];
+    if(children.length>0){
+      return enfantsSel.some(function(enf){
+        var n=(enf.prenom||enf.name||'').toLowerCase();
+        return children.some(function(k){return (k.prenom||k.name||'').toLowerCase()===n;});
+      });
+    }
+    // Fallback : si un seul enfant dans la famille → bloquer
+    return (ST.membreConnecte&&(ST.membreConnecte.children||[]).length<=1);
   });
 
   if (!_semainesSelectionnees[periode]) _semainesSelectionnees[periode] = [];
@@ -5950,6 +5983,19 @@ async function confirmerEnvoiReservation(){
   ST.reservations.push(resaObj);
 
   // 1 seul insert Supabase
+  // Récupérer les ids des enfants depuis ST.members si disponibles
+  var enfantsIds = (_resaEnfantsSelectionnes||[]).map(function(enf){
+    if(enf.id) return enf.id;
+    // Chercher l'id depuis ST.members
+    if(m){
+      var found = (m.children||[]).find(function(k){
+        return (k.prenom||k.name||'').toLowerCase()===(enf.prenom||enf.name||'').toLowerCase();
+      });
+      return found ? found.id : null;
+    }
+    return null;
+  }).filter(Boolean);
+
   sb.from('reservations').insert({
     membre_id: m?m.id:null,
     nom_famille: nomFam,
@@ -5960,7 +6006,9 @@ async function confirmerEnvoiReservation(){
     semaine_fin: premierWk.fin||'',
     periode: allSel[0]?allSel[0].periode:'matin',
     montant: totalPrix,
-    statut: 'en_attente'
+    statut: 'en_attente',
+    enfant_id: enfantsIds.length===1 ? enfantsIds[0] : null,
+    enfants_ids: enfantsIds.length>0 ? JSON.stringify(enfantsIds) : null
   }).then(function(res){
     if(res.error) console.error('Resa insert:', res.error.message);
     else{ console.log('Resa insérée ✅'); chargerDonnees(); }
@@ -7397,6 +7445,8 @@ function capitalize(s){
   return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
 }
 window.capitalize=capitalize;
+
+
 
 
 
