@@ -2373,6 +2373,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2459,8 +2460,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5493,7 +5496,7 @@ function renderEtape3(saison) {
     _semData.push({saison:saison, sem:wk, periode:'après-midi'});
 
     var matinSel   = (_semainesSelectionnees['matin']  || []).indexOf(wi) >= 0;
-    var apremSel   = (_semainesSelectionnees['après-midi']  || []).indexOf(wi) >= 0;
+    var apremSel   = (_semainesSelectionnees['aprem']  || []).indexOf(wi) >= 0;
 
     return '<div style="background:#fff;border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);">'
       // Header semaine
@@ -7085,6 +7088,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
