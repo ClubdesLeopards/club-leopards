@@ -2360,6 +2360,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2433,8 +2434,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -2835,11 +2838,17 @@ async function sauvegarderInscriptionSB(membreData, password) {
         };
       })
     };
-    ST.membreConnecte = membreComplet;
+    // Mettre à jour l'id sans écraser les children déjà définis
+    if(ST.membreConnecte){
+      ST.membreConnecte.id = membreComplet.id;
+      if(!ST.membreConnecte.children||!ST.membreConnecte.children.length)
+        ST.membreConnecte.children = membreComplet.children;
+    } else {
+      ST.membreConnecte = membreComplet;
+    }
     updateConnectedUI();
-    // Ajouter dans ST.members pour que renderReservation trouve les enfants
-    ST.members = ST.members.filter(function(m){return m.id !== membre.id;});
-    ST.members.push(membreComplet);
+    ST.members = ST.members.filter(function(m){return String(m.id) !== String(membre.id) && m.email !== membreComplet.email;});
+    ST.members.push(ST.membreConnecte);
     updateConnectedUI();
     chargerDonnees();
     return membreComplet;
@@ -3242,14 +3251,34 @@ function submitInscription() {
   updateConnectedUI();
   sauvegarderInscriptionSB(membreData, pwd1);
   emailConfirmationInscription(membreData);
-  // Mettre à jour localement le membre connecté avec les enfants saisis
-  if(membreData.children&&membreData.children.length){
-    if(!ST.membreConnecte) ST.membreConnecte={};
-    ST.membreConnecte.children=(membreData.children||[]).map(function(ch){
-      return {id:null,prenom:ch.prenom||'',nom:ch.nom||'',age:parseFloat(ch.age)||0,dob:ch.dob||'',medical:ch.medical||'RAS'};
-    });
-  }
-  toast('Inscription enregistrée !', 'ok');
+  // Mettre à jour ST.membreConnecte avec les enfants saisis immédiatement
+  var childrenFormatted=(membreData.children||[]).map(function(ch){
+    return {
+      id:null,
+      prenom:ch.prenom||ch.name||'',
+      nom:ch.nom||'',
+      name:ch.name||((ch.prenom||'')+' '+(ch.nom||'')),
+      age:parseFloat(ch.age)||0,
+      dob:ch.dob||'',
+      medical:ch.medical||'RAS',
+      genre:ch.genre||''
+    };
+  });
+  ST.membreConnecte = {
+    id: null, // sera mis à jour par sauvegarderInscriptionSB
+    prenom: membreData.prenom,
+    nom: membreData.nom,
+    email: membreData.email,
+    tel: membreData.tel,
+    adresse: membreData.adresse,
+    children: childrenFormatted
+  };
+  // Mettre à jour ST.members aussi
+  ST.members = ST.members.filter(function(m){return m.email!==membreData.email;});
+  ST.members.push(ST.membreConnecte);
+  updateConnectedUI();
+  window._allKidsForResa = childrenFormatted;
+  toast('Inscription enregistrée ! 🎉', 'ok');
 
   // ── Reset ──
   inscDroit = null;
@@ -7013,6 +7042,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
