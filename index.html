@@ -2388,6 +2388,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2494,8 +2495,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4013,15 +4016,23 @@ function buildDashFreqNew(kids){
   dashWkOffset=Math.max(0,Math.min(sems.length-1,dashWkOffset));
   window._dashWkOffset=dashWkOffset;
   var wk=sems[dashWkOffset]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
+  var periodeFilter=window._dashPeriode||'tout'; // 'tout','matin','aprem'
 
-  // Filtrer les enfants de cette semaine
-  var resasSem=ST.reservations.filter(function(r){
+  // Réservations VALIDÉES uniquement pour cette semaine
+  var resasValSem=ST.reservations.filter(function(r){
     var s=r.statut||'';
-    var ok=s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
-    return ok && (r.semaine_label||'').indexOf(wk.label)>=0;
+    var ok=s==='valide'||s==='validé'||s==='paye';
+    if(!ok) return false;
+    if(!(r.semaine_label||'').indexOf(wk.label)>=0&&(r.semaine_label||'')!=='') return false;
+    if(periodeFilter!=='tout'){
+      if(periodeFilter==='matin'&&r.periode!=='matin') return false;
+      if(periodeFilter==='aprem'&&r.periode!=='aprem'&&r.periode!=='après-midi') return false;
+    }
+    return true;
   });
+
   var kidsSem=[];
-  resasSem.forEach(function(r){
+  resasValSem.forEach(function(r){
     var enfants=r.children||[];
     if(!enfants.length&&r.membre_id){
       var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id);});
@@ -4031,70 +4042,94 @@ function buildDashFreqNew(kids){
   });
 
   // ── Navigation semaine ──
-  var navHTML='<div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border-radius:12px;padding:10px 14px;margin-bottom:14px;">'
-    +'<button onclick="window._dashWkOffset=Math.max(0,(window._dashWkOffset||0)-1);renderDashboard();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:700;'+(dashWkOffset===0?'opacity:.3;':'')+'">‹</button>'
+  var navHTML='<div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border-radius:12px;padding:10px 14px;margin-bottom:12px;">'
+    +'<button onclick="window._dashWkOffset=Math.max(0,(window._dashWkOffset||0)-1);renderDashboard();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:700;'+(dashWkOffset===0?'opacity:.3;pointer-events:none;':'')+'">‹</button>'
     +'<div style="text-align:center;">'
     +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+wk.label+'</div>'
     +'<div style="font-size:11px;color:#9CA3AF;">'+wk.debut+' → '+wk.fin+'</div>'
     +'</div>'
-    +'<button onclick="window._dashWkOffset=Math.min('+(sems.length-1)+',( window._dashWkOffset||0)+1);renderDashboard();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:700;'+(dashWkOffset>=sems.length-1?'opacity:.3;':'')+'">›</button>'
+    +'<button onclick="window._dashWkOffset=Math.min('+(sems.length-1)+',( window._dashWkOffset||0)+1);renderDashboard();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:700;'+(dashWkOffset>=sems.length-1?'opacity:.3;pointer-events:none;':'')+'">›</button>'
+    +'</div>';
+
+  // ── Filtres Matin / Après-midi ──
+  var periodes=[{k:'tout',l:'Tous'},{k:'matin',l:'🌅 Matin'},{k:'aprem',l:'🌞 Après-midi'}];
+  var periodeBar='<div style="display:flex;gap:6px;margin-bottom:12px;">'
+    +periodes.map(function(p){
+      var act=periodeFilter===p.k;
+      return '<button onclick="window._dashPeriode=&apos;'+p.k+'&apos;;renderDashboard();" style="flex:1;padding:7px 4px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151')+';">'+p.l+'</button>';
+    }).join('')
     +'</div>';
 
   // ── Tableau par jour ──
   var jours=['Lun','Mar','Mer','Jeu','Ven'];
-  var maxJ=Math.max(1,kidsSem.length);
-  var joursHTML='<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px;">'
-    +'<div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:10px;">Présences par jour</div>'
+  var total=kidsSem.length;
+  var joursHTML='<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:12px;">'
+    +'<div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:10px;">Présences par jour · '+total+' enfant'+(total>1?'s':'')+'</div>'
     +'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
     +jours.map(function(j){
-      // Pour l'instant, tous les jours = même effectif (pas de suivi quotidien individuel)
-      var cnt=kidsSem.length;
-      var pct=Math.round(cnt/Math.max(1,resasSem.length>0?kidsSem.length:1)*100);
-      var barH=Math.max(4,Math.round(cnt/Math.max(1,maxJ)*48));
+      var cnt=total; // tous les jours = même effectif (réservation semaine entière)
+      var barH=total>0?Math.max(8,Math.round(cnt/Math.max(1,total)*48)):4;
       return '<div style="text-align:center;">'
-        +'<div style="font-size:16px;font-weight:800;color:#0077C8;">'+cnt+'</div>'
+        +'<div style="font-size:18px;font-weight:800;color:#0077C8;">'+cnt+'</div>'
         +'<div style="height:48px;display:flex;align-items:flex-end;justify-content:center;margin:4px 0;">'
-        +'<div style="width:20px;height:'+barH+'px;background:linear-gradient(135deg,#0077C8,#0099E6);border-radius:4px 4px 0 0;"></div>'
+        +'<div style="width:22px;height:'+barH+'px;background:linear-gradient(135deg,#0077C8,#0099E6);border-radius:4px 4px 0 0;"></div>'
         +'</div>'
         +'<div style="font-size:11px;font-weight:700;color:#374151;">'+j+'</div>'
         +'</div>';
     }).join('')
     +'</div></div>';
 
-  // ── Répartition par âge ──
+  // ── Répartition par âge (validés uniquement) ──
   var groups=[
     {id:'g35',label:'3–5 ans',min:3,max:5.9,color:'#F97316',bg:'#FFF7ED',emoji:'🐥'},
     {id:'g68',label:'6–8 ans',min:6,max:8.9,color:'#0099E6',bg:'#EFF6FF',emoji:'🐬'},
     {id:'g912',label:'9–12 ans',min:9,max:12.9,color:'#8B5CF6',bg:'#F5F3FF',emoji:'🏅'},
   ];
-  var total=kidsSem.length;
   var cardsHTML=groups.map(function(g){
     var cnt=kidsSem.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
     var pct=total>0?Math.round(cnt/total*100):0;
-    return '<div style="background:'+g.bg+';border-radius:12px;padding:14px;text-align:center;flex:1;min-width:0;">'
-      +'<div style="font-size:24px;margin-bottom:4px;">'+g.emoji+'</div>'
-      +'<div style="font-size:22px;font-weight:800;color:'+g.color+';font-family:Syne,sans-serif;">'+cnt+'</div>'
+    return '<div style="background:'+g.bg+';border-radius:12px;padding:12px;text-align:center;flex:1;min-width:0;">'
+      +'<div style="font-size:22px;margin-bottom:3px;">'+g.emoji+'</div>'
+      +'<div style="font-size:20px;font-weight:800;color:'+g.color+';font-family:Syne,sans-serif;">'+cnt+'</div>'
       +'<div style="font-size:10px;font-weight:700;color:'+g.color+';margin-top:2px;">'+g.label+'</div>'
       +'<div style="font-size:10px;color:#9CA3AF;">'+pct+'%</div>'
       +'</div>';
   }).join('');
-  var totalCard='<div style="background:#1E2A3A;border-radius:12px;padding:14px;text-align:center;flex:1;min-width:0;">'
-    +'<div style="font-size:24px;margin-bottom:4px;">👥</div>'
-    +'<div style="font-size:22px;font-weight:800;color:#fff;font-family:Syne,sans-serif;">'+total+'</div>'
+  var totalCard='<div style="background:#1E2A3A;border-radius:12px;padding:12px;text-align:center;flex:1;min-width:0;">'
+    +'<div style="font-size:22px;margin-bottom:3px;">👥</div>'
+    +'<div style="font-size:20px;font-weight:800;color:#fff;font-family:Syne,sans-serif;">'+total+'</div>'
     +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.7);margin-top:2px;">Total</div>'
     +'</div>';
   var barParts=groups.map(function(g){
     var cnt=kidsSem.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
     var pct=total>0?Math.round(cnt/total*100):0;
-    return '<div style="flex:'+Math.max(pct,0)+';background:'+g.color+';height:100%;min-width:'+(cnt?'4px':'0')+'"></div>';
+    return '<div style="flex:'+Math.max(pct,1)+';background:'+g.color+';height:100%;min-width:'+(cnt?'4px':'0')+'"></div>';
   }).join('');
 
-  return navHTML
-    +joursHTML
-    +'<div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Répartition par âge</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:8px;">'+cardsHTML+totalCard+'</div>'
-    +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:12px;">'+barParts+'</div>'
-    +'<div id="dash-kids-list">'+buildDashKidsList('tout',kidsSem)+'</div>';
+  // ── Liste enfants repliable ──
+  var listOpen=window._dashKidsOpen!==false;
+  var kidsListHTML=kidsSem.map(function(k){
+    var g=groups.find(function(gr){return parseFloat(k.age)>=gr.min&&parseFloat(k.age)<=gr.max;})||{color:'#9CA3AF',emoji:'👶'};
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #F3F4F6;">'
+      +'<span style="font-size:16px;">'+g.emoji+'</span>'
+      +'<div style="flex:1;font-size:12px;font-weight:700;color:#0A0F1E;">'+(cap(k.prenom||'')||k.name||'—')+' '+(k.nom||'').toUpperCase()+'</div>'
+      +'<span style="font-size:10px;color:#9CA3AF;">'+(k.age||'?')+' ans</span>'
+      +'</div>';
+  }).join('')||'<div style="font-size:12px;color:#9CA3AF;padding:10px 0;">Aucun enfant pour cette sélection</div>';
+
+  var kidsSection='<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;">'
+    +'<div onclick="window._dashKidsOpen=!window._dashKidsOpen;renderDashboard();" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;">'
+    +'<div style="font-size:12px;font-weight:800;color:#0A0F1E;">👶 Tous les enfants ('+kidsSem.length+')</div>'
+    +'<span style="font-size:18px;color:#9CA3AF;">'+(listOpen?'▲':'▼')+'</span>'
+    +'</div>'
+    +(listOpen?'<div style="padding:0 14px 12px;">'+kidsListHTML+'</div>':'')
+    +'</div>';
+
+  return navHTML+periodeBar+joursHTML
+    +'<div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:8px;">Répartition par âge · validés uniquement</div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:8px;">'+cardsHTML+totalCard+'</div>'
+    +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:12px;background:#F3F4F6;">'+barParts+'</div>'
+    +kidsSection;
 }
 
 function buildDashKidsList(filter,kids){
@@ -7291,6 +7326,7 @@ function capitalize(s){
   return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
 }
 window.capitalize=capitalize;
+
 
 
 
