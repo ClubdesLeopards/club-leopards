@@ -2339,6 +2339,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2402,8 +2403,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -2762,13 +2765,11 @@ async function sauvegarderInscriptionSB(membreData, password) {
       })
     };
     ST.membreConnecte = membreComplet;
+    updateConnectedUI();
     // Ajouter dans ST.members pour que renderReservation trouve les enfants
     ST.members = ST.members.filter(function(m){return m.id !== membre.id;});
     ST.members.push(membreComplet);
-    var _ncc2=document.getElementById('nouveau-au-club-card');
-    if(_ncc2) _ncc2.style.display='none';
-    var _bni2=document.getElementById('bn-inscription');
-    if(_bni2) _bni2.style.display='none';
+    updateConnectedUI();
     chargerDonnees();
     return membreComplet;
   } catch(err) {
@@ -3163,6 +3164,7 @@ function submitInscription() {
   // ── Sauvegarder ──
   ST.members.push(membreData);
   ST.membreConnecte = membreData;
+  updateConnectedUI();
   sauvegarderInscriptionSB(membreData, pwd1);
   emailConfirmationInscription(membreData);
   // Mettre à jour localement le membre connecté avec les enfants saisis
@@ -6021,7 +6023,8 @@ window.envoyerFactureEmail=envoyerFactureEmail;
 
 
 
-document.addEventListener('DOMContentLoaded', function(){ checkSession(); });
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(updateConnectedUI, 500); checkSession(); });
 
 
 
@@ -6902,6 +6905,16 @@ window.relanceResa2=relanceResa2;
 
 
 
+
+
+function updateConnectedUI(){
+  var connected=!!ST.membreConnecte;
+  var ncc=document.getElementById('nouveau-au-club-card');
+  if(ncc) ncc.style.display=connected?'none':'';
+  var bni=document.getElementById('bn-inscription');
+  if(bni) bni.style.display=connected?'none':'';
+}
+window.updateConnectedUI=updateConnectedUI;
 
 </script>
 </body>
