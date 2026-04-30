@@ -4932,111 +4932,100 @@ async function relanceResa2(nom, email){
 // ═══ PAIEMENTS ═══
 var paiPeriod='semaine';
 function setPaiPeriod(p){paiPeriod=p;['jour','semaine','mois','saison'].forEach(function(x){var b=document.getElementById('pp-'+x);if(b){b.classList.toggle('active',x===p);b.classList.toggle('btn-ghost',x!==p);}});renderPaiements();}
+function _pFS(v){window._pFilter=v;window._pAlpha='';renderPaiements();}
+function _pAS(v){window._pAlpha=v;renderPaiements();}
+window._pFS=_pFS; window._pAS=_pAS;
+
 function renderPaiements(){
-  var el=document.getElementById('paiements-content');if(!el)return;
-  var allR2=ST.reservations.length?ST.reservations:[].concat(DEMO_RESAS);
-  var seen={};
-  var paies=allR2.filter(function(r){
-    var key=String(r.id||r.nom||'');
-    if(seen[key]) return false; seen[key]=true; return true;
-  }).map(function(r){
-    var isV=r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
-    var enf=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0]||'';}).filter(Boolean).join(', ')||'';
-    return {nom:r.nom||r.nom_famille||'',enfants:enf,
-      forme:r.mode_paiement||'—',montant:parseFloat(r.montant||0),
-      statut:isV?'paye':'attente',resaId:r.id,
-      semaine:r.semaine_label||''};
-  });
+  var el=document.getElementById('paiements-content'); if(!el) return;
+  var allR=ST.reservations.length?ST.reservations:[].concat(DEMO_RESAS);
+  var seen={}; allR=allR.filter(function(r){var k=String(r.id||r.nom||'');if(seen[k])return false;seen[k]=true;return true;});
+  var payees=allR.filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
+  var enAtt=allR.filter(function(r){var s=r.statut||'';return s==='en attente'||s==='en_attente';});
+  var tPaye=payees.reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0);
+  var tAtt=enAtt.reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0);
+  var modes={cb:0,virement:0,cheque:0,cheques_vacances:0,especes:0,avoir:0};
+  var mL={cb:'💳 CB',virement:'🏦 Virement',cheque:'📝 Chèque',cheques_vacances:'🎫 Chq Vac',especes:'💶 Espèces',avoir:'🎟️ Avoir'};
+  var mC={cb:'#0077C8',virement:'#10B981',cheque:'#F59E0B',cheques_vacances:'#8B5CF6',especes:'#F97316',avoir:'#EC4899'};
+  payees.forEach(function(r){var m=r.mode_paiement||'';if(modes[m]!==undefined)modes[m]+=parseFloat(r.montant)||0;});
+  var tM=Object.values(modes).reduce(function(s,v){return s+v;},0);
+  var bar=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){return '<div style="flex:'+modes[k]+';background:'+mC[k]+';height:100%;min-width:3px;"></div>';}).join('');
+  var leg=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#374151;margin-right:8px;"><span style="width:9px;height:9px;border-radius:2px;background:'+mC[k]+';display:inline-block;"></span>'+mL[k]+' · '+modes[k]+' €</span>';}).join('');
+  var pF=window._pFilter||'attente';
+  var aF=window._pAlpha||'';
+  var liste=pF==='payees'?payees:enAtt;
+  if(pF==='payees'&&aF) liste=liste.filter(function(r){return (r.nom||r.nom_famille||'').toUpperCase().indexOf(aF)===0;});
 
-  // Filtre
-  var pFilter=window._pFilter||'attente';
-  var paiesFilt=pFilter==='payees'?paies.filter(function(p){return p.statut==='paye';}):
-                pFilter==='attente'?paies.filter(function(p){return p.statut!=='paye';}):paies;
+  el.innerHTML='<div id="p-kpi"></div><div id="p-rept"></div><div id="p-flt"></div><div id="p-ab"></div><div id="p-cards"></div>';
 
-  var payees=paies.filter(function(p){return p.statut==='paye';});
-  var enAttente=paies.filter(function(p){return p.statut!=='paye';});
-  var totalPaye=payees.reduce(function(s,p){return s+p.montant;},0);
-  var totalAtt=enAttente.reduce(function(s,p){return s+p.montant;},0);
-  var total=paies.length;
+  // KPI
+  var kpi=el.querySelector('#p-kpi');
+  if(kpi) kpi.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"><div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #F97316;"><div style="font-size:20px;font-weight:800;color:#F97316;">'+enAtt.length+'</div><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">En attente</div><div style="font-size:11px;color:#F97316;font-weight:700;">'+tAtt+' €</div></div><div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #10B981;"><div style="font-size:20px;font-weight:800;color:#10B981;">'+payees.length+'</div><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Payées</div><div style="font-size:11px;color:#10B981;font-weight:700;">'+tPaye+' €</div></div></div>';
 
-  // Répartition par mode
-  var modes={cb:0,virement:0,cheque:0,cheques_vacances:0,especes:0,avoir:0,inconnu:0};
-  var modeLabels={cb:'💳 CB',virement:'🏦 Virement',cheque:'📝 Chèque',cheques_vacances:'🎫 Chq Vac',especes:'💶 Espèces',avoir:'🎟️ Avoir',inconnu:'—'};
-  var modeColors={cb:'#0077C8',virement:'#10B981',cheque:'#F59E0B',cheques_vacances:'#8B5CF6',especes:'#F97316',avoir:'#EC4899',inconnu:'#9CA3AF'};
-  payees.forEach(function(p){
-    var m=p.forme||'inconnu';
-    m=m.replace('cheque_vac','cheques_vacances');
-    if(modes[m]!==undefined) modes[m]+=p.montant; else modes.inconnu+=p.montant;
-  });
-  var totalModes=Object.values(modes).reduce(function(s,v){return s+v;},0);
+  // Répartition
+  var rept=el.querySelector('#p-rept');
+  if(rept) rept.innerHTML='<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:14px;"><div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:12px;">💳 Répartition des paiements</div><div style="height:16px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:10px;background:#F3F4F6;">'+(tM>0?bar:'<div style="flex:1;background:#F3F4F6;height:100%;"></div>')+'</div>'+(tM>0?'<div>'+leg+'</div>':'<div style="font-size:12px;color:#9CA3AF;">Aucun paiement</div>')+'</div>';
 
-  // Barre répartition
-  var barSegments=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){
-    var pct=totalModes>0?Math.round(modes[k]/totalModes*100):0;
-    return '<div title="'+modeLabels[k]+': '+modes[k]+' €" style="flex:'+modes[k]+';background:'+modeColors[k]+';height:100%;min-width:'+(pct>0?'2px':'0')+';" ></div>';
-  }).join('');
+  // Filtres via DOM
+  var flt=el.querySelector('#p-flt');
+  if(flt){
+    flt.style.cssText='display:flex;gap:8px;margin-bottom:12px;';
+    var b1=document.createElement('button');
+    b1.style.cssText='flex:1;padding:10px;border:2px solid '+(pF==='attente'?'#F97316':'#E5E7EB')+';border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;background:'+(pF==='attente'?'#FFF7ED':'#fff')+';color:'+(pF==='attente'?'#C2410C':'#374151');
+    b1.textContent='⏳ Réservations en attente ('+enAtt.length+')';
+    b1.onclick=function(){_pFS('attente');};
+    flt.appendChild(b1);
+    var b2=document.createElement('button');
+    b2.style.cssText='flex:1;padding:10px;border:2px solid '+(pF==='payees'?'#10B981':'#E5E7EB')+';border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;background:'+(pF==='payees'?'#ECFDF5':'#fff')+';color:'+(pF==='payees'?'#065F46':'#374151');
+    b2.textContent='✅ Réservations payées ('+payees.length+')';
+    b2.onclick=function(){_pFS('payees');};
+    flt.appendChild(b2);
+  }
 
-  var barLegend=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){
-    return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#374151;margin-right:12px;">'
-      +'<span style="width:10px;height:10px;border-radius:3px;background:'+modeColors[k]+';display:inline-block;"></span>'
-      +modeLabels[k]+' · '+modes[k]+' €</span>';
-  }).join('');
+  // Alphabet
+  var ab=el.querySelector('#p-ab');
+  if(ab&&pF==='payees'){
+    ab.style.cssText='display:flex;flex-wrap:wrap;gap:3px;margin-bottom:12px;';
+    ['Tous'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')).forEach(function(l){
+      var v=l==='Tous'?'':l; var act=aF===v;
+      var btn=document.createElement('button');
+      btn.style.cssText='padding:4px 8px;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151');
+      btn.textContent=l;
+      btn.onclick=(function(val){return function(){_pAS(val);};})(v);
+      ab.appendChild(btn);
+    });
+  }
 
-  el.innerHTML=
-    // KPIs
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">'
-    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #F97316;">'
-    +'<div style="font-size:22px;font-weight:800;color:#F97316;">'+enAttente.length+'</div>'
-    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">En attente</div>'
-    +'<div style="font-size:11px;color:#F97316;font-weight:700;">'+totalAtt+' €</div></div>'
-    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #10B981;">'
-    +'<div style="font-size:22px;font-weight:800;color:#10B981;">'+payees.length+'</div>'
-    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Confirmées</div>'
-    +'<div style="font-size:11px;color:#10B981;font-weight:700;">'+totalPaye+' €</div></div>'
-    +'<div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #0099E6;">'
-    +'<div style="font-size:22px;font-weight:800;color:#0099E6;">'+total+'</div>'
-    +'<div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Total</div></div>'
-    +'</div>'
-
-    // Répartition paiements
-    +'<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:14px;">'
-    +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:12px;">💳 Répartition des paiements</div>'
-    +'<div style="height:16px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:10px;background:#F3F4F6;">'
-    +(totalModes>0?barSegments:'<div style="flex:1;background:#F3F4F6;height:100%;"></div>')
-    +'</div>'
-    +(totalModes>0?'<div>'+barLegend+'</div>':'<div style="font-size:12px;color:#9CA3AF;">Aucun paiement enregistré</div>')
-    +'</div>'
-
-    // Filtres
-    +'<div style="display:flex;gap:6px;margin-bottom:12px;">'
-    '<button onclick="setPFilter(\'attente\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='attente'?'#FEF3C7':'#F3F4F6')+';color:'+(pFilter==='attente'?'#92400E':'#374151')+';">⏳ Attente</button>'
-    +'<button onclick="setPFilter(\'payees\')" style="flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:'+(pFilter==='payees'?'#D1FAE5':'#F3F4F6')+';color:'+(pFilter==='payees'?'#065F46':'#374151')+';">✅ Payées</button>'
-    +'</div>'
-
-    // Liste
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">'
-    +paiesFilt.map(function(p){
-      var isP=p.statut==='paye';
-      var bc=isP?'#10B981':'#F97316';
-      return '<div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid '+bc+';">'
-        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
-        +'<div>'
-        +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+p.nom+'</div>'
-        +(p.enfants?'<div style="font-size:11px;color:#0099E6;font-weight:600;margin-top:1px;">👶 '+p.enfants+'</div>':'')
-        +(p.semaine?'<div style="font-size:10px;color:#9CA3AF;margin-top:2px;">'+p.semaine+'</div>':'')
-        +'</div>'
-        +'<div style="font-size:18px;font-weight:800;color:'+bc+';">'+p.montant+' €</div>'
-        +'</div>'
-        +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
-        +'<span style="background:'+(isP?'#D1FAE5':'#FEF3C7')+';color:'+(isP?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;">'+(isP?'✅ Payé':'⏳ En attente')+'</span>'
-        +'<div style="display:flex;gap:6px;">'
-        +(!isP&&p.resaId?'<button onclick="ouvrirValidationResa(\''+p.resaId+'\')" style="padding:5px 12px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">✅ Valider</button>':'')
-        +(isP&&p.resaId?'<button onclick="remettreEnAttente(\''+p.resaId+'\')" style="padding:5px 12px;background:#F3F4F6;color:#6B7280;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">↩️ Remettre en attente</button>':'')
-        +'</div>'
-        +'</div>'
-        +'</div>';
-    }).join('')
-    +'</div>';
+  // Cards via DOM
+  var pc=el.querySelector('#p-cards');
+  if(pc){
+    pc.style.cssText='display:flex;flex-direction:column;gap:8px;';
+    pc.innerHTML='';
+    liste.forEach(function(r){
+      var isV=r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
+      var bc=isV?'#10B981':'#F97316';
+      var enf=(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0]||'';}).filter(Boolean).join(', ');
+      var card=document.createElement('div');
+      card.style.cssText='background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid '+bc;
+      card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;"><div><div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+(r.nom||r.nom_famille||'')+'</div>'+(enf?'<div style="font-size:11px;color:#0099E6;font-weight:600;margin-top:1px;">👶 '+enf+'</div>':'')+(r.semaine_label?'<div style="font-size:10px;color:#9CA3AF;margin-top:2px;">'+r.semaine_label+'</div>':'')+'</div><div style="font-size:18px;font-weight:800;color:'+bc+';">'+(r.montant||0)+' €</div></div><div style="display:flex;align-items:center;justify-content:space-between;"><span style="background:'+(isV?'#D1FAE5':'#FEF3C7')+';color:'+(isV?'#065F46':'#92400E')+';font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;">'+(isV?'✅ Payé':'⏳ En attente')+'</span><div id="p-btn-'+r.id+'"></div></div>';
+      pc.appendChild(card);
+      // Bouton action
+      var btnDiv=card.querySelector('#p-btn-'+r.id);
+      if(btnDiv&&r.id){
+        var aBtn=document.createElement('button');
+        if(isV){
+          aBtn.style.cssText='padding:5px 10px;background:#F3F4F6;color:#6B7280;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;';
+          aBtn.textContent='↩️ Remettre';
+          aBtn.onclick=(function(id){return function(){remettreEnAttente(id);};})(r.id);
+        } else {
+          aBtn.style.cssText='padding:5px 10px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;';
+          aBtn.textContent='✅ Valider';
+          aBtn.onclick=(function(id){return function(){ouvrirValidationResa(id);};})(r.id);
+        }
+        btnDiv.appendChild(aBtn);
+      }
+    });
+  }
 }
 
 function setPFilter(f){window._pFilter=f;renderPaiements();}
@@ -5229,7 +5218,7 @@ function renderFrequentation(){
 
     // Graphique
     +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📊</span> Graphique '+wk.label+'</div>'
+    +'<div class="wcard-title"><span>📊</span> Évolution semaine '+wk.label+'</div>'
     +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:8px;">'+barHTML+'</div>'
     +'<div style="display:flex;gap:12px;">'
     +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin ('+totM+')</div>'
