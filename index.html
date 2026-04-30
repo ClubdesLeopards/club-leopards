@@ -2391,6 +2391,10 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2500,8 +2504,16 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
 </script>
 <script>
+
+
+
+
 
 
 
@@ -5697,6 +5709,29 @@ function renderEtape3(saison) {
 
     var matinSel   = (_semainesSelectionnees['matin']  || []).indexOf(wi) >= 0;
     var apremSel   = (_semainesSelectionnees['aprem']  || []).indexOf(wi) >= 0;
+    var wkLbl = (s.semaines||[])[wi] ? (s.semaines||[])[wi].label : '';
+    // Vérifier si TOUS les enfants sélectionnés sont déjà réservés sur cette semaine/période
+    var enfsSelLocal = _resaEnfantsSelectionnes||[];
+    var dejaMatin = !matinSel && enfsSelLocal.length>0 && enfsSelLocal.some(function(enf){
+      var enfNom=(enf.prenom||enf.name||'').toLowerCase();
+      return ST.reservations.some(function(r){
+        var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+        var s2=r.statut||'';
+        return (s2==='valide'||s2==='validé'||s2==='paye'||s2==='en attente'||s2==='en_attente')
+          && (r.semaine_label||'').indexOf(wkLbl)>=0 && rPer==='matin'
+          && (r.children||[]).some(function(k){return (k.prenom||k.name||'').toLowerCase()===enfNom;});
+      });
+    });
+    var dejaAprem = !apremSel && enfsSelLocal.length>0 && enfsSelLocal.some(function(enf){
+      var enfNom=(enf.prenom||enf.name||'').toLowerCase();
+      return ST.reservations.some(function(r){
+        var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+        var s2=r.statut||'';
+        return (s2==='valide'||s2==='validé'||s2==='paye'||s2==='en attente'||s2==='en_attente')
+          && (r.semaine_label||'').indexOf(wkLbl)>=0 && (rPer==='aprem'||rPer==='après-midi')
+          && (r.children||[]).some(function(k){return (k.prenom||k.name||'').toLowerCase()===enfNom;});
+      });
+    });
 
     return '<div style="background:#fff;border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);">'
       // Header semaine
@@ -5737,15 +5772,44 @@ function renderEtape3(saison) {
 }
 
 function toggleSemaine(wi, periode) {
+  // Vérifier si un enfant sélectionné a déjà une réservation sur cette semaine/période
+  var s = SAISONS[currentSaison] || {};
+  var wk = (s.semaines||[])[wi] || {};
+  var wkLabel = wk.label || '';
+  var enfantsSel = _resaEnfantsSelectionnes || [];
+
+  // Vérifier les réservations existantes
+  // Vérifier uniquement les enfants sélectionnés (pas toute la famille)
+  var dejaPris = enfantsSel.length > 0 && enfantsSel.some(function(enf){
+    var enfNom = (enf.prenom||enf.name||'').toLowerCase();
+    return ST.reservations.some(function(r){
+      var rLabel = r.semaine_label||'';
+      var rPer = (r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+      // Même enfant = même prénom dans les children de la résa
+      var memeEnfant = (r.children||[]).some(function(k){
+        return (k.prenom||k.name||'').toLowerCase()===enfNom;
+      });
+      var memeSemaine = wkLabel && rLabel.indexOf(wkLabel)>=0;
+      var memePeriode = (periode==='matin'&&rPer==='matin')||(periode==='aprem'&&(rPer==='aprem'||rPer==='après-midi'));
+      return memeEnfant && memeSemaine && memePeriode;
+    });
+  });
+
   if (!_semainesSelectionnees[periode]) _semainesSelectionnees[periode] = [];
   var arr = _semainesSelectionnees[periode];
   var idx = arr.indexOf(wi);
+
+  // Si on essaie d'ajouter et que c'est déjà réservé
+  if (idx < 0 && dejaPris) {
+    toast('⚠️ Déjà réservé pour cette semaine et période !', 'ko');
+    return;
+  }
+
   if (idx >= 0) arr.splice(idx, 1);
   else arr.push(wi);
-  // Mettre à jour visuellement
-  var s = SAISONS[currentSaison] || {};
+
   var col = s.color || '#0099E6';
-  var sel = idx < 0; // vient d'être sélectionné
+  var sel = idx < 0;
   var card = document.getElementById('sem-card-' + wi + '-' + periode);
   if (card) {
     card.style.border = '2px solid ' + (sel ? col : 'transparent');
@@ -7333,6 +7397,10 @@ function capitalize(s){
   return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
 }
 window.capitalize=capitalize;
+
+
+
+
 
 
 
