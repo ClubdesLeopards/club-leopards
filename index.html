@@ -2461,6 +2461,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2594,8 +2595,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4632,22 +4635,6 @@ function sqEditerById(id){
 }
 window.sqEditerById=sqEditerById;
 
-async function sqSupprimerById(id){
-  var r=SUIVI_QUOTIDIEN.find(function(e){return String(e.id)===String(id);});
-  if(!r){toast('Entrée introuvable','ko');return;}
-  if(!confirm('Supprimer cette entrée ?')) return;
-  if(r.id){
-    try{
-      var res=await sb.from('suivi_quotidien').delete().eq('id',r.id);
-      if(res.error) throw res.error;
-    }catch(e){console.warn('sqSupprimer:',e);toast('Erreur suppression','ko');return;}
-  }
-  var localIdx=SUIVI_QUOTIDIEN.indexOf(r);
-  if(localIdx>=0) SUIVI_QUOTIDIEN.splice(localIdx,1);
-  renderSuiviQuotidien();
-  toast('Entrée supprimée ✅','ok');
-}
-window.sqSupprimerById=sqSupprimerById;
 e.display = tab === 'suivi' ? 'block' : 'none';
   if (btnB) { btnB.classList.toggle('active', tab==='bilan'); btnB.classList.toggle('btn-ghost', tab!=='bilan'); }
   if (btnS) { btnS.classList.toggle('active', tab==='suivi'); btnS.classList.toggle('btn-ghost', tab!=='suivi'); }
@@ -5852,6 +5839,23 @@ function renderSuiviQuotidien(){
     +'<span style="font-size:15px;font-weight:800;color:#065F46;">'+totalTTC+' €</span></div>';
   wrap.appendChild(tvaDiv);
 }
+async function sqSupprimerById(id){
+  var r=SUIVI_QUOTIDIEN.find(function(e){return String(e.id)===String(id);});
+  if(!r){toast('Entrée introuvable','ko');return;}
+  if(!confirm('Supprimer cette entrée ?')) return;
+  if(r.id){
+    try{
+      var res=await sb.from('suivi_quotidien').delete().eq('id',r.id);
+      if(res.error) throw res.error;
+    }catch(e){console.warn('sqSupprimer:',e);toast('Erreur suppression','ko');return;}
+  }
+  var localIdx=SUIVI_QUOTIDIEN.indexOf(r);
+  if(localIdx>=0) SUIVI_QUOTIDIEN.splice(localIdx,1);
+  renderSuiviQuotidien();
+  toast('Entrée supprimée ✅','ok');
+}
+window.sqSupprimerById=sqSupprimerById;
+
 function ouvrirSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov){var d=document.getElementById('sq-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);ov.style.display='flex';}}
 function fermerSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov)ov.style.display='none';}
 
@@ -7727,6 +7731,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
