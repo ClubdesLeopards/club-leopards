@@ -2387,6 +2387,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2495,8 +2497,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -5843,7 +5849,17 @@ async function confirmerEnvoiReservation(){
       saisonLabel: s.label,
       slot: {date: (premierWk.debut||'')+' → '+(premierWk.fin||''), time: premierSel.periode==='matin'?'Matin':'Après-midi'},
       montant: totalEmail,
-      nbSemaines: allSel.length
+      nbSemaines: allSel.length,
+      semaines: allSel.map(function(item, idx){
+        var wk=(s.semaines||[])[item.wi]||{};
+        return {
+          label: wk.label||('Semaine '+(item.wi+1)),
+          debut: wk.debut||'',
+          fin: wk.fin||'',
+          periode: item.periode==='aprem'?'Après-midi':'Matin',
+          prix: calculerPrixSemaine(nbEnf, idx)
+        };
+      })
     });
     emailNotifAdmin({nom:nomFam, email:m?m.email:'', saisonLabel:s.label, semaine_label:premierWk.label||'', periode:premierSel.periode, montant:totalEmail});
   }
@@ -6888,12 +6904,22 @@ async function emailConfirmationReservation(membre, resa) {
   var nomsEnfants = (membre.children||[]).map(function(k){ return k.prenom||(k.name||'').split(' ')[0]; }).filter(Boolean).join(', ');
   if(!nomsEnfants) nomsEnfants = membre.prenom;
   var nbEnf = (membre.children||[]).length || 1;
-  // 1 ligne par semaine avec dates
+  // 1 ligne par semaine avec dates complètes
   var semaines = resa.semaines || [{label: semaine||'', debut:'', fin:'', periode: periode||'', prix: montant}];
+  var saisonLbl = resa.saisonLabel || '';
+  var periodeUnique = semaines.length>0 ? semaines[0].periode : (periode||'');
+
+  // Bloc récap semaines : Saison / Semaine 1 : Lundi... au Vendredi... / Période
+  var semsRecap = '<div style="background:#EFF6FF;border-radius:10px;padding:16px;margin-bottom:20px;">'    +(saisonLbl?'<div style="font-size:13px;font-weight:800;color:#0077C8;margin-bottom:10px;">☀️ '+saisonLbl+'</div>':'')    +semaines.map(function(sem){
+      var dateStr = sem.debut && sem.fin
+        ? 'Lundi '+sem.debut+' au vendredi '+sem.fin
+        : (sem.debut||sem.label||'');
+      return '<div style="font-size:13px;color:#374151;margin-bottom:4px;">'        +'<strong>'+sem.label+' :</strong> '+dateStr+'</div>';
+    }).join('')    +'<div style="font-size:13px;color:#374151;margin-top:8px;font-weight:600;">'+periodeUnique+'</div>'    +'</div>';
+
   var enfants = semaines.map(function(sem, idx){
-    var dateStr = sem.debut && sem.fin ? sem.debut+' → '+sem.fin : (sem.label||semaine||'');
     var bg = idx%2===1 ? 'background:#F9FAFB;' : '';
-    return '<tr style="'+bg+'">'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards<br><span style="font-size:11px;color:#9CA3AF;">📍 Plage de La Baule</span></td>'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+nomsEnfants+'</td>'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+sem.label+'<br><span style="font-size:11px;color:#9CA3AF;">'+dateStr+'<br>'+sem.periode+'</span></td>'      +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#FF6B35;text-align:right;">'+sem.prix+' €</td>'      +'</tr>';
+    return '<tr style="'+bg+'">'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards<br><span style="font-size:11px;color:#9CA3AF;">📍 Plage de La Baule</span></td>'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+nomsEnfants+'</td>'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+sem.label+'<br><span style="font-size:11px;color:#9CA3AF;">'+(sem.debut?sem.debut+' → '+sem.fin:'')+'</span></td>'      +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#FF6B35;text-align:right;">'+sem.prix+' €</td>'      +'</tr>';
   }).join('');
 
   var html = '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F3F4F6;font-family:Arial,sans-serif;">'
@@ -6913,7 +6939,10 @@ async function emailConfirmationReservation(membre, resa) {
     +'<p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.6;">Merci pour votre réservation ! Votre demande a bien été pré-enregistrée. Voici le récapitulatif de votre commande ainsi que les informations de règlement.</p>'
 
     // Tableau récap
-    +'<table style="width:100%;border-collapse:collapse;margin-bottom:20px;">'
+   
+    +semsRecap
+
+     +'<table style="width:100%;border-collapse:collapse;margin-bottom:20px;">'
     +'<thead>'
     +'<tr style="background:#0077C8;">'
     +'<th style="padding:10px 12px;text-align:left;font-size:11px;color:#fff;text-transform:uppercase;letter-spacing:0.5px;border-radius:6px 0 0 0;">Prestation</th>'
@@ -7223,6 +7252,8 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
 
 
 
