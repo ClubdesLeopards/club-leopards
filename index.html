@@ -2389,6 +2389,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2499,8 +2500,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -7024,22 +7027,27 @@ async function emailConfirmationReservation(membre, resa) {
 // 3. Confirmation paiement validé
 async function emailPaiementValide(membre, resa, mode, montant) {
   var modeLabel = {cb:'Carte bancaire',virement:'Virement',cheque:'Chèque',especes:'Espèces',cheque_vac:'Chèques Vacances',avoir:'Avoir'}[mode]||mode;
-  var html = '<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">'
-    +'<div style="background:linear-gradient(135deg,#10B981,#059669);padding:30px;border-radius:12px 12px 0 0;text-align:center;">'
-    +'<h1 style="color:#fff;margin:0;font-size:24px;">✅ Réservation confirmée !</h1>'
-    +'<p style="color:rgba(255,255,255,.9);margin:8px 0 0;">Club des Léopards · La Baule</p>'
-    +'</div>'
-    +'<div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #E5E7EB;">'
-    +'<h2 style="color:#0A0F1E;">Bonjour '+membre.prenom+' !</h2>'
-    +'<p style="color:#6B7280;">Votre réservation est confirmée et votre paiement a été enregistré.</p>'
-    +'<div style="background:#F0FDF4;border-radius:10px;padding:16px;margin:20px 0;border-left:4px solid #10B981;">'
-    +'<p style="margin:0;color:#065F46;font-weight:700;">'+( resa.saisonLabel||'')+(resa.slot?' · '+resa.slot.date:'')+' · '+(resa.slot?resa.slot.time:'')+'</p>'
-    +'<p style="margin:8px 0 0;color:#374151;">Mode de paiement : <strong>'+modeLabel+'</strong></p>'
-    +'<p style="margin:4px 0 0;color:#374151;">Montant : <strong>'+montant+' €</strong></p>'
-    +'</div>'
-    +'<p style="color:#6B7280;">À très bientôt sur la plage ! 🏖️</p>'
-    +'<p style="color:#9CA3AF;font-size:12px;text-align:center;">Club des Léopards · La Baule</p>'
-    +'</div></div>';
+
+  // Construire le bloc semaines
+  var saisonLbl = resa.saisonLabel||'';
+  var periode = resa.slot ? resa.slot.time : (resa.periode||'');
+  var semsHTML = '';
+  if(resa.semaines && resa.semaines.length>0){
+    semsHTML = resa.semaines.map(function(sem){
+      var dateStr = sem.debut && sem.fin
+        ? 'Lundi '+sem.debut+' au vendredi '+sem.fin
+        : (sem.label||'');
+      return '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+sem.label+' :</strong> '+dateStr+'</p>';
+    }).join('');
+  } else {
+    // Fallback depuis slot.date (ancienne réservation)
+    var semLabel = resa.semaine_label || (resa.slot ? resa.slot.date : '');
+    semLabel.split(',').map(function(s){return s.trim();}).filter(Boolean).forEach(function(lbl){
+      semsHTML += '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+lbl+'</strong></p>';
+    });
+  }
+
+  var html = '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">'    +'<div style="background:linear-gradient(135deg,#0077C8,#0099E6);padding:28px;border-radius:12px 12px 0 0;text-align:center;">'    +'<h1 style="color:#fff;margin:0;font-size:22px;font-weight:800;">✅ Réservation confirmée !</h1>'    +'<p style="color:rgba(255,255,255,.9);margin:8px 0 0;font-size:13px;">🐆 Club des Léopards · La Baule</p>'    +'</div>'    +'<div style="background:#fff;padding:28px;border:1px solid #E5E7EB;">'    +'<p style="color:#374151;font-size:15px;">Bonjour <strong>'+membre.prenom+'</strong>,</p>'    +'<p style="color:#374151;font-size:14px;">Votre réservation est confirmée et votre paiement a bien été enregistré.</p>'    +'<div style="background:#F0FDF4;border-radius:10px;padding:18px;margin:20px 0;border-left:4px solid #10B981;">'    +(saisonLbl?'<p style="margin:0 0 10px;color:#065F46;font-size:15px;font-weight:800;">☀️ '+saisonLbl+'</p>':'')    +semsHTML    +(periode?'<p style="margin:8px 0 0;color:#374151;font-size:13px;font-weight:600;">'+periode+'</p>':'')    +'<p style="margin:12px 0 0;color:#374151;font-size:13px;">Mode de paiement : <strong>'+modeLabel+'</strong></p>'    +'<p style="margin:4px 0 0;color:#374151;font-size:13px;">Montant réglé : <strong>'+montant+' €</strong></p>'    +'</div>'    +'<p style="color:#374151;font-size:14px;">À très bientôt sur la plage ! 🏖️</p>'    +'</div>'    +'<div style="background:#0A0F1E;border-radius:0 0 12px 12px;padding:20px 28px;text-align:center;">'    +'<p style="color:#fff;margin:0 0 4px;font-size:15px;font-weight:800;">🐆 Club des Léopards – La Baule</p>'    +'<p style="color:rgba(255,255,255,.5);margin:0;font-size:11px;">28 Bd de l\'Océan · 44500 La Baule · clubdesleopards@free.fr</p>'    +'</div>'    +'</div>';
   if(membre.email) await envoyerEmailBrevo(membre.email, membre.prenom+' '+membre.nom, '✅ Réservation confirmée - Club des Léopards', html);
 }
 
@@ -7252,6 +7260,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
