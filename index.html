@@ -2384,6 +2384,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2489,8 +2492,14 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
 </script>
 <script>
+
+
+
 
 
 
@@ -4981,31 +4990,7 @@ async function delResa(i){
 async function relanceResa2(nom, email){
   if(!email){ toast('Pas d\'email pour ce membre','ko'); return; }
   if(!confirm('Confirmer l\'envoi du mail de relance à '+nom+' ?')) return;
-  var html='<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F3F4F6;font-family:Arial,sans-serif;">'
-    +'<div style="max-width:600px;margin:0 auto;padding:20px;">'
-    +'<div style="background:linear-gradient(135deg,#F97316,#FFB800);border-radius:12px 12px 0 0;padding:24px 28px;">'
-    +'<h1 style="color:#fff;margin:0;font-size:20px;font-weight:800;">🐆 Club des Léopards</h1>'
-    +'<p style="color:rgba(255,255,255,.8);margin:4px 0 0;font-size:12px;">Rappel de paiement</p>'
-    +'</div>'
-    +'<div style="background:#fff;padding:28px;border-left:1px solid #E5E7EB;border-right:1px solid #E5E7EB;">'
-    +'<p style="margin:0 0 16px;font-size:14px;color:#374151;">Bonjour <strong>'+nom+'</strong>,</p>'
-    +'<p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">Nous n\'avons pas encore reçu votre règlement pour votre réservation au Club des Léopards. Merci de procéder au paiement dans les meilleurs délais pour confirmer votre place.</p>'
-    +'<div style="background:#FFF7ED;border:2px solid #FED7AA;border-radius:12px;padding:16px;margin-bottom:20px;">'
-    +'<p style="margin:0;font-size:13px;color:#92400E;font-weight:700;">💳 Modes de paiement acceptés</p>'
-    +'<p style="margin:8px 0 0;font-size:12px;color:#374151;">CB sur place · Virement · Chèque · Espèces · Chèques Vacances</p>'
-    +'</div>'
-    +'<div style="background:#EFF6FF;border-radius:10px;padding:14px;margin-bottom:20px;">'
-    +'<p style="color:#0077C8;font-size:13px;font-weight:700;margin:0 0 10px;">🏦 Coordonnées bancaires</p>'
-    +'<table style="width:100%;border-collapse:collapse;">'
-    +'<tr><td style="font-size:11px;font-weight:700;color:#374151;padding:3px 0;width:30%;">Titulaire</td><td style="font-size:11px;color:#374151;">EURL MLEP</td></tr>'
-    +'<tr><td style="font-size:11px;font-weight:700;color:#374151;padding:3px 0;">IBAN</td><td style="font-size:11px;color:#374151;font-family:monospace;">FR76 3004 7141 6500 0200 9170 180</td></tr>'
-    +'<tr><td style="font-size:11px;font-weight:700;color:#374151;padding:3px 0;">BIC</td><td style="font-size:11px;color:#374151;font-family:monospace;">CMCIFRPP</td></tr>'
-    +'</table></div>'
-    +'<p style="color:#6B7280;font-size:13px;">Des questions ? <a href="mailto:clubdesleopards44.labaule@gmail.com" style="color:#0099E6;">clubdesleopards44.labaule@gmail.com</a></p>'
-    +'</div>'
-    +'<div style="background:#0A0F1E;border-radius:0 0 12px 12px;padding:14px 28px;text-align:center;">'
-    +'<p style="color:rgba(255,255,255,.5);margin:0;font-size:11px;">🐆 Club des Léopards · 28 Bd de l\'Océan · 44500 La Baule</p>'
-    +'</div></div></body></html>';
+  var html='<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F3F4F6;font-family:Arial,sans-serif;">'    +'<div style="max-width:600px;margin:0 auto;padding:20px;">'    +'<div style="background:linear-gradient(135deg,#0077C8,#0099E6);border-radius:12px 12px 0 0;padding:24px 28px;">'    +'<h1 style="color:#fff;margin:0;font-size:22px;font-weight:800;">🐆 Club des Léopards</h1>'    +'<p style="color:rgba(255,255,255,.85);margin:4px 0 0;font-size:13px;">La Baule · Rappel de paiement</p>'    +'</div>'    +'<div style="background:#fff;padding:28px;border-left:1px solid #E5E7EB;border-right:1px solid #E5E7EB;">'    +'<p style="margin:0 0 16px;font-size:14px;color:#374151;">Bonjour <strong>'+nom+'</strong>,</p>'    +'<p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">Sauf erreur de notre part, nous n\'avons pas reçu votre règlement pour votre réservation au Club des Léopards.</p>'    +'<p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">Merci de procéder au paiement dans les meilleurs délais pour confirmer votre place.</p>'    +'<div style="background:#FFF7ED;border:2px solid #FED7AA;border-radius:12px;padding:16px;margin-bottom:20px;">'    +'<p style="margin:0;font-size:13px;color:#92400E;font-weight:700;">💳 Modes de paiement acceptés</p>'    +'<p style="margin:8px 0 0;font-size:12px;color:#374151;">CB sur place · Virement · Chèque · Espèces · Chèques Vacances</p>'    +'</div>'    +'<div style="background:#EFF6FF;border-radius:10px;padding:14px;margin-bottom:20px;">'    +'<p style="color:#0077C8;font-size:13px;font-weight:700;margin:0 0 10px;">🏦 Coordonnées bancaires</p>'    +'<table style="width:100%;border-collapse:collapse;">'    +'<tr><td style="font-size:11px;font-weight:700;color:#374151;padding:3px 0;width:30%;">Titulaire</td><td style="font-size:11px;color:#374151;">EURL MLEP</td></tr>'    +'<tr><td style="font-size:11px;font-weight:700;color:#374151;padding:3px 0;">IBAN</td><td style="font-size:11px;color:#374151;font-family:monospace;">FR76 3004 7141 6500 0200 9170 180</td></tr>'    +'<tr><td style="font-size:11px;font-weight:700;color:#374151;padding:3px 0;">BIC</td><td style="font-size:11px;color:#374151;font-family:monospace;">CMCIFRPP</td></tr>'    +'</table></div>'    +'<p style="color:#6B7280;font-size:13px;">Des questions ? <a href="mailto:clubdesleopards@free.fr" style="color:#0099E6;">clubdesleopards@free.fr</a></p>'    +'</div>'    +'<div style="background:#0A0F1E;border-radius:0 0 12px 12px;padding:14px 28px;text-align:center;">'    +'<p style="color:rgba(255,255,255,.5);margin:0;font-size:11px;">🐆 Club des Léopards · 28 Bd de l\'Océan · 44500 La Baule</p>'    +'</div></div></body></html>';
   try{
     await envoyerEmailBrevo(email, nom, '⏰ Rappel paiement - Club des Léopards', html);
     toast('📧 Email de relance envoyé !','ok');
@@ -6903,12 +6888,13 @@ async function emailConfirmationReservation(membre, resa) {
   var nomsEnfants = (membre.children||[]).map(function(k){ return k.prenom||(k.name||'').split(' ')[0]; }).filter(Boolean).join(', ');
   if(!nomsEnfants) nomsEnfants = membre.prenom;
   var nbEnf = (membre.children||[]).length || 1;
-  var enfants = '<tr>'
-    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards<br><span style="font-size:11px;color:#9CA3AF;">'+nbSemaines+' semaine'+(nbSemaines>1?'s':'')+'</span></td>'
-    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+nomsEnfants+'</td>'
-    +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+semaine+'<br><span style="font-size:11px;color:#9CA3AF;">'+periode+'</span></td>'
-    +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#FF6B35;text-align:right;">'+montant+' €</td>'
-    +'</tr>';
+  // 1 ligne par semaine avec dates
+  var semaines = resa.semaines || [{label: semaine||'', debut:'', fin:'', periode: periode||'', prix: montant}];
+  var enfants = semaines.map(function(sem, idx){
+    var dateStr = sem.debut && sem.fin ? sem.debut+' → '+sem.fin : (sem.label||semaine||'');
+    var bg = idx%2===1 ? 'background:#F9FAFB;' : '';
+    return '<tr style="'+bg+'">'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">🐆 Club des Léopards<br><span style="font-size:11px;color:#9CA3AF;">📍 Plage de La Baule</span></td>'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+nomsEnfants+'</td>'      +'<td style="padding:10px 12px;font-size:13px;color:#374151;">'+sem.label+'<br><span style="font-size:11px;color:#9CA3AF;">'+dateStr+'<br>'+sem.periode+'</span></td>'      +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#FF6B35;text-align:right;">'+sem.prix+' €</td>'      +'</tr>';
+  }).join('');
 
   var html = '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#F3F4F6;font-family:Arial,sans-serif;">'
     +'<div style="max-width:600px;margin:0 auto;padding:20px;">'
@@ -6995,9 +6981,9 @@ async function emailConfirmationReservation(membre, resa) {
 
     // Footer
     +'<div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:0 0 12px 12px;padding:16px 28px;text-align:center;">'
-    +'<p style="color:#374151;font-size:12px;font-weight:700;margin:0 0 4px;">Club des Léopards · Club de Plage</p>'
-    +'<p style="color:#6B7280;font-size:12px;margin:0 0 4px;">28 Boulevard de l\'Océan · 44500 La Baule</p>'
-    +'<p style="color:#6B7280;font-size:12px;margin:0 0 8px;"><a href="mailto:clubdesleopards44.labaule@gmail.com" style="color:#0099E6;">clubdesleopards44.labaule@gmail.com</a></p>'
+    +'<p style="color:#0077C8;font-size:16px;font-weight:800;margin:0 0 6px;">🐆 Club des Léopards – La Baule</p>'
+    +'<p style="color:#374151;font-size:12px;margin:0 0 4px;">28 Boulevard de l\'Océan · 44500 La Baule</p>'
+    +'<p style="color:#374151;font-size:12px;margin:0 0 8px;"><a href="mailto:clubdesleopards@free.fr" style="color:#0099E6;">clubdesleopards@free.fr</a></p>'
     +'<p style="color:#9CA3AF;font-size:11px;font-style:italic;margin:0;">Cet email est généré automatiquement depuis l\'application Club des Léopards.</p>'
     +'</div>'
 
@@ -7237,6 +7223,9 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
+
 
 
 
