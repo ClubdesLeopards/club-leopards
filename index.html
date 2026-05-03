@@ -2391,6 +2391,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2503,8 +2506,14 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
 </script>
 <script>
+
+
+
 
 
 
@@ -4826,7 +4835,13 @@ function renderAdminGroupes(){
   var active=(ST.gPeriod==='après-midi'||ST.gPeriod==='aprem')?GROUPES_APREM:GROUPES_MATIN;
   el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">'
     +active.map(function(g){
-      var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var kPer=k.periode||[]; var pOk=kPer.indexOf(ST.gPeriod)>=0||(ST.gPeriod==='aprem'&&(kPer.indexOf('après-midi')>=0||kPer.indexOf('aprem')>=0))||(ST.gPeriod==='matin'&&kPer.indexOf('matin')>=0); return age>=g.min&&age<=g.max&&pOk;});
+      var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var pOk=resasSem.some(function(r){
+          if(String(r.membre_id)!==String(k.membre_id)) return false;
+          var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+          if(ST.gPeriod==='aprem'||ST.gPeriod==='après-midi') return rPer==='aprem'||rPer==='après-midi';
+          return rPer==='matin';
+        });
+        return age>=g.min&&age<=g.max&&pOk;});
       var pct=Math.round(enf.length/MAX_G*100);
       return '<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid '+g.color+';">'
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
@@ -6918,7 +6933,7 @@ async function emailConfirmationReservation(membre, resa) {
   // Bloc récap semaines : Saison / Semaine 1 : Lundi... au Vendredi... / Période
   var semsRecap = '<div style="background:#EFF6FF;border-radius:10px;padding:16px;margin-bottom:20px;">'    +(saisonLbl?'<div style="font-size:13px;font-weight:800;color:#0077C8;margin-bottom:10px;">☀️ '+saisonLbl+'</div>':'')    +semaines.map(function(sem){
       var dateStr = sem.debut && sem.fin
-        ? 'Lundi '+sem.debut+' au vendredi '+sem.fin
+        ? sem.debut.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ')+' au '+sem.fin.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ')
         : (sem.debut||sem.label||'');
       return '<div style="font-size:13px;color:#374151;margin-bottom:4px;">'        +'<strong>'+sem.label+' :</strong> '+dateStr+'</div>';
     }).join('')    +'<div style="font-size:13px;color:#374151;margin-top:8px;font-weight:600;">'+periodeUnique+'</div>'    +'</div>';
@@ -7044,7 +7059,7 @@ async function emailPaiementValide(membre, resa, mode, montant) {
   if(resa.semaines && resa.semaines.length>0){
     semsHTML = resa.semaines.map(function(sem){
       var dateStr = sem.debut && sem.fin
-        ? 'Lundi '+sem.debut+' au vendredi '+sem.fin
+        ? sem.debut.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ')+' au '+sem.fin.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ')
         : (sem.label||'');
       return '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+sem.label+' :</strong> '+dateStr+'</p>';
     }).join('');
@@ -7054,7 +7069,7 @@ async function emailPaiementValide(membre, resa, mode, montant) {
     semLabel.split(',').map(function(s){return s.trim();}).filter(Boolean).forEach(function(lbl){
       var wk = allSems.find(function(w){return w.label===lbl;});
       var dateStr = (wk && wk.debut && wk.fin)
-        ? 'Lundi '+wk.debut+' au vendredi '+wk.fin
+        ? wk.debut.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ')+' au '+wk.fin.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ')
         : '';
       semsHTML += '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+lbl+' :</strong> '+dateStr+'</p>';
     });
@@ -7273,6 +7288,9 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
+
 
 
 
