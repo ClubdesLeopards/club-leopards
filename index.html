@@ -2379,6 +2379,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2479,8 +2480,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4667,12 +4670,71 @@ function ouvrirMembreEdit(i){
   ov.style.display='flex';ov.style.zIndex='600';
 }
 function fermerMembreEdit(){var ov=document.getElementById('membre-edit-overlay');if(ov)ov.style.display='none';}
-function sauvegarderMembreEdit(i){
-  var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
+async function sauvegarderMembreEdit(i){
+  var all=[].concat(DEMO_FAMS,ST.members); var m=all[i]; if(!m) return;
   var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  m.prenom=f('em-prenom')||m.prenom;m.nom=f('em-nom')||m.nom;m.email=f('em-email')||m.email;m.tel=f('em-tel')||m.tel;
-  (m.children||[]).forEach(function(ch,ci){var name=(document.getElementById('ek-name-'+ci)||{value:ch.name}).value.trim();var age=parseInt((document.getElementById('ek-age-'+ci)||{value:ch.age}).value)||ch.age;ch.name=name;ch.age=age;});
-  fermerMembreEdit();toast('Sauvegarde','ok');renderMembres();
+
+  // Lire les nouvelles valeurs
+  var newPrenom=f('em-prenom')||m.prenom;
+  var newNom=f('em-nom')||m.nom;
+  var newEmail=f('em-email')||m.email;
+  var newTel=f('em-tel')||m.tel;
+
+  // Mettre à jour l'objet local
+  m.prenom=cap(newPrenom); m.nom=newNom; m.email=newEmail; m.tel=newTel;
+
+  // Mettre à jour les enfants localement
+  (m.children||[]).forEach(function(ch,ci){
+    var nameVal=(document.getElementById('ek-name-'+ci)||{value:ch.name}).value.trim();
+    var ageVal=parseInt((document.getElementById('ek-age-'+ci)||{value:ch.age}).value)||ch.age;
+    ch.name=cap(nameVal||ch.name);
+    ch.prenom=cap(nameVal||ch.prenom||'');
+    ch.age=ageVal;
+  });
+
+  // Propager dans ST.members
+  var idx=ST.members.findIndex(function(mb){return String(mb.id)===String(m.id);});
+  if(idx>=0) ST.members[idx]=m;
+
+  // Propager dans ST.membreConnecte si c'est le même
+  if(ST.membreConnecte && String(ST.membreConnecte.id)===String(m.id)){
+    ST.membreConnecte=m;
+    updateConnectedUI();
+  }
+
+  // Sauvegarder dans Supabase
+  try{
+    if(m.id){
+      var upM=await sb.from('membres').update({
+        prenom: m.prenom, nom: m.nom, email: m.email, tel: m.tel||null
+      }).eq('id',m.id);
+      if(upM.error) throw upM.error;
+
+      // Mettre à jour chaque enfant
+      for(var ci=0; ci<(m.children||[]).length; ci++){
+        var ch=m.children[ci];
+        if(ch.id){
+          var upE=await sb.from('enfants').update({
+            prenom: ch.prenom||ch.name||'',
+            nom: ch.nom||m.nom||'',
+            age: ch.age||0
+          }).eq('id',ch.id);
+          if(upE.error) console.warn('Enfant update err:',upE.error.message);
+        }
+      }
+      toast('✅ Modifications sauvegardées','ok');
+    }
+  }catch(err){
+    console.error('sauvegarderMembreEdit:',err);
+    toast('Erreur sauvegarde Supabase','ko');
+  }
+
+  fermerMembreEdit();
+  // Rafraîchir toute l'app
+  renderMembres();
+  renderAdminGroupes && renderAdminGroupes();
+  if(ST.adminTab==='reservations') renderAdminResas && renderAdminResas();
+  if(ST.adminTab==='paiements') renderPaiements && renderPaiements();
 }
 function supprimerEnfantEdit(mi,ci){var all=[].concat(DEMO_FAMS,ST.members);var m=all[mi];if(!m||!m.children)return;m.children.splice(ci,1);ouvrirMembreEdit(mi);}
 
@@ -7161,6 +7223,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
