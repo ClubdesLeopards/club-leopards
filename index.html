@@ -2438,6 +2438,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2559,8 +2560,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5350,7 +5353,7 @@ function renderPaiements(){
   var saisLabels={printemps:'Printemps',ete:'Été',automne:'Automne'};
   allR=allR.filter(function(r){
     var sl=(r.saisonLabel||r.saison||'').toLowerCase();
-    return sl.indexOf(saisLabels[paiSais].toLowerCase())>=0||sl.indexOf(paiSais)>=0||sl==='';
+    return sl.indexOf(saisLabels[paiSais].toLowerCase())>=0||sl.indexOf(paiSais)>=0;
   });
   var pF=window._pFilter||'attente';
   var aF=window._pAlpha||'';
@@ -5654,8 +5657,25 @@ function setComptaTab(t){
 }
 function renderComptabilite(){
   var el=document.getElementById('comptabilite-content');if(!el)return;
-  var saisons=[{key:'ete',label:'Ete 2026',emoji:'☀️',color:'#F97316'},{key:'automne',label:'Automne 2026',emoji:'🍂',color:'#F59E0B'},{key:'printemps',label:'Printemps 2027',emoji:'🌸',color:'#10B981'}];
-  el.innerHTML=saisons.map(function(s){var enc=ST.reservations.filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';}).reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0);var att=ST.reservations.filter(function(r){var s=r.statut||'';return s==='en attente'||s==='en_attente';}).reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0);return '<div class="wcard" style="margin-bottom:12px;border-left:4px solid '+s.color+';"><div class="wcard-title"><span>'+s.emoji+'</span> '+s.label+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="background:#D1FAE5;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#065F46;text-transform:uppercase;">Encaisse</div><div style="font-size:19px;font-weight:800;color:#065F46;">'+enc+'€</div></div><div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">Attendu</div><div style="font-size:19px;font-weight:800;color:#92400E;">'+(enc+att)+'€</div></div></div></div>';}).join('');
+  var saisons=[
+    {key:'ete',label:'Été 2026',emoji:'☀️',color:'#F97316'},
+    {key:'automne',label:'Automne 2026',emoji:'🍂',color:'#F59E0B'},
+    {key:'printemps',label:'Printemps 2027',emoji:'🌸',color:'#10B981'}
+  ];
+  el.innerHTML=saisons.map(function(s){
+    // Filtrer par saison : comparer saisonLabel ou saison
+    var resasSais=ST.reservations.filter(function(r){
+      var sl=(r.saisonLabel||r.saison||'').toLowerCase();
+      return sl.indexOf(s.label.toLowerCase())>=0||sl.indexOf(s.key)>=0;
+    });
+    var enc=resasSais.filter(function(r){
+      return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
+    }).reduce(function(acc,r){return acc+(parseFloat(r.montant)||0);},0);
+    var att=resasSais.filter(function(r){
+      var st=r.statut||''; return st==='en attente'||st==='en_attente';
+    }).reduce(function(acc,r){return acc+(parseFloat(r.montant)||0);},0);
+    return '<div class="wcard" style="margin-bottom:12px;border-left:4px solid '+s.color+';">'      +'<div class="wcard-title"><span>'+s.emoji+'</span> '+s.label+'</div>'      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'      +'<div style="background:#D1FAE5;border-radius:10px;padding:10px;text-align:center;">'      +'<div style="font-size:9px;font-weight:700;color:#065F46;text-transform:uppercase;">Encaissé</div>'      +'<div style="font-size:19px;font-weight:800;color:#065F46;">'+enc+' €</div></div>'      +'<div style="background:#FEF3C7;border-radius:10px;padding:10px;text-align:center;">'      +'<div style="font-size:9px;font-weight:700;color:#92400E;text-transform:uppercase;">En attente</div>'      +'<div style="font-size:19px;font-weight:800;color:#92400E;">'+att+' €</div></div>'      +'</div></div>';
+  }).join('');
 }
 function renderSuiviQuotidien(){
   var el=document.getElementById('suivi-quotidien-content');if(!el)return;
@@ -7474,6 +7494,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
