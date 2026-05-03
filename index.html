@@ -1944,51 +1944,89 @@ textarea{resize:vertical;}
 
       <!-- NOUVELLE RÉSERVATION OVERLAY -->
       <div id="nouvelle-resa-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:18px;max-width:480px;width:92%;max-height:88vh;overflow-y:auto;">
+        <div style="background:#fff;border-radius:18px;max-width:480px;width:92%;max-height:90vh;overflow-y:auto;">
           <div style="padding:14px 18px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;">
             <div style="font-size:14px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">Nouvelle réservation</div>
             <button onclick="fermerNouvelleResa()" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;">×</button>
           </div>
-          <div style="padding:18px;display:flex;flex-direction:column;gap:10px;">
-            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Famille *</label>
-            <select id="nr-membre-select" onchange="nrSelectMembre(this.value)" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;box-sizing:border-box;">
-              <option value="">-- Choisir un membre --</option>
-            </select></div>
-            <div id="nr-enfants-section" style="display:none;">
-              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;margin-top:8px;">Enfants *</label>
-              <div id="nr-enfants-checkboxes" style="display:flex;flex-direction:column;gap:6px;padding:8px;background:#F9FAFB;border-radius:9px;border:1.5px solid #E5E7EB;"></div>
+          <div style="padding:18px;display:flex;flex-direction:column;gap:12px;">
+            <!-- Membre -->
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Famille *</label>
+              <select id="nr-membre-select" onchange="nrSelectMembre(this.value)" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;box-sizing:border-box;">
+                <option value="">-- Choisir un membre --</option>
+              </select>
             </div>
+            <!-- Email + Tel (auto-remplis) -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Email</label>
-              <input id="nr-email" type="email" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <input id="nr-email" type="email" readonly style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;background:#F9FAFB;color:#6B7280;"></div>
               <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Tél</label>
-              <input id="nr-tel" type="tel" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+              <input id="nr-tel" type="tel" readonly style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;background:#F9FAFB;color:#6B7280;"></div>
             </div>
-            <!-- Enfants -->
-            <div>
-              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Enfants</label>
-              <div id="nr-enfants-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
-              <button type="button" onclick="nrAjouterEnfant()" style="width:100%;padding:7px;background:#EFF6FF;color:#0099E6;border:2px dashed #BFDBFE;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">+ Enfant</button>
+            <!-- Enfants checkboxes -->
+            <div id="nr-enfants-section" style="display:none;">
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Enfants *</label>
+              <div id="nr-enfants-checkboxes" style="display:flex;flex-direction:column;gap:6px;padding:8px;background:#F9FAFB;border-radius:9px;border:1.5px solid #E5E7EB;"></div>
             </div>
+            <!-- Période + Saison -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Période</label>
               <select id="nr-periode" onchange="nrCalculerMontant()" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
                 <option value="matin">Matin</option><option value="aprem">Après-midi</option>
               </select></div>
-              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Saisons</label>
+              <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Saison</label>
               <select id="nr-saison" onchange="updateResaSemaines();nrCalculerMontant();" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
                 <option value="ete">Été 2026</option><option value="automne">Automne 2026</option><option value="printemps">Printemps 2027</option>
               </select></div>
             </div>
-            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Semaines (plusieurs possibles)</label>
-            <div id="nr-semaines-checks" style="display:flex;flex-direction:column;gap:5px;max-height:150px;overflow-y:auto;border:1.5px solid #E5E7EB;border-radius:9px;padding:8px;"></div></div>
+            <!-- Semaines -->
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Semaines</label>
+              <div id="nr-semaines-checks" style="display:flex;flex-direction:column;gap:5px;max-height:150px;overflow-y:auto;border:1.5px solid #E5E7EB;border-radius:9px;padding:8px;"></div>
+            </div>
             <!-- Montant calculé -->
             <div id="nr-montant-display" style="background:#F0F9FF;border-radius:10px;padding:12px;text-align:center;display:none;">
-              <div style="font-size:12px;color:#6B7280;">Montant </div>
-              <div id="nr-montant-val" style="font-size:24px;font-weight:800;color:#0099E6;">120 €</div>
+              <div style="font-size:12px;color:#6B7280;">Montant</div>
+              <div id="nr-montant-val" style="font-size:24px;font-weight:800;color:#0099E6;">0 €</div>
               <div id="nr-montant-detail" style="font-size:11px;color:#9CA3AF;"></div>
             </div>
-            <button onclick="confirmerNouvelleResa()" style="padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:11px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">Créer la réservation</button>
+            <!-- Mode de paiement -->
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:6px;">Mode de paiement</label>
+              <select id="nr-mode-select" onchange="nrOnModeChange(this.value)" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="">-- Sélectionner --</option>
+                <option value="cb">💳 Carte bancaire</option>
+                <option value="virement">🏦 Virement</option>
+                <option value="cheque">📝 Chèque</option>
+                <option value="cheques_vacances">🎫 Chèques Vacances</option>
+                <option value="especes">💶 Espèces</option>
+                <option value="avoir">🎟️ Avoir</option>
+                <option value="multiple">💰 Plusieurs modes</option>
+              </select>
+            </div>
+            <!-- Avoir : sélection membre -->
+            <div id="nr-avoir-section" style="display:none;background:#FDF2F8;border-radius:10px;padding:12px;border:1.5px solid #FBCFE8;">
+              <label style="font-size:10px;font-weight:700;color:#EC4899;text-transform:uppercase;display:block;margin-bottom:6px;">Membre avec avoir</label>
+              <select id="nr-avoir-membre" onchange="nrSelectAvoir(this.value)" style="width:100%;padding:9px;border:1.5px solid #FBCFE8;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;margin-bottom:8px;">
+                <option value="">-- Sélectionner --</option>
+              </select>
+              <div id="nr-avoir-montant-display" style="font-size:13px;color:#EC4899;font-weight:700;"></div>
+            </div>
+            <!-- Plusieurs modes -->
+            <div id="nr-multi-section" style="display:none;background:#F9FAFB;border-radius:10px;padding:12px;border:1.5px solid #E5E7EB;">
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:8px;">Répartition des paiements</label>
+              <div style="display:flex;flex-direction:column;gap:6px;" id="nr-multi-fields"></div>
+            </div>
+            <!-- Statut -->
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Statut</label>
+              <select id="nr-statut" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;">
+                <option value="en_attente">⏳ En attente de paiement</option>
+                <option value="valide">✅ Payée</option>
+              </select>
+            </div>
+            <button onclick="confirmerNouvelleResa()" style="padding:12px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:11px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">✅ Créer la réservation</button>
           </div>
         </div>
       </div>
@@ -2394,6 +2432,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2509,8 +2548,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -3798,6 +3839,254 @@ function renderFiches() {
   }).join('') || '<div class="empty"><div class="empty-icon">📋</div><p>Aucun résultat</p></div>';
 }
 
+// ═══ NOUVELLE RÉSERVATION MANUELLE ═══
+function nrPopulerMembres(){
+  var sel=document.getElementById('nr-membre-select'); if(!sel) return;
+  sel.innerHTML='<option value="">-- Choisir un membre --</option>';
+  ST.members.forEach(function(m,idx){
+    var opt=document.createElement('option');
+    opt.value=idx;
+    opt.textContent=cap(m.prenom)+' '+NOM(m.nom||'');
+    sel.appendChild(opt);
+  });
+}
+
+function nrSelectMembre(idx){
+  var m=ST.members[parseInt(idx)];
+  // Email + Tel auto
+  var emailEl=document.getElementById('nr-email');
+  var telEl=document.getElementById('nr-tel');
+  if(emailEl) emailEl.value=m?m.email||'':'';
+  if(telEl) telEl.value=m?m.tel||'':'';
+  // Enfants checkboxes
+  var section=document.getElementById('nr-enfants-section');
+  var checks=document.getElementById('nr-enfants-checkboxes');
+  if(!section||!checks){return;}
+  if(!m){section.style.display='none';return;}
+  section.style.display='';
+  var kids=m.children||[];
+  checks.innerHTML=kids.length===0
+    ?'<div style="font-size:12px;color:#9CA3AF;">Aucun enfant inscrit</div>'
+    :kids.map(function(k,ki){
+      return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;">'        +'<input type="checkbox" name="nr-enfant" value="'+ki+'" checked style="width:16px;height:16px;accent-color:#0099E6;">'        +'<span style="font-size:13px;color:#374151;font-weight:600;">'+(cap(k.prenom||k.name||''))+'</span>'        +'<span style="font-size:11px;color:#9CA3AF;">'+(k.age?' · '+k.age+' ans':'')+'</span>'        +'</label>';
+    }).join('');
+  nrCalculerMontant();
+}
+
+function updateResaSemaines(){
+  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
+  var sems=(SAISONS[saison]||SAISONS.ete).semaines||[];
+  var cont=document.getElementById('nr-semaines-checks'); if(!cont) return;
+  cont.innerHTML=sems.map(function(s,i){
+    return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;">'      +'<input type="checkbox" name="nr-semaine" value="'+i+'" onchange="nrCalculerMontant()" style="width:16px;height:16px;accent-color:#0099E6;">'      +'<span style="font-size:12px;color:#374151;">'+s.label+' · '+s.debut+' → '+s.fin+'</span>'      +'</label>';
+  }).join('');
+}
+
+function nrCalculerMontant(){
+  var idx=(document.getElementById('nr-membre-select')||{value:''}).value;
+  var m=ST.members[parseInt(idx)];
+  var nbEnf=0;
+  if(m){
+    var checked=document.querySelectorAll('#nr-enfants-checkboxes input[type=checkbox]:checked');
+    nbEnf=checked.length;
+  }
+  nbEnf=Math.max(nbEnf,1);
+  var semChecks=document.querySelectorAll('#nr-semaines-checks input[type=checkbox]:checked');
+  var total=0;
+  semChecks.forEach(function(cb,i){ total+=calculerPrixSemaine(nbEnf,i); });
+  var disp=document.getElementById('nr-montant-display');
+  var val=document.getElementById('nr-montant-val');
+  var det=document.getElementById('nr-montant-detail');
+  if(disp) disp.style.display=semChecks.length>0?'':'none';
+  if(val) val.textContent=total+' €';
+  if(det) det.textContent=nbEnf+' enfant'+(nbEnf>1?'s':'')+' · '+semChecks.length+' semaine'+(semChecks.length>1?'s':'');
+  return total;
+}
+
+function nrOnModeChange(val){
+  var avoirSec=document.getElementById('nr-avoir-section');
+  var multiSec=document.getElementById('nr-multi-section');
+  if(avoirSec) avoirSec.style.display=(val==='avoir')?'':'none';
+  if(multiSec) multiSec.style.display=(val==='multiple')?'':'none';
+  if(val==='avoir') nrPopulerAvoirs();
+  if(val==='multiple') nrBuildMultiFields();
+}
+
+function nrPopulerAvoirs(){
+  var sel=document.getElementById('nr-avoir-membre'); if(!sel) return;
+  sel.innerHTML='<option value="">-- Sélectionner --</option>';
+  (ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';}).forEach(function(a,i){
+    var opt=document.createElement('option');
+    opt.value=i;
+    opt.textContent=(a.nom||a.membre||'')+ ' · '+a.montant+' €';
+    sel.appendChild(opt);
+  });
+}
+
+function nrSelectAvoir(idx){
+  var disp=document.getElementById('nr-avoir-montant-display'); if(!disp) return;
+  var avoirs=(ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';});
+  var a=avoirs[parseInt(idx)];
+  if(!a){disp.textContent='';return;}
+  disp.textContent='Avoir disponible : '+a.montant+' €';
+  // Auto-remplir montant si champ multi avoir
+  var avoirInput=document.getElementById('nr-multi-avoir');
+  if(avoirInput) avoirInput.value=a.montant;
+}
+
+function nrBuildMultiFields(){
+  var cont=document.getElementById('nr-multi-fields'); if(!cont) return;
+  var modes=[
+    {k:'cb',l:'💳 CB',c:'#0077C8'},
+    {k:'virement',l:'🏦 Virement',c:'#10B981'},
+    {k:'cheque',l:'📝 Chèque',c:'#F59E0B'},
+    {k:'cheques_vacances',l:'🎫 Chq Vacances',c:'#8B5CF6'},
+    {k:'especes',l:'💶 Espèces',c:'#F97316'},
+    {k:'avoir',l:'🎟️ Avoir',c:'#EC4899'}
+  ];
+  cont.innerHTML=modes.map(function(m){
+    return '<div style="display:flex;align-items:center;gap:8px;">'      +'<span style="font-size:12px;font-weight:700;color:'+m.c+';min-width:120px;">'+m.l+'</span>'      +'<input id="nr-multi-'+m.k+'" type="number" min="0" value="0" '      +'style="flex:1;padding:7px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;" '      +'onchange="nrCheckMultiAvoir()">'      +'</div>';
+  }).join('');
+  // Section avoir dans multi
+  cont.innerHTML+='<div id="nr-multi-avoir-section" style="display:none;margin-top:8px;padding:8px;background:#FDF2F8;border-radius:8px;">'    +'<label style="font-size:10px;font-weight:700;color:#EC4899;text-transform:uppercase;display:block;margin-bottom:4px;">Membre avec avoir</label>'    +'<select id="nr-multi-avoir-membre" onchange="nrSelectAvoirMulti(this.value)" style="width:100%;padding:8px;border:1.5px solid #FBCFE8;border-radius:8px;font-family:inherit;font-size:12px;background:#fff;"></select>'    +'<div id="nr-multi-avoir-info" style="font-size:12px;color:#EC4899;font-weight:700;margin-top:4px;"></div>'    +'</div>';
+}
+
+function nrCheckMultiAvoir(){
+  var avoirInput=document.getElementById('nr-multi-avoir');
+  var avoirSec=document.getElementById('nr-multi-avoir-section');
+  if(!avoirInput||!avoirSec) return;
+  var val=parseFloat(avoirInput.value)||0;
+  avoirSec.style.display=val>0?'':'none';
+  if(val>0){
+    var sel=document.getElementById('nr-multi-avoir-membre');
+    if(sel){
+      sel.innerHTML='<option value="">-- Sélectionner --</option>';
+      (ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';}).forEach(function(a,i){
+        var opt=document.createElement('option');
+        opt.value=i; opt.textContent=(a.nom||a.membre||'')+' · '+a.montant+' €';
+        sel.appendChild(opt);
+      });
+    }
+  }
+}
+
+function nrSelectAvoirMulti(idx){
+  var avoirs=(ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';});
+  var a=avoirs[parseInt(idx)];
+  var info=document.getElementById('nr-multi-avoir-info'); if(!info) return;
+  info.textContent=a?'Avoir disponible : '+a.montant+' €':'';
+}
+
+async function confirmerNouvelleResa(){
+  var selIdx=(document.getElementById('nr-membre-select')||{value:''}).value;
+  if(selIdx===''){toast('Choisir un membre','ko');return;}
+  var m=ST.members[parseInt(selIdx)];
+  if(!m){toast('Membre introuvable','ko');return;}
+
+  var checks=document.querySelectorAll('#nr-semaines-checks input[type=checkbox]:checked');
+  if(!checks.length){toast('Choisir au moins une semaine','ko');return;}
+
+  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
+  var sems=(SAISONS[saison]||SAISONS.ete).semaines||[];
+  var periode=(document.getElementById('nr-periode')||{value:'matin'}).value;
+  var statut=(document.getElementById('nr-statut')||{value:'en_attente'}).value;
+  var mode=(document.getElementById('nr-mode-select')||{value:''}).value;
+
+  // Enfants sélectionnés
+  var enfChecks=document.querySelectorAll('#nr-enfants-checkboxes input[type=checkbox]:checked');
+  var enfants=(m.children||[]).filter(function(_,i){
+    return Array.from(enfChecks).some(function(cb){return parseInt(cb.value)===i;});
+  });
+  var nbEnf=Math.max(enfants.length,1);
+
+  // Semaines sélectionnées
+  var semLabels=[], semDebut='', semFin='';
+  var totalMontant=0;
+  Array.from(checks).forEach(function(cb,i){
+    var sem=sems[parseInt(cb.value)]||{};
+    semLabels.push(sem.label||'');
+    if(i===0){semDebut=sem.debut||''; semFin=sem.fin||'';}
+    totalMontant+=calculerPrixSemaine(nbEnf,i);
+  });
+
+  // Mode paiement
+  var modeLabel=mode;
+  var avoirIdx=null;
+  if(mode==='avoir'){
+    var avoirSel=document.getElementById('nr-avoir-membre');
+    if(avoirSel&&avoirSel.value!==''){
+      var avoirs=(ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';});
+      avoirIdx=parseInt(avoirSel.value);
+      var avoir=avoirs[avoirIdx];
+      if(avoir) modeLabel='avoir:'+avoir.id;
+    }
+  }
+  if(mode==='multiple'){
+    var parts=[];
+    ['cb','virement','cheque','cheques_vacances','especes','avoir'].forEach(function(k){
+      var v=parseFloat((document.getElementById('nr-multi-'+k)||{value:'0'}).value)||0;
+      if(v>0) parts.push(k+':'+v);
+    });
+    modeLabel='multiple:'+parts.join('|');
+    // Avoir dans multi
+    var maMemb=document.getElementById('nr-multi-avoir-membre');
+    if(maMemb&&maMemb.value!==''){
+      var avoirs2=(ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';});
+      avoirIdx=parseInt(maMemb.value);
+    }
+  }
+
+  // Insérer dans Supabase
+  var resaData={
+    membre_id: m.id,
+    nom_famille: m.nom||'',
+    email: m.email||'',
+    tel: m.tel||'',
+    saison: saison,
+    semaine_label: semLabels.join(', '),
+    semaine_debut: semDebut,
+    semaine_fin: semFin,
+    periode: periode,
+    montant: totalMontant,
+    statut: statut,
+    mode_paiement: mode==='multiple'?'multiple':mode,
+    enfants_ids: JSON.stringify((enfants||[]).map(function(e){return e.id;}).filter(Boolean))
+  };
+
+  try{
+    var res=await sb.from('reservations').insert(resaData).select().single();
+    if(res.error) throw res.error;
+    // Mettre à jour l'avoir si utilisé
+    if(avoirIdx!==null){
+      var avoirs3=(ST.avoirs||[]).filter(function(a){return a.statut!=='soldé';});
+      var avoir3=avoirs3[avoirIdx];
+      if(avoir3&&avoir3.id){
+        await sb.from('avoirs').update({statut:'soldé',date_utilisation:new Date().toISOString().slice(0,10)}).eq('id',avoir3.id);
+        avoir3.statut='soldé'; avoir3.date_utilisation=new Date().toLocaleDateString('fr-FR');
+      }
+    }
+    // Ajouter localement
+    ST.reservations.push(Object.assign({},resaData,{id:res.data.id,children:enfants,nom:m.nom,saisonLabel:saison}));
+    fermerNouvelleResa();
+    toast('Réservation créée ✅','ok');
+    renderAdminResas();
+    renderPaiements&&renderPaiements();
+  }catch(err){
+    console.error('confirmerNouvelleResa:',err);
+    toast('Erreur création réservation','ko');
+  }
+}
+window.nrPopulerMembres=nrPopulerMembres;
+window.nrSelectMembre=nrSelectMembre;
+window.updateResaSemaines=updateResaSemaines;
+window.nrCalculerMontant=nrCalculerMontant;
+window.nrOnModeChange=nrOnModeChange;
+window.nrSelectAvoir=nrSelectAvoir;
+window.nrCheckMultiAvoir=nrCheckMultiAvoir;
+window.nrSelectAvoirMulti=nrSelectAvoirMulti;
+window.confirmerNouvelleResa=confirmerNouvelleResa;
+
+
 // ═══ PAIEMENTS ═══
 var paiPeriod='saison';
 var paiSaison=window._paiSaison||'ete';
@@ -4902,14 +5191,7 @@ function nouvelleResaManuelle(){
   setTimeout(function(){nrPopulerMembres();updateResaSemaines();},100);var ov=document.getElementById('nouvelle-resa-overlay');if(ov){ov.style.display='flex';updateResaSemaines();}}
 function fermerNouvelleResa(){var ov=document.getElementById('nouvelle-resa-overlay');if(ov)ov.style.display='none';}
 
-function ajouterEnfantResa(){
-  var cont=document.getElementById('nr-enfants-list');if(!cont)return;
-  var idx=cont.querySelectorAll('input').length;
-  var inp=document.createElement('input');
-  inp.placeholder='Prenom Nom (enfant '+(idx+1)+')';inp.id='nr-enfant-'+idx;
-  inp.style.cssText='width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:4px;';
-  cont.appendChild(inp);
-}
+
 
 function renderAdminResas(){
   var el=document.getElementById('admin-resa-content');if(!el)return;
@@ -6556,117 +6838,17 @@ window.ajouterMembre=ajouterMembre;
 
 
 
-function nrAjouterEnfant(){
-  var list=document.getElementById('nr-enfants-list');if(!list)return;
-  var div=document.createElement('div');
-  div.style.cssText='display:grid;grid-template-columns:1fr 1fr 60px;gap:6px;align-items:center;margin-bottom:4px;';
-  div.innerHTML='<input placeholder="Prénom *" class="nr-e-prenom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
-    +'<input placeholder="NOM" class="nr-e-nom" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">'
-    +'<input type="number" min="3" max="13" placeholder="Âge" class="nr-e-age" onchange="nrCalculerMontant()" style="padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box;">';
-  list.appendChild(div);
-  nrCalculerMontant();
-}
 
-function nrCalculerMontant(){
-  var list=document.getElementById('nr-enfants-list');
-  var nbE=list?list.children.length:0;if(nbE<1)nbE=1;
-  var checks=document.querySelectorAll('#nr-semaines-checks input[type=checkbox]:checked');
-  var nbS=checks.length;
-  var montant=nbE*nbS*120;
-  var disp=document.getElementById('nr-montant-display');
-  var val=document.getElementById('nr-montant-val');
-  var det=document.getElementById('nr-montant-detail');
-  if(disp)disp.style.display=nbS>0?'':'none';
-  if(val)val.textContent=montant+' €';
-  if(det)det.textContent=nbE+' enfant'+(nbE>1?'s':'')+' × '+nbS+' semaine'+(nbS>1?'s':'')+' × 120 €';
-}
 
-function nrPopulerMembres(){
-  var sel=document.getElementById('nr-membre-select');
-  if(!sel) return;
-  sel.innerHTML='<option value="">-- Choisir un membre --</option>';
-  ST.members.forEach(function(m,idx){
-    var opt=document.createElement('option');
-    opt.value=idx;
-    opt.textContent=m.prenom+' '+m.nom.toUpperCase();
-    sel.appendChild(opt);
-  });
-}
 
-function nrSelectMembre(idx){
-  var section=document.getElementById('nr-enfants-section');
-  var checks=document.getElementById('nr-enfants-checkboxes');
-  if(!section||!checks) return;
-  if(idx===''){section.style.display='none';return;}
-  var m=ST.members[parseInt(idx)];
-  if(!m){section.style.display='none';return;}
-  section.style.display='';
-  var kids=m.children||[];
-  if(kids.length===0){
-    checks.innerHTML='<div style="font-size:12px;color:#9CA3AF;">Aucun enfant inscrit</div>';
-  } else {
-    checks.innerHTML=kids.map(function(k,ki){
-      return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;">'
-        +'<input type="checkbox" name="nr-enfant" value="'+ki+'" checked style="width:16px;height:16px;accent-color:#0099E6;">'
-        +'<span style="font-size:13px;color:#374151;font-weight:600;">'+(k.prenom||k.name||'')+'</span>'
-        +'<span style="font-size:11px;color:#9CA3AF;">'+(k.age?' · '+k.age+' ans':'')+'</span>'
-        +'</label>';
-    }).join('');
-  }
-  nrCalculerMontant();
-}
 
-function updateResaSemaines(){
-  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
-  var cont=document.getElementById('nr-semaines-checks');if(!cont)return;
-  var sems=(SAISONS[saison]||SAISONS.ete).semaines||[];
-  cont.innerHTML=sems.map(function(s,i){
-    return '<label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;">'
-      +'<input type="checkbox" value="'+i+'" onchange="nrCalculerMontant()" style="width:16px;height:16px;accent-color:#0099E6;">'
-      +'<span style="font-size:13px;color:#374151;">'+s.label+' · '+s.debut+' au '+s.fin+'</span>'
-      +'</label>';
-  }).join('');
-  nrCalculerMontant();
-}
 
-function confirmerNouvelleResa(){
-  var g=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var nom=g('nr-nom');if(!nom){toast('Nom requis','ko');return;}
-  var checks=document.querySelectorAll('#nr-semaines-checks input[type=checkbox]:checked');
-  if(!checks.length){toast('Choisir au moins une semaine','ko');return;}
-  var saison=(document.getElementById('nr-saison')||{value:'ete'}).value;
-  var sems=(SAISONS[saison]||SAISONS.ete).semaines||[];
-  var periode=(document.getElementById('nr-periode')||{value:'matin'}).value;
-  var enfants=[];
-  document.querySelectorAll('#nr-enfants-list > div').forEach(function(div){
-    var p=div.querySelector('.nr-e-prenom');
-    var n=div.querySelector('.nr-e-nom');
-    var a=div.querySelector('.nr-e-age');
-    var pr=p?p.value.trim():'';
-    if(pr)enfants.push({prenom:pr,nom:n?n.value.trim():'',age:a?parseFloat(a.value)||0:0});
-  });
-  var nbE=enfants.length||1;
-  checks.forEach(function(cb){
-    var sem=sems[parseInt(cb.value)]||{};
-    var resaObj={
-      id:'R'+Date.now()+Math.floor(Math.random()*9000),
-      nom:nom,email:g('nr-email'),tel:g('nr-tel'),
-      slot:{time:periode,date:(sem.debut||'')+' au '+(sem.fin||'')},
-      saisonLabel:sem.label||'',saison:saison,
-      periode:periode,montant:nbE*120,paid:0,statut:'en attente',
-      children:enfants,date:new Date().toLocaleDateString('fr-FR')
-    };
-    ST.reservations.push(resaObj);
-    sb.from('reservations').insert({
-      nom_famille:nom,email:g('nr-email'),
-      saison:saison,semaine_label:sem.label||'',
-      periode:periode,montant:nbE*120,statut:'en_attente'
-    }).then(function(r){if(r.error)console.warn(r.error.message);});
-  });
-  fermerNouvelleResa();
-  toast('Réservation créée ✅','ok');
-  renderAdminResas();
-}
+
+
+
+
+
+
 
 window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
@@ -7288,6 +7470,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
