@@ -2455,6 +2455,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2582,8 +2583,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5774,6 +5777,35 @@ function renderSuiviQuotidien(){
 }
 function ouvrirSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov){var d=document.getElementById('sq-date');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);ov.style.display='flex';}}
 function fermerSaisieQuotidienne(){var ov=document.getElementById('saisie-quotidienne-overlay');if(ov)ov.style.display='none';}
+
+function sqUpdateRef(){
+  var type=(document.getElementById('sq-ref-type')||{value:'libre'}).value;
+  var memSel=document.getElementById('sq-ref-membre');
+  var libSel=document.getElementById('sq-ref-libre');
+  var disp=document.getElementById('sq-ref-display');
+  if(memSel) memSel.style.display=type==='enfant'?'':'none';
+  if(libSel) libSel.style.display=type==='libre'?'':'none';
+  if(type==='enfant'&&memSel){
+    if(memSel.children.length<=1){
+      memSel.innerHTML='<option value="">-- Choisir un membre --</option>';
+      ST.members.forEach(function(m,i){
+        var opt=document.createElement('option'); opt.value=i;
+        var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);
+        opt.textContent=(enfs.length?enfs.join(', ')+' — ':'')+cap(m.prenom||'')+' '+NOM(m.nom||'');
+        memSel.appendChild(opt);
+      });
+    }
+    if(disp&&memSel.value){
+      var m=ST.members[parseInt(memSel.value)];
+      if(m){var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);disp.textContent=enfs.join(', ');}
+    }
+  } else if(type==='casquette'){ if(disp) disp.textContent='🧢 Casquette'; }
+  else if(type==='tshirt'){ if(disp) disp.textContent='👕 T-Shirt'; }
+  else if(type==='sweat'){ if(disp) disp.textContent='🧥 Sweat'; }
+  else { if(disp) disp.textContent=''; }
+}
+window.sqUpdateRef=sqUpdateRef;
+
 async function confirmerSaisieQuotidienne(){
   var f=function(id){return parseFloat((document.getElementById(id)||{value:'0'}).value)||0;};
   var s=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
@@ -7618,6 +7650,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
