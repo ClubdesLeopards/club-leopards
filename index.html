@@ -2383,6 +2383,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2487,8 +2488,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -3098,9 +3101,9 @@ function allKids() {
       kids.push({
         id: ch.id || null,
         membre_id: m.id || null,
-        prenom: cap(ch.prenom || (ch.name?ch.name.split(' ')[0]:'')),
-        nom: ch.nom || m.nom || '',
-        name: cap(ch.prenom||(ch.name?ch.name.split(' ')[0]:''))+' '+NOM(ch.nom||m.nom||''),
+        prenom: cap((ch.prenom||'').split(' ')[0] || (ch.name?ch.name.split(' ')[0]:'')),
+        nom: NOM(ch.nom||m.nom||''),
+        name: cap((ch.prenom||'').split(' ')[0]||(ch.name?ch.name.split(' ')[0]:''))+' '+NOM(ch.nom||m.nom||''),
         age: parseFloat(ch.age) || 0,
         dob: ch.dob || ch.date_naissance || '',
         medical: ch.medical || 'RAS',
@@ -7234,6 +7237,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
