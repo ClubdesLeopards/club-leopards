@@ -2390,6 +2390,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2501,8 +2502,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -7030,8 +7033,14 @@ async function emailPaiementValide(membre, resa, mode, montant) {
 
   // Construire le bloc semaines
   var saisonLbl = resa.saisonLabel||'';
-  var periode = resa.slot ? resa.slot.time : (resa.periode||'');
+  var rawPer = resa.slot ? resa.slot.time : (resa.periode||'');
+  var periode = (rawPer==='aprem'||rawPer==='Aprem')?'Après-midi':(rawPer==='matin'||rawPer==='Matin')?'Matin':rawPer;
   var semsHTML = '';
+  // Toutes les semaines disponibles dans SAISONS pour lookup
+  var allSems = [];
+  if(typeof SAISONS !== 'undefined'){
+    Object.values(SAISONS).forEach(function(sais){(sais.semaines||[]).forEach(function(wk){allSems.push(wk);});});
+  }
   if(resa.semaines && resa.semaines.length>0){
     semsHTML = resa.semaines.map(function(sem){
       var dateStr = sem.debut && sem.fin
@@ -7040,10 +7049,14 @@ async function emailPaiementValide(membre, resa, mode, montant) {
       return '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+sem.label+' :</strong> '+dateStr+'</p>';
     }).join('');
   } else {
-    // Fallback depuis slot.date (ancienne réservation)
+    // Reconstruire depuis semaine_label en cherchant les dates dans SAISONS
     var semLabel = resa.semaine_label || (resa.slot ? resa.slot.date : '');
     semLabel.split(',').map(function(s){return s.trim();}).filter(Boolean).forEach(function(lbl){
-      semsHTML += '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+lbl+'</strong></p>';
+      var wk = allSems.find(function(w){return w.label===lbl;});
+      var dateStr = (wk && wk.debut && wk.fin)
+        ? 'Lundi '+wk.debut+' au vendredi '+wk.fin
+        : '';
+      semsHTML += '<p style="margin:4px 0;color:#065F46;font-size:13px;"><strong>'+lbl+' :</strong> '+dateStr+'</p>';
     });
   }
 
@@ -7260,6 +7273,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
