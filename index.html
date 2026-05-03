@@ -2433,8 +2433,16 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
+
+
+
+
 
 
 
@@ -2734,6 +2742,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2743,6 +2755,8 @@ var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var adminUser = null;
 
 // ── Chargement initial ──
+
+
 async function chargerDonnees() {
   try {
     // Membres + enfants
@@ -6850,7 +6864,6 @@ window.ajouterMembre=ajouterMembre;
 
 
 
-window.nrAjouterEnfant=nrAjouterEnfant;
 window.nrCalculerMontant=nrCalculerMontant;
 window.updateResaSemaines=updateResaSemaines;
 window.confirmerNouvelleResa=confirmerNouvelleResa;
@@ -7428,8 +7441,8 @@ window.relanceResa2=relanceResa2;
 
 
 
-var ADMIN_EMAILS=['clubdesleopards44.labaule@gmail.com','charlene-sauzeau@live.fr'];
 
+var ADMIN_EMAILS=['clubdesleopards44.labaule@gmail.com','charlene-sauzeau@live.fr'];
 function updateConnectedUI(){
   var connected=!!ST.membreConnecte;
   var ncc=document.getElementById('nouveau-au-club-card');
@@ -7470,6 +7483,10 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
+
+
 
 
 
