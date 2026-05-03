@@ -2456,6 +2456,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2584,8 +2586,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -4590,79 +4596,127 @@ var SUIVI_QUOTIDIEN = [];
 function renderSuiviQuotidien(){
   var el=document.getElementById('suivi-quotidien-content'); if(!el) return;
 
-  // Filtre dates
   var dateDebut=window._sqDateDebut||'';
   var dateFin=window._sqDateFin||'';
 
-  // Injecter les réservations validées depuis ST.reservations si pas encore dans SUIVI_QUOTIDIEN
+  // Injecter réservations validées depuis ST.reservations
   var allEntries=[].concat(SUIVI_QUOTIDIEN);
-
-  // Ajouter les paiements de réservations validées qui ne sont pas encore dans SUIVI_QUOTIDIEN
   ST.reservations.forEach(function(r){
     if(r.statut!=='valide'&&r.statut!=='validé'&&r.statut!=='paye') return;
-    var rId=String(r.id||'');
-    if(!rId) return;
-    // Vérifier si déjà présent
-    var exists=allEntries.some(function(e){return String(e.resa_id||e.id||'')===rId;});
+    var rId=String(r.id||''); if(!rId) return;
+    var exists=allEntries.some(function(e){return String(e.resa_id||'')===rId||String(e.id||'')===rId;});
     if(exists) return;
-    // Date en fuseau France
-    var dateStr=r.created_at||r.date||'';
-    var dateObj=dateStr?new Date(dateStr):new Date();
+    var dateObj=r.created_at?new Date(r.created_at):new Date();
     var dateFR=dateObj.toLocaleDateString('fr-FR',{timeZone:'Europe/Paris'});
-    // Référence = prénoms enfants
     var enf=(r.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);
     if(!enf.length&&r.membre_id){
       var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id);});
       if(m) enf=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);
     }
-    var ref=enf.length?enf.join(', ')+(r.nom_famille?' ('+NOM(r.nom_famille)+')':''):(r.nom_famille||r.nom||'');
-    // Mode paiement → colonne
+    var nomFam=r.nom_famille||r.nom||'';
+    var ref=enf.length?enf.join(', ')+(nomFam?' ('+NOM(nomFam)+')':''):(nomFam?cap(nomFam):'');
     var mode=(r.mode_paiement||'cb').toLowerCase();
-    var entry={resa_id:rId, date:dateFR, ref:ref, cb:0,vir:0,chq:0,chqvac:0,esp:0,avoir:0,remb:0, manuel:false};
-    if(mode==='cb'||mode==='carte'||mode==='carte bancaire') entry.cb=r.montant||0;
-    else if(mode==='virement') entry.vir=r.montant||0;
+    var entry={resa_id:rId,date:dateFR,ref:ref,cb:0,vir:0,chq:0,chqvac:0,esp:0,avoir:0,remb:0,manuel:false};
+    if(mode==='virement') entry.vir=r.montant||0;
     else if(mode==='cheque'||mode==='chèque') entry.chq=r.montant||0;
-    else if(mode==='cheques_vacances'||mode==='chèques vacances') entry.chqvac=r.montant||0;
+    else if(mode==='cheques_vacances') entry.chqvac=r.montant||0;
     else if(mode==='especes'||mode==='espèces') entry.esp=r.montant||0;
     else if(mode==='avoir') entry.avoir=r.montant||0;
-    else entry.cb=r.montant||0; // défaut CB
+    else entry.cb=r.montant||0;
     allEntries.push(entry);
   });
 
   // Tri par date décroissante
   allEntries.sort(function(a,b){
-    var da=new Date(a.date.split('/').reverse().join('-'));
-    var db=new Date(b.date.split('/').reverse().join('-'));
-    return db-da;
+    var parse=function(d){var p=d.split('/');return p.length===3?new Date(p[2]+'-'+p[1]+'-'+p[0]):new Date(0);};
+    return parse(b.date)-parse(a.date);
   });
 
   // Filtre période
   var filtered=allEntries.filter(function(e){
     if(!dateDebut&&!dateFin) return true;
-    var parts=(e.date||'').split('/');
-    if(parts.length!==3) return true;
-    var d=new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+    var p=e.date.split('/');
+    if(p.length!==3) return true;
+    var d=new Date(p[2]+'-'+p[1]+'-'+p[0]);
     if(dateDebut&&d<new Date(dateDebut)) return false;
     if(dateFin&&d>new Date(dateFin)) return false;
     return true;
   });
 
-  // Totaux (avoirs et remboursements exclus du total)
+  // Totaux
   var cols=['cb','vir','chq','chqvac','esp','avoir','remb'];
   var colLabels=['💳 CB','🏦 Virement','📝 Chèque','🎫 Chq Vac','💶 Espèces','🎟️ Avoir','↩️ Remb.'];
   var totals={}; cols.forEach(function(k){totals[k]=0;});
-  filtered.forEach(function(r){cols.forEach(function(k){totals[k]+=(r[k]||0);});});
-  // Total = tout sauf avoirs et remboursements
-  var grandTotal=totals.cb+totals.vir+totals.chq+totals.chqvac+totals.esp - totals.remb;
-  var totalTTC=grandTotal;
+  filtered.forEach(function(e){cols.forEach(function(k){totals[k]+=(e[k]||0);});});
+  // Total = CB+Vir+Chq+ChqVac+Esp − Remb (Avoir exclu)
+  var grandTotal=totals.cb+totals.vir+totals.chq+totals.chqvac+totals.esp-totals.remb;
+  var totalTTC=Math.round(grandTotal*100)/100;
   var totalHT=Math.round(totalTTC/1.1*100)/100;
   var totalTVA=Math.round((totalTTC-totalHT)*100)/100;
 
-  el.innerHTML=''    // Filtres dates
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Du</label>'    +'<input type="date" value="'+(dateDebut)+'" onchange="window._sqDateDebut=this.value;renderSuiviQuotidien();" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;box-sizing:border-box;"></div>'    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Au</label>'    +'<input type="date" value="'+(dateFin)+'" onchange="window._sqDateFin=this.value;renderSuiviQuotidien();" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;box-sizing:border-box;"></div>'    +'</div>'    // Tableau
-    +'<div style="overflow-x:auto;margin-bottom:16px;">'    +'<table style="width:100%;border-collapse:collapse;min-width:700px;font-size:12px;">'    +'<thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;">'    +'<th style="padding:10px 8px;text-align:left;font-size:13px;font-weight:800;">Date</th>'    +'<th style="padding:10px 8px;text-align:left;">Référence</th>'    +colLabels.map(function(l){return '<th style="padding:10px 6px;text-align:right;">'+l+'</th>';}).join('')    +'<th style="padding:10px 6px;text-align:right;">Action</th>'    +'</tr></thead>'    +'<tbody>'    +filtered.map(function(r,idx){      var bg=idx%2===0?'#fff':'#F9FAFB';      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'        +'<td style="padding:9px 8px;white-space:nowrap;font-size:13px;font-weight:800;color:#0077C8;">'+r.date+'</td>'        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;">'+r.ref+'</td>'        +cols.map(function(k){return '<td style="padding:9px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(k==='remb'&&r[k]?'#EF4444':r[k]?'#0077C8':'#D1D5DB')+';">'+(r[k]?(k==='avoir'?'<span style="color:#9CA3AF">':'')+r[k]+'€'+(k==='avoir'?'</span>':''):'-')+'</td>';}).join('')        +'<td style="padding:9px 6px;text-align:right;white-space:nowrap;">'+(r.manuel?'<button onclick="sqEditer('+idx+',filtered)" style="padding:4px 8px;background:#EFF6FF;color:#0077C8;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;margin-right:4px;">✏️</button><button onclick="sqSupprimer('+idx+',filtered)" style="padding:4px 8px;background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">🗑️</button>':'')+'</td>'        +'</tr>';    }).join('')    +'<tr style="background:#EFF6FF;font-weight:700;border-top:2px solid #0077C8;">'    +'<td style="padding:10px 8px;font-size:13px;font-weight:800;color:#0077C8;" colspan="2">TOTAL</td>'    +cols.map(function(k){return '<td style="padding:10px 6px;text-align:right;color:'+(k==='avoir'?'#9CA3AF':k==='remb'?'#EF4444':'#0077C8')+';">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')    +'<td></td>'    +'</tr>'    +'</tbody></table></div>'    // Total général
-    +'<div style="background:#1E2A3A;border-radius:12px;padding:16px;margin-bottom:12px;">'    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'    +'<span style="color:rgba(255,255,255,.7);font-size:12px;">Total général (hors avoirs)</span>'    +'<span style="color:#fff;font-size:20px;font-weight:800;">'+grandTotal+' €</span>'    +'</div></div>'    // Module TVA
-    +'<div style="background:#F0FDF4;border-radius:12px;padding:14px;border:1.5px solid #BBF7D0;">'    +'<div style="font-size:12px;font-weight:800;color:#065F46;margin-bottom:10px;">🧾 Calcul TVA (10%)</div>'    +'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #D1FAE5;">'    +'<span style="font-size:12px;color:#374151;">Montant HT</span>'    +'<span style="font-size:13px;font-weight:700;color:#065F46;">'+totalHT+' €</span></div>'    +'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #D1FAE5;">'    +'<span style="font-size:12px;color:#374151;">TVA (10%)</span>'    +'<span style="font-size:13px;font-weight:700;color:#065F46;">'+totalTVA+' €</span></div>'    +'<div style="display:flex;justify-content:space-between;padding:6px 0;">'    +'<span style="font-size:12px;font-weight:700;color:#374151;">Total TTC</span>'    +'<span style="font-size:14px;font-weight:800;color:#065F46;">'+totalTTC+' €</span></div>'    +'</div>';
+  el.innerHTML=
+    // Filtres dates
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Du</label>'
+    +'<input type="date" value="'+dateDebut+'" onchange="window._sqDateDebut=this.value;renderSuiviQuotidien();" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;box-sizing:border-box;"></div>'
+    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Au</label>'
+    +'<input type="date" value="'+dateFin+'" onchange="window._sqDateFin=this.value;renderSuiviQuotidien();" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;box-sizing:border-box;"></div>'
+    +'</div>'
+    // Tableau
+    +'<div style="overflow-x:auto;margin-bottom:16px;">'
+    +'<table style="width:100%;border-collapse:collapse;min-width:700px;font-size:12px;">'
+    +'<thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;">'
+    +'<th style="padding:10px 8px;text-align:left;min-width:90px;">📅 Date</th>'
+    +'<th style="padding:10px 8px;text-align:left;">Référence</th>'
+    +colLabels.map(function(l){return '<th style="padding:10px 6px;text-align:right;">'+l+'</th>';}).join('')
+    +'<th style="padding:10px 6px;text-align:right;">Actions</th>'
+    +'</tr></thead>'
+    +'<tbody>'
+    +filtered.map(function(r,idx){
+      var bg=idx%2===0?'#fff':'#F9FAFB';
+      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'
+        +'<td style="padding:9px 8px;white-space:nowrap;font-size:14px;font-weight:800;color:#0077C8;">'+r.date+'</td>'
+        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;font-size:12px;">'+r.ref+'</td>'
+        +cols.map(function(k){
+          var val=r[k]||0;
+          var col=k==='remb'&&val?'#EF4444':k==='avoir'&&val?'#9CA3AF':val?'#0077C8':'#D1D5DB';
+          return '<td style="padding:9px 6px;text-align:right;font-weight:'+(val?'700':'400')+';color:'+col+';">'+(val?val+'€':'-')+'</td>';
+        }).join('')
+        +'<td style="padding:9px 6px;text-align:right;white-space:nowrap;">'
+        +(r.manuel
+          ?'<button onclick="sqEditerById(&apos;'+r.id+'&apos;)" style="padding:4px 8px;background:#EFF6FF;color:#0077C8;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;margin-right:4px;">✏️</button>'
+          +'<button onclick="sqSupprimerById(&apos;'+r.id+'&apos;)" style="padding:4px 8px;background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">🗑️</button>'
+          :'')
+        +'</td>'
+        +'</tr>';
+    }).join('')
+    +'<tr style="background:#EFF6FF;font-weight:700;border-top:2px solid #0077C8;">'
+    +'<td style="padding:10px 8px;font-size:13px;font-weight:800;color:#0077C8;" colspan="2">TOTAL</td>'
+    +cols.map(function(k){
+      var col=k==='avoir'?'#9CA3AF':k==='remb'?'#EF4444':'#0077C8';
+      return '<td style="padding:10px 6px;text-align:right;color:'+col+';">'+(totals[k]?totals[k]+'€':'-')+'</td>';
+    }).join('')
+    +'<td></td>'
+    +'</tr>'
+    +'</tbody></table></div>'
+    // Total général
+    +'<div style="background:#1E2A3A;border-radius:12px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">'
+    +'<span style="color:rgba(255,255,255,.7);font-size:12px;">Total (hors avoirs)</span>'
+    +'<span style="color:#fff;font-size:20px;font-weight:800;">'+grandTotal+' €</span>'
+    +'</div>'
+    // Module TVA
+    +'<div style="background:#F0FDF4;border-radius:12px;padding:14px;border:1.5px solid #BBF7D0;">'
+    +'<div style="font-size:12px;font-weight:800;color:#065F46;margin-bottom:10px;">🧾 Calcul TVA (10%)</div>'
+    +'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #D1FAE5;">'
+    +'<span style="font-size:13px;color:#374151;">Montant HT</span>'
+    +'<span style="font-size:14px;font-weight:700;color:#065F46;">'+totalHT+' €</span></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #D1FAE5;">'
+    +'<span style="font-size:13px;color:#374151;">TVA (10%)</span>'
+    +'<span style="font-size:14px;font-weight:700;color:#065F46;">'+totalTVA+' €</span></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:7px 0;">'
+    +'<span style="font-size:13px;font-weight:700;color:#374151;">Total TTC</span>'
+    +'<span style="font-size:15px;font-weight:800;color:#065F46;">'+totalTTC+' €</span></div>'
+    +'</div>';
 }
 
 
@@ -4672,7 +4726,44 @@ function setComptaTab(tab) {
   var btnB  = document.getElementById('ct-bilan');
   var btnS  = document.getElementById('ct-suivi');
   if (bilan) bilan.style.display = tab === 'bilan' ? 'block' : 'none';
-  if (suivi) suivi.style.display = tab === 'suivi' ? 'block' : 'none';
+  if (suivi) suivi.styl
+function sqEditerById(id){
+  var r=SUIVI_QUOTIDIEN.find(function(e){return String(e.id)===String(id);});
+  if(!r){toast('Entrée introuvable','ko');return;}
+  var sv=function(eid,v){var el=document.getElementById(eid);if(el)el.value=v;};
+  var dateParts=(r.date||'').split('/');
+  var isoDate=dateParts.length===3?dateParts[2]+'-'+dateParts[1]+'-'+dateParts[0]:'';
+  sv('sq-date',isoDate);
+  var refType=document.getElementById('sq-ref-type');
+  var refLibre=document.getElementById('sq-ref-libre');
+  if(refType){refType.value='libre';if(typeof sqUpdateRef==='function')sqUpdateRef();}
+  if(refLibre) refLibre.value=r.ref||'';
+  sv('sq-cb',r.cb||0); sv('sq-vir',r.vir||0); sv('sq-chq',r.chq||0);
+  sv('sq-chqvac',r.chqvac||0); sv('sq-esp',r.esp||0);
+  sv('sq-avoir24',r.avoir||0); sv('sq-remb25',r.remb||0);
+  window._sqEditId=r.id||null;
+  var ov=document.getElementById('saisie-quotidienne-overlay');
+  if(ov) ov.style.display='flex';
+}
+window.sqEditerById=sqEditerById;
+
+async function sqSupprimerById(id){
+  var r=SUIVI_QUOTIDIEN.find(function(e){return String(e.id)===String(id);});
+  if(!r){toast('Entrée introuvable','ko');return;}
+  if(!confirm('Supprimer cette entrée ?')) return;
+  if(r.id){
+    try{
+      var res=await sb.from('suivi_quotidien').delete().eq('id',r.id);
+      if(res.error) throw res.error;
+    }catch(e){console.warn('sqSupprimer:',e);toast('Erreur suppression','ko');return;}
+  }
+  var localIdx=SUIVI_QUOTIDIEN.indexOf(r);
+  if(localIdx>=0) SUIVI_QUOTIDIEN.splice(localIdx,1);
+  renderSuiviQuotidien();
+  toast('Entrée supprimée ✅','ok');
+}
+window.sqSupprimerById=sqSupprimerById;
+e.display = tab === 'suivi' ? 'block' : 'none';
   if (btnB) { btnB.classList.toggle('active', tab==='bilan'); btnB.classList.toggle('btn-ghost', tab!=='bilan'); }
   if (btnS) { btnS.classList.toggle('active', tab==='suivi'); btnS.classList.toggle('btn-ghost', tab!=='suivi'); }
   if (tab === 'suivi') renderSuiviQuotidien();
@@ -7650,6 +7741,8 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
 
 
 
