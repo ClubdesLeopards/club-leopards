@@ -2454,6 +2454,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2580,8 +2581,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4654,7 +4657,7 @@ function renderSuiviQuotidien(){
 
   el.innerHTML=''    // Filtres dates
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Du</label>'    +'<input type="date" value="'+(dateDebut)+'" onchange="window._sqDateDebut=this.value;renderSuiviQuotidien();" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;box-sizing:border-box;"></div>'    +'<div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Au</label>'    +'<input type="date" value="'+(dateFin)+'" onchange="window._sqDateFin=this.value;renderSuiviQuotidien();" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:8px;font-family:inherit;font-size:12px;box-sizing:border-box;"></div>'    +'</div>'    // Tableau
-    +'<div style="overflow-x:auto;margin-bottom:16px;">'    +'<table style="width:100%;border-collapse:collapse;min-width:700px;font-size:12px;">'    +'<thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;">'    +'<th style="padding:10px 8px;text-align:left;font-size:13px;font-weight:800;">Date</th>'    +'<th style="padding:10px 8px;text-align:left;">Référence</th>'    +colLabels.map(function(l){return '<th style="padding:10px 6px;text-align:right;">'+l+'</th>';}).join('')    +'<th style="padding:10px 6px;text-align:right;">Action</th>'    +'</tr></thead>'    +'<tbody>'    +filtered.map(function(r,idx){      var bg=idx%2===0?'#fff':'#F9FAFB';      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'        +'<td style="padding:9px 8px;white-space:nowrap;font-size:13px;font-weight:800;color:#0077C8;">'+r.date+'</td>'        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;">'+r.ref+'</td>'        +cols.map(function(k){return '<td style="padding:9px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(k==='remb'&&r[k]?'#EF4444':r[k]?'#0077C8':'#D1D5DB')+';">'+(r[k]?(k==='avoir'?'<span style="color:#9CA3AF">':'')+r[k]+'€'+(k==='avoir'?'</span>':''):'-')+'</td>';}).join('')        +'<td style="padding:9px 6px;text-align:right;">'+(r.manuel?'<button onclick="sqEditer('+idx+')" style="padding:4px 8px;background:#EFF6FF;color:#0077C8;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">✏️</button>':'')+'</td>'        +'</tr>';    }).join('')    +'<tr style="background:#EFF6FF;font-weight:700;border-top:2px solid #0077C8;">'    +'<td style="padding:10px 8px;font-size:13px;font-weight:800;color:#0077C8;" colspan="2">TOTAL</td>'    +cols.map(function(k){return '<td style="padding:10px 6px;text-align:right;color:'+(k==='avoir'?'#9CA3AF':k==='remb'?'#EF4444':'#0077C8')+';">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')    +'<td></td>'    +'</tr>'    +'</tbody></table></div>'    // Total général
+    +'<div style="overflow-x:auto;margin-bottom:16px;">'    +'<table style="width:100%;border-collapse:collapse;min-width:700px;font-size:12px;">'    +'<thead><tr style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;">'    +'<th style="padding:10px 8px;text-align:left;font-size:13px;font-weight:800;">Date</th>'    +'<th style="padding:10px 8px;text-align:left;">Référence</th>'    +colLabels.map(function(l){return '<th style="padding:10px 6px;text-align:right;">'+l+'</th>';}).join('')    +'<th style="padding:10px 6px;text-align:right;">Action</th>'    +'</tr></thead>'    +'<tbody>'    +filtered.map(function(r,idx){      var bg=idx%2===0?'#fff':'#F9FAFB';      return '<tr style="background:'+bg+';border-bottom:1px solid #F3F4F6;">'        +'<td style="padding:9px 8px;white-space:nowrap;font-size:13px;font-weight:800;color:#0077C8;">'+r.date+'</td>'        +'<td style="padding:9px 8px;font-weight:600;color:#1A1A2E;">'+r.ref+'</td>'        +cols.map(function(k){return '<td style="padding:9px 6px;text-align:right;font-weight:'+(r[k]?'700':'400')+';color:'+(k==='remb'&&r[k]?'#EF4444':r[k]?'#0077C8':'#D1D5DB')+';">'+(r[k]?(k==='avoir'?'<span style="color:#9CA3AF">':'')+r[k]+'€'+(k==='avoir'?'</span>':''):'-')+'</td>';}).join('')        +'<td style="padding:9px 6px;text-align:right;white-space:nowrap;">'+(r.manuel?'<button onclick="sqEditer('+idx+',filtered)" style="padding:4px 8px;background:#EFF6FF;color:#0077C8;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;margin-right:4px;">✏️</button><button onclick="sqSupprimer('+idx+',filtered)" style="padding:4px 8px;background:#FEF2F2;color:#EF4444;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">🗑️</button>':'')+'</td>'        +'</tr>';    }).join('')    +'<tr style="background:#EFF6FF;font-weight:700;border-top:2px solid #0077C8;">'    +'<td style="padding:10px 8px;font-size:13px;font-weight:800;color:#0077C8;" colspan="2">TOTAL</td>'    +cols.map(function(k){return '<td style="padding:10px 6px;text-align:right;color:'+(k==='avoir'?'#9CA3AF':k==='remb'?'#EF4444':'#0077C8')+';">'+(totals[k]?totals[k]+'€':'-')+'</td>';}).join('')    +'<td></td>'    +'</tr>'    +'</tbody></table></div>'    // Total général
     +'<div style="background:#1E2A3A;border-radius:12px;padding:16px;margin-bottom:12px;">'    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'    +'<span style="color:rgba(255,255,255,.7);font-size:12px;">Total général (hors avoirs)</span>'    +'<span style="color:#fff;font-size:20px;font-weight:800;">'+grandTotal+' €</span>'    +'</div></div>'    // Module TVA
     +'<div style="background:#F0FDF4;border-radius:12px;padding:14px;border:1.5px solid #BBF7D0;">'    +'<div style="font-size:12px;font-weight:800;color:#065F46;margin-bottom:10px;">🧾 Calcul TVA (10%)</div>'    +'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #D1FAE5;">'    +'<span style="font-size:12px;color:#374151;">Montant HT</span>'    +'<span style="font-size:13px;font-weight:700;color:#065F46;">'+totalHT+' €</span></div>'    +'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #D1FAE5;">'    +'<span style="font-size:12px;color:#374151;">TVA (10%)</span>'    +'<span style="font-size:13px;font-weight:700;color:#065F46;">'+totalTVA+' €</span></div>'    +'<div style="display:flex;justify-content:space-between;padding:6px 0;">'    +'<span style="font-size:12px;font-weight:700;color:#374151;">Total TTC</span>'    +'<span style="font-size:14px;font-weight:800;color:#065F46;">'+totalTTC+' €</span></div>'    +'</div>';
 }
@@ -5799,9 +5802,20 @@ async function confirmerSaisieQuotidienne(){
   // Vérifier que la somme n'est pas nulle
   var total=entry.cb+entry.vir+entry.chq+entry.chqvac+entry.esp+entry.avoir+entry.remb;
   if(total===0){toast('Montant nul — enregistrement annulé','ko');return;}
-  // Supabase
+  // Supabase : update si édition, insert si nouveau
+  var isEdit=!!window._sqEditId;
   try{
     var isoDate=dateVal.split('/').length===3?dateVal.split('/').reverse().join('-'):dateVal;
+    var payload={date:isoDate, reference:ref, cb:entry.cb, virement:entry.vir, cheque:entry.chq, cheques_vacances:entry.chqvac, especes:entry.esp, avoir_n_moins_1:entry.avoir, remboursement:entry.remb, manuel:true};
+    if(isEdit){
+      await sb.from('suivi_quotidien').update(payload).eq('id',window._sqEditId);
+      // Mettre à jour local
+      if(window._sqEditLocalIdx>=0){
+        entry.id=window._sqEditId; SUIVI_QUOTIDIEN[window._sqEditLocalIdx]=entry;
+      }
+      window._sqEditId=null; window._sqEditLocalIdx=-1;
+      toast('Entrée modifiée ✅','ok');
+    } else {
     var res=await sb.from('suivi_quotidien').insert({
       date:isoDate, reference:ref,
       cb:entry.cb, virement:entry.vir, cheque:entry.chq,
@@ -5812,11 +5826,12 @@ async function confirmerSaisieQuotidienne(){
     if(res.error) throw res.error;
     entry.id=res.data.id;
     toast('Saisie enregistrée ✅','ok');
+    }  // fin else insert
   }catch(e){
     console.warn('suivi_quotidien insert:',e);
     toast('Enregistré localement','ok');
   }
-  SUIVI_QUOTIDIEN.unshift(entry);
+  if(!isEdit) SUIVI_QUOTIDIEN.unshift(entry);
   fermerSaisieQuotidienne();
   setComptaTab('suivi');
 }
@@ -7603,6 +7618,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
