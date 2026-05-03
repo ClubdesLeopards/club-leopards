@@ -2077,8 +2077,8 @@ textarea{resize:vertical;}
             <button onclick="fermerAjouterAvoir()" style="background:#F3F4F6;border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;">x</button>
           </div>
           <div style="padding:18px;display:flex;flex-direction:column;gap:10px;">
-            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Nom famille *</label>
-            <input id="aa-membre" placeholder="DUPONT" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
+            <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Membre *</label>
+            <select id="aa-membre" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;background:#fff;box-sizing:border-box;"><option value="">-- Choisir un membre --</option></select></div>
             <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Montant (euros) *</label>
             <input id="aa-somme" type="number" value="120" style="width:100%;padding:9px;border:1.5px solid #E5E7EB;border-radius:9px;font-family:inherit;font-size:13px;box-sizing:border-box;"></div>
             <div><label style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;display:block;margin-bottom:3px;">Motif *</label>
@@ -2462,6 +2462,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2596,8 +2597,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -4497,57 +4500,80 @@ var _origRenderAdminResas = null;
 
 // ═══ FACTURE ═══
 
-function genererFacture() {
-  var famille   = (document.getElementById('fac-famille')||{value:''}).value.trim();
-  var email     = (document.getElementById('fac-email')||{value:''}).value.trim();
-  var enfant    = (document.getElementById('fac-enfant')||{value:''}).value.trim();
-  var prestation= (document.getElementById('fac-prestation')||{value:''}).value;
-  var dates     = (document.getElementById('fac-dates')||{value:''}).value.trim();
-  var montant   = (document.getElementById('fac-montant')||{value:'120'}).value;
-  var mode      = (document.getElementById('fac-mode')||{value:''}).value;
-  var date      = (document.getElementById('fac-date')||{value:''}).value;
-
-  if (!famille) { toast('Nom de famille requis','ko'); return; }
-
-  var ref = 'FAC-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*9000+1000);
-  var dateF = date ? new Date(date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR');
-
-  var el = document.getElementById('facture-preview');
-  if (!el) return;
-  el.innerHTML = '<div style="background:#fff;border:2px solid #E5E7EB;border-radius:20px;padding:24px;margin-top:12px;font-family:inherit;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">'
-    +'<div><div style="font-size:22px;font-weight:800;color:#1E1B4B;">🐆 Club des Léopards</div>'
-    +'<div style="font-size:12px;color:#9CA3AF;margin-top:2px;">clubdesleopards@free.fr</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#1A6FD4;">FACTURE</div>'
-    +'<div style="font-size:12px;color:#9CA3AF;">'+ref+'</div>'
-    +'<div style="font-size:12px;color:#9CA3AF;">'+dateF+'</div></div>'
-    +'</div>'
-    +'<div style="background:#F9FAFB;border-radius:14px;padding:16px;margin-bottom:16px;">'
-    +'<div style="font-size:11px;text-transform:uppercase;font-weight:700;color:#9CA3AF;margin-bottom:8px;">Facturé à</div>'
-    +'<div style="font-size:16px;font-weight:700;color:#1A1A2E;">Famille '+famille+'</div>'
-    +(enfant?'<div style="font-size:13px;color:#374151;">Enfant : '+enfant+'</div>':'')
-    +(email?'<div style="font-size:13px;color:#6B7280;">'+email+'</div>':'')
-    +'</div>'
-    +'<div style="border:1.5px solid #E5E7EB;border-radius:14px;overflow:hidden;margin-bottom:16px;">'
-    +'<div style="background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;padding:10px 16px;display:grid;grid-template-columns:1fr auto;font-size:12px;font-weight:700;text-transform:uppercase;">'
-    +'<span>Prestation</span><span>Montant</span></div>'
-    +'<div style="padding:14px 16px;display:grid;grid-template-columns:1fr auto;align-items:start;">'
-    +'<div><div style="font-size:14px;font-weight:600;color:#1A1A2E;">'+prestation+'</div>'
-    +(dates?'<div style="font-size:12px;color:#9CA3AF;">'+dates+'</div>':'')
-    +'</div>'
-    +'<div style="font-size:16px;font-weight:800;color:#1A1A2E;">'+montant+'€</div>'
-    +'</div>'
-    +'<div style="border-top:1.5px solid #E5E7EB;padding:12px 16px;display:grid;grid-template-columns:1fr auto;background:#F9FAFB;">'
-    +'<span style="font-weight:700;font-size:14px;">Total TTC</span>'
-    +'<span style="font-size:18px;font-weight:800;color:#1A6FD4;">'+montant+'€</span>'
-    +'</div></div>'
-    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#9CA3AF;margin-bottom:16px;">'
-    +'<span>Mode de paiement : <strong style="color:#374151;">'+mode+'</strong></span>'
-    +'<span>SIRET : 50237123000025</span>'
-    +'</div>'
-    +'<button onclick="window.print()" style="width:100%;padding:13px;background:linear-gradient(135deg,#1A6FD4,#0D4FA0);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">🖨️ Imprimer / Sauvegarder en PDF</button>'
-    +'</div>';
-  if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth'});
+function genererFacture(){
+  var famille=(document.getElementById("fac-famille")||{value:""}).value.trim();
+  var email=(document.getElementById("fac-email")||{value:""}).value.trim();
+  var enfant=(document.getElementById("fac-enfant")||{value:""}).value.trim();
+  var prestation=(document.getElementById("fac-prestation")||{value:""}).value;
+  var dates=(document.getElementById("fac-dates")||{value:""}).value.trim();
+  var montant=parseFloat((document.getElementById("fac-montant")||{value:"120"}).value)||120;
+  var mode=(document.getElementById("fac-mode")||{value:""}).value;
+  var date=(document.getElementById("fac-date")||{value:""}).value;
+  if(!famille){toast("Nom de famille requis","ko");return;}
+  if(!window._facLastNum) window._facLastNum=0;
+  window._facLastNum++;
+  var numStr=String(window._facLastNum).padStart(4,"0");
+  var facRef="FAC-"+new Date().getFullYear()+"-"+numStr;
+  var dateF=date?new Date(date).toLocaleDateString("fr-FR"):new Date().toLocaleDateString("fr-FR");
+  var totalTTC=montant;
+  var totalHT=Math.round(totalTTC/1.1*100)/100;
+  var totalTVA=Math.round((totalTTC-totalHT)*100)/100;
+  var el=document.getElementById("facture-preview"); if(!el) return;
+  var parts=[];
+  parts.push('<div style="background:#fff;border:2px solid #E5E7EB;border-radius:20px;padding:28px;font-family:Arial,sans-serif;">');
+  parts.push('<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">');
+  parts.push('<div>');
+  parts.push('<div style="font-size:22px;font-weight:800;color:#1E1B4B;">&#127758; Club des L&eacute;opards</div>');
+  parts.push('<div style="font-size:12px;color:#6B7280;">28 Boulevard de l\'Oc&eacute;an</div>');
+  parts.push('<div style="font-size:12px;color:#6B7280;">44500 LA BAULE</div>');
+  parts.push('<div style="font-size:12px;color:#6B7280;">clubdesleopards@free.fr</div>');
+  parts.push('</div>');
+  parts.push('<div style="text-align:right;">');
+  parts.push('<div style="font-size:20px;font-weight:800;color:#1A6FD4;">FACTURE</div>');
+  parts.push('<div style="font-size:12px;color:#9CA3AF;">N&deg; '+facRef+'</div>');
+  parts.push('<div style="font-size:12px;color:#9CA3AF;">'+dateF+'</div>');
+  parts.push('</div></div>');
+  parts.push('<div style="background:#F9FAFB;border-radius:14px;padding:16px;margin-bottom:20px;">');
+  parts.push('<div style="font-size:11px;text-transform:uppercase;font-weight:700;color:#9CA3AF;margin-bottom:8px;">Factur&eacute; &agrave;</div>');
+  parts.push('<div style="font-size:16px;font-weight:700;color:#1A1A2E;">Famille '+famille.toUpperCase()+'</div>');
+  if(enfant) parts.push('<div style="font-size:13px;color:#374151;margin-top:4px;">'+enfant+'</div>');
+  if(email) parts.push('<div style="font-size:12px;color:#6B7280;margin-top:2px;">'+email+'</div>');
+  parts.push('<div style="font-size:12px;color:#6B7280;margin-top:2px;">44500 LA BAULE</div>');
+  parts.push('</div>');
+  parts.push('<div style="border:1.5px solid #E5E7EB;border-radius:14px;overflow:hidden;margin-bottom:20px;">');
+  parts.push('<div style="background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;padding:10px 16px;display:grid;grid-template-columns:1fr auto;font-size:12px;font-weight:700;text-transform:uppercase;"><span>Prestation</span><span>Montant</span></div>');
+  parts.push('<div style="padding:14px 16px;">');
+  parts.push('<div style="font-size:14px;font-weight:600;color:#1A1A2E;">Club des L&eacute;opards &middot; Plage de La Baule</div>');
+  if(enfant) parts.push('<div style="font-size:12px;color:#374151;margin-top:3px;">'+enfant+'</div>');
+  if(dates) parts.push('<div style="font-size:12px;color:#9CA3AF;margin-top:2px;">'+dates+'</div>');
+  if(prestation) parts.push('<div style="font-size:12px;color:#0077C8;margin-top:2px;">'+prestation+'</div>');
+  parts.push('<div style="text-align:right;font-size:16px;font-weight:800;color:#1A1A2E;margin-top:8px;">'+totalTTC.toFixed(2)+' &euro;</div>');
+  parts.push('</div>');
+  parts.push('<div style="border-top:1.5px solid #E5E7EB;padding:10px 16px;display:flex;justify-content:space-between;background:#F9FAFB;">');
+  parts.push('<span style="font-weight:700;font-size:14px;">Total TTC</span><span style="font-size:18px;font-weight:800;color:#0077C8;">'+totalTTC.toFixed(2)+' &euro;</span>');
+  parts.push('</div>');
+  parts.push('<div style="border-top:1px solid #E5E7EB;padding:8px 16px;display:flex;justify-content:space-between;">');
+  parts.push('<span style="font-size:12px;color:#6B7280;">Total HT (&divide; 1,1)</span><span style="font-size:13px;color:#374151;font-weight:600;">'+totalHT.toFixed(2)+' &euro;</span>');
+  parts.push('</div>');
+  parts.push('<div style="border-top:1px solid #E5E7EB;padding:8px 16px;display:flex;justify-content:space-between;">');
+  parts.push('<span style="font-size:12px;color:#6B7280;">TVA (10%)</span><span style="font-size:13px;color:#374151;font-weight:600;">'+totalTVA.toFixed(2)+' &euro;</span>');
+  parts.push('</div>');
+  if(mode){
+    parts.push('<div style="border-top:1.5px solid #E5E7EB;padding:10px 16px;background:#F0FDF4;">');
+    parts.push('<span style="font-size:12px;color:#374151;">Pay&eacute; par : <strong>'+mode+'</strong></span>');
+    parts.push('</div>');
+  }
+  parts.push('</div>');
+  parts.push('<div style="border-top:2px solid #1E1B4B;padding-top:12px;margin-top:4px;">');
+  parts.push('<div style="font-size:13px;font-weight:800;color:#1E1B4B;">&#127758; Club des L&eacute;opards &ndash; LA BAULE</div>');
+  parts.push('<div style="font-size:11px;color:#374151;font-weight:700;">SIRET : 50237123000025 &middot; clubdesleopards@free.fr</div>');
+  parts.push('</div>');
+  parts.push('<div style="display:flex;gap:8px;margin-top:16px;">');
+  parts.push('<button onclick="window.print()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">&#128424; Imprimer / PDF</button>');
+  parts.push('<button onclick="envoyerFactureMail(\''+facRef+'\')" style="flex:1;padding:12px;background:#F0FDF4;color:#059669;border:1.5px solid #A7F3D0;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">&#9993; Envoyer</button>');
+  parts.push('</div></div>');
+  el.innerHTML=parts.join('');
+  el.scrollIntoView({behavior:"smooth"});
 }
 
 // ═══ RECHERCHE GLOBALE ═══
@@ -5968,7 +5994,10 @@ function ajouterAvoir(ti){window._avoirTableIdx=ti;var ov=document.getElementByI
 function fermerAjouterAvoir(){var ov=document.getElementById('ajouter-avoir-overlay');if(ov)ov.style.display='none';}
 async function confirmerAjouterAvoir(){
   var f=function(id){return(document.getElementById(id)||{value:''}).value.trim();};
-  var membre=f('aa-membre');if(!membre){toast('Nom requis','ko');return;}
+  var aaEl=document.getElementById('aa-membre');
+  var membre='';
+  if(aaEl&&aaEl.tagName==='SELECT'){var m=ST.members[parseInt(aaEl.value)];if(!m){toast('Membre requis','ko');return;}membre=cap(m.prenom)+' '+NOM(m.nom||'');}
+  else{membre=f('aa-membre');if(!membre){toast('Nom requis','ko');return;}}
   var somme=parseFloat(f('aa-somme')||'0');
   var motif=f('aa-motif');if(!motif){toast('Motif requis','ko');return;}
   var ti=window._avoirTableIdx||0;
@@ -6577,7 +6606,12 @@ function renderFactureTab(){
     return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
   });
   var q=(document.getElementById('fac-search')||{value:''}).value.toLowerCase();
-  var famsFilt=q?fams.filter(function(m){return(m.nom+' '+m.prenom+' '+(m.email||'')).toLowerCase().includes(q);}):fams;
+  var _alpha=window._facAlpha||'';
+  var famsFilt=fams.filter(function(m){
+    if(q&&!(m.nom+' '+m.prenom+' '+(m.email||'')).toLowerCase().includes(q)) return false;
+    if(_alpha&&(m.nom||'').toUpperCase().charAt(0)!==_alpha) return false;
+    return true;
+  });
   var cardsHTML=famsFilt.filter(function(m){
     var famResas2=resasVal.filter(function(r){return r.membre_id===m.id||(r.nom===m.prenom+' '+NOM(m.nom||''));});
     return famResas2.length>0;
@@ -6617,9 +6651,23 @@ function renderFactureTab(){
     +'<div><div style="font-size:15px;font-weight:800;color:#0A0F1E;font-family:Syne,sans-serif;">🧾 Factures</div>'
     +'<div style="font-size:11px;color:#9CA3AF;">'+famsFilt.length+' membre'+(famsFilt.length>1?'s':'')+' · '+resasVal.length+' réservation'+(resasVal.length>1?'s':'')+' validée'+(resasVal.length>1?'s':'')+' en base</div></div>'
     +'<button onclick="toutDecocherFac()" style="font-size:11px;color:#9CA3AF;background:none;border:none;cursor:pointer;">✕ Tout dé-cocher</button></div>'
-    +'<input id="fac-search" placeholder="🔍 Rechercher un membre…" oninput="renderFactureTab()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:12px;">'
+    +'<input id="fac-search" placeholder="🔍 Rechercher un membre…" oninput="window._facAlpha=\'\';renderFactureTab();" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E5E7EB;font-family:inherit;font-size:13px;box-sizing:border-box;margin-bottom:8px;">'
+    +'<div id="fac-alpha-bar" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:12px;"></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+(cardsHTML||'<div style="text-align:center;color:#9CA3AF;padding:30px;font-size:13px;grid-column:1/-1;">Aucune réservation validée</div>')+'</div>'
     +'<div id="facture-preview"></div>';
+  setTimeout(function(){
+    var bar=document.getElementById('fac-alpha-bar'); if(!bar) return;
+    var al=window._facAlpha||'';
+    bar.innerHTML='';
+    ['Tous'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')).forEach(function(l){
+      var v=l==='Tous'?'':l; var act=al===v;
+      var btn=document.createElement('button');
+      btn.style.cssText='padding:4px 8px;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;margin:1px;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151');
+      btn.textContent=l;
+      btn.onclick=(function(val){return function(){window._facAlpha=val;renderFactureTab();};})(v);
+      bar.appendChild(btn);
+    });
+  },10);
 }
 
 function toggleFacKid(el){
@@ -7794,6 +7842,20 @@ window.setGenre=setGenre;
 
 
 
+
+
+async function envoyerFactureMail(facRef){
+  if(!confirm("Confirmer l'envoi de la facture "+facRef+" ?")) return;
+  var email=(document.getElementById("fac-email")||{value:""}).value.trim();
+  var famille=(document.getElementById("fac-famille")||{value:""}).value.trim();
+  if(!email){toast("Pas d'adresse email","ko");return;}
+  var corps="<p>Bonjour,</p><p>Veuillez trouver votre facture <strong>"+facRef+"</strong> pour votre reservation au Club des Leopards.</p><p>Pour toute question : clubdesleopards@free.fr</p><p><strong>Club des Leopards - LA BAULE</strong></p>";
+  try{
+    await envoyerEmailBrevo(email,famille,"Facture "+facRef+" - Club des Leopards",corps);
+    toast("Facture envoyee a "+email,"ok");
+  }catch(e){toast("Erreur envoi","ko");}
+}
+window.envoyerFactureMail=envoyerFactureMail;
 
 </script>
 </body>
