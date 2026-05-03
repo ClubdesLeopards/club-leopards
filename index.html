@@ -5501,158 +5501,146 @@ var freqSaisonIdx=0;
 var freqPeriod='semaine';
 function renderFrequentation(){
   var el=document.getElementById('frequentation-content'); if(!el) return;
-
-  // ── wk : semaine sélectionnée ──
-  var _sems=(typeof SAISONS!=='undefined'&&SAISONS.ete&&SAISONS.ete.semaines)||
-            [{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}];
+  var _sems=(SAISONS&&SAISONS.ete&&SAISONS.ete.semaines)||[{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'}];
   var _wi=Math.max(0,Math.min(_sems.length-1,freqWeekOffset||0));
-  var wk=_sems[_wi]||{label:'Semaine 1',debut:'Lun 29 juin',fin:'Ven 3 juillet'};
+  var wk=_sems[_wi];
+  var freqSais=window._freqSais||'ete';
+  var freqMois=window._freqMois||'juillet';
 
-  // ── Réservations actives ──
-  var allResas=[].concat(ST.reservations).filter(function(r){
-    var s=r.statut||'';
-    return s==='valide'||s==='validé'||s==='paye'||s==='en attente'||s==='en_attente';
+  // Réservations validées
+  var allResas=ST.reservations.filter(function(r){
+    var s=r.statut||''; return s==='valide'||s==='validé'||s==='paye';
   });
 
-  // ── Filtrer selon mode ──
+  // Filtrer selon mode
   var resasFilt=allResas;
-  if(freqPeriod==='semaine'||freqPeriod==='jour'){
+  if(freqPeriod==='semaine'){
     resasFilt=allResas.filter(function(r){
-      var rLabel=r.semaine_label||'';
-      return !rLabel||rLabel.indexOf(wk.label)>=0;
+      var rLabel=r.semaine_label||''; return !rLabel||rLabel.indexOf(wk.label)>=0;
+    });
+  }
+  if(freqPeriod==='mois'){
+    resasFilt=allResas.filter(function(r){
+      var d=(r.semaine_debut||'').toLowerCase();
+      return freqMois==='juillet'?(d.indexOf('juil')>=0||d.indexOf('juin')>=0):(d.indexOf('ao')>=0);
+    });
+  }
+  if(freqPeriod==='saison'){
+    var saisLabels={printemps:'Printemps',ete:'Été',automne:'Automne'};
+    resasFilt=allResas.filter(function(r){
+      var sl=(r.saisonLabel||r.saison||'').toLowerCase();
+      return sl.indexOf((saisLabels[freqSais]||'ete').toLowerCase())>=0||sl.indexOf(freqSais)>=0;
     });
   }
 
-  // ── Compteurs ──
-  var totM=resasFilt.filter(function(r){return r.periode==='matin'||(r.slot&&r.slot.time==='Matin');}).length;
-  var totA=resasFilt.filter(function(r){return r.periode==='après-midi'||r.periode==='après-midi'||(r.slot&&r.slot.time==='Après-midi');}).length;
+  // Enfants par période
+  function getKids(resas, pf){
+    var kids=[];
+    resas.forEach(function(r){
+      var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+      if(pf==='matin'&&rPer!=='matin') return;
+      if(pf==='aprem'&&rPer!=='aprem'&&rPer!=='après-midi') return;
+      var enf=r.children||[];
+      if(!enf.length&&r.membre_id){
+        var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id);});
+        if(m) enf=m.children||[];
+      }
+      enf.forEach(function(k){kids.push(k);});
+    });
+    return kids;
+  }
+  var kidsM=getKids(resasFilt,'matin');
+  var kidsA=getKids(resasFilt,'aprem');
 
-  // ── Enfants pour les modules (depuis ST.members via membre_id) ──
-  var kidsShow=[];
-  resasFilt.forEach(function(r){
-    var enfants=r.children||[];
-    if(!enfants.length&&r.membre_id){
-      var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id||r._memberId);});
-      if(m) enfants=m.children||[];
+  // DOM helpers
+  var cont=el;
+
+  // KPIs
+  cont.innerHTML='<div id="fq-kpi"></div><div id="fq-nav"></div><div id="fq-graph"></div><div id="fq-groups"></div>';
+
+  var kpi=el.querySelector('#fq-kpi');
+  if(kpi) kpi.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'    +'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:14px;text-align:center;">'    +'<div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:4px;">🌅 MATIN</div>'    +'<div style="font-size:32px;font-weight:800;color:#92400E;">'+kidsM.length+'</div>'    +'<div style="font-size:10px;color:#B45309;">enfant'+(kidsM.length>1?'s':'')+'</div></div>'    +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;">'    +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:4px;">🌞 APRÈS-MIDI</div>'    +'<div style="font-size:32px;font-weight:800;color:#1565C0;">'+kidsA.length+'</div>'    +'<div style="font-size:10px;color:#1D4ED8;">enfant'+(kidsA.length>1?'s':'')+'</div></div>'    +'</div>';
+
+  // Navigation via DOM
+  var nav=el.querySelector('#fq-nav');
+  if(nav){
+    nav.innerHTML='';
+    if(freqPeriod==='semaine'){
+      var debutFull=wk.debut.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ');
+      var finFull=wk.fin.replace(/^Lun /,'Lundi ').replace(/^Ven /,'Vendredi ');
+      var navDiv=document.createElement('div');
+      navDiv.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;background:#F9FAFB;border-radius:12px;padding:12px 16px;';
+      var bPrev=document.createElement('button');
+      bPrev.style.cssText='background:#E5E7EB;border:none;border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:18px;'+(_wi===0?'opacity:.3;pointer-events:none;':'');
+      bPrev.textContent='‹';
+      bPrev.onclick=function(){freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();};
+      var center=document.createElement('div');
+      center.style.cssText='text-align:center;';
+      center.innerHTML='<div style="font-size:16px;font-weight:800;color:#0A0F1E;">'+wk.label+'</div>'
+        +'<div style="font-size:13px;font-weight:600;color:#0077C8;margin-top:2px;">'+debutFull+' → '+finFull+'</div>';
+      var bNext=document.createElement('button');
+      bNext.style.cssText='background:#E5E7EB;border:none;border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:18px;'+(_wi>=_sems.length-1?'opacity:.3;pointer-events:none;':'');
+      bNext.textContent='›';
+      bNext.onclick=function(){freqWeekOffset=Math.min(_sems.length-1,(freqWeekOffset||0)+1);renderFrequentation();};
+      navDiv.appendChild(bPrev); navDiv.appendChild(center); navDiv.appendChild(bNext);
+      nav.appendChild(navDiv);
     }
-    enfants.forEach(function(k){kidsShow.push(k);});
-  });
-
-  // ── Navigation ──
-  var navHTML='';
-  if(freqPeriod==='semaine'){
-    navHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:#F9FAFB;border-radius:10px;padding:10px 14px;">'
-      +'<button onclick="freqWeekOffset=Math.max(0,(freqWeekOffset||0)-1);renderFrequentation();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;">‹</button>'
-      +'<div style="text-align:center;">'
-      +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;">'+wk.label+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF;">'+wk.debut+' → '+wk.fin+'</div>'
-      +'</div>'
-      +'<button onclick="freqWeekOffset=Math.min('+(_sems.length-1)+',freqWeekOffset+1);renderFrequentation();" style="background:#E5E7EB;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;">›</button>'
-      +'</div>';
-  }
-  if(freqPeriod==='jour'){
-    var dateVal=window._freqDate||new Date().toISOString().slice(0,10);
-    navHTML='<div style="margin-bottom:12px;">'
-      +'<input type="date" id="freq-date-input" value="'+dateVal+'" '
-      +'onchange="window._freqDate=this.value;renderFrequentation();" '
-      +'style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-family:inherit;font-size:14px;box-sizing:border-box;">'
-      +'</div>';
-  }
-
-  // ── Graphique (barres Lun-Ven) ──
-  var jours=['Lun','Mar','Mer','Jeu','Ven'];
-  var graphData=jours.map(function(j){
-    return {label:j, matin:totM, aprem:totA};
-  });
-  var maxAll=Math.max(1,totM,totA);
-  var barHTML=graphData.map(function(d){
-    var hM=Math.round((d.matin||0)/maxAll*64);
-    var hA=Math.round((d.aprem||0)/maxAll*64);
-    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'
-      +'<div style="display:flex;gap:2px;align-items:flex-end;height:64px;width:100%;">'
-      +'<div style="flex:1;background:#F97316;border-radius:3px 3px 0 0;height:'+Math.max(2,hM)+'px;"></div>'
-      +'<div style="flex:1;background:#0099E6;border-radius:3px 3px 0 0;height:'+Math.max(2,hA)+'px;"></div>'
-      +'</div>'
-      +'<div style="font-size:9px;color:#9CA3AF;margin-top:3px;">'+d.label+'</div></div>';
-  }).join('');
-
-  // ── Modules groupes ──
-  var GROUPES_MATIN2=[
-    {name:'GM1',emoji:'🐠',min:3,max:5.4,color:'#FF6B35'},
-    {name:'GM2',emoji:'🐬',min:5.5,max:6.4,color:'#8B5CF6'},
-    {name:'GM3',emoji:'🦈',min:6.5,max:7.9,color:'#0099E6'},
-    {name:'GM4',emoji:'🦈',min:8,max:13,color:'#10B981'}
-  ];
-  var GROUPES_APREM2=[
-    {name:'GA1',emoji:'🐠',min:3,max:5.4,color:'#FF6B35'},
-    {name:'GA2',emoji:'🐬',min:5.5,max:6.4,color:'#8B5CF6'},
-    {name:'GA3',emoji:'🦈',min:7,max:8,color:'#0099E6'},
-    {name:'GA4',emoji:'🦈',min:9,max:10,color:'#10B981'},
-    {name:'GA5',emoji:'🏄',min:11,max:13,color:'#F59E0B'}
-  ];
-  var MAX_G2=20;
-
-  function groupRow(g){
-    var cnt=kidsShow.filter(function(k){
-      var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
-      return age>=g.min&&age<=g.max;
-    }).length;
-    var pct=Math.round(cnt/MAX_G2*100);
-    var full=cnt>=MAX_G2;
-    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F3F4F6;">'
-      +'<span style="font-size:18px;">'+g.emoji+'</span>'
-      +'<div style="flex:1;">'
-      +'<div style="font-size:12px;font-weight:700;color:#0A0F1E;">'+g.name+'</div>'
-      +'<div style="height:5px;background:#F3F4F6;border-radius:3px;margin-top:3px;overflow:hidden;">'
-      +'<div style="height:5px;background:'+(full?'#EF4444':g.color)+';border-radius:3px;width:'+pct+'%;"></div>'
-      +'</div></div>'
-      +'<div style="font-size:13px;font-weight:800;color:'+(full?'#EF4444':cnt>0?g.color:'#D1D5DB')+';">'+cnt+'<span style="font-size:10px;color:#9CA3AF;font-weight:400;">/'+MAX_G2+'</span></div>'
-      +'</div>';
+    if(freqPeriod==='mois'){
+      var moisBar=document.createElement('div');
+      moisBar.style.cssText='display:flex;gap:8px;margin-bottom:14px;';
+      ['juillet','août'].forEach(function(m){
+        var btn=document.createElement('button');
+        var act=freqMois===m;
+        btn.style.cssText='flex:1;padding:10px;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151');
+        btn.textContent=m==='juillet'?'☀️ Juillet':'🌊 Août';
+        btn.onclick=(function(mv){return function(){window._freqMois=mv;renderFrequentation();};})(m);
+        moisBar.appendChild(btn);
+      });
+      nav.appendChild(moisBar);
+    }
+    if(freqPeriod==='saison'){
+      var saisBar=document.createElement('div');
+      saisBar.style.cssText='display:flex;gap:6px;margin-bottom:14px;';
+      [{k:'printemps',l:'🌸 Printemps'},{k:'ete',l:'☀️ Été'},{k:'automne',l:'🍂 Automne'}].forEach(function(s){
+        var btn=document.createElement('button');
+        var act=freqSais===s.k;
+        btn.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151');
+        btn.textContent=s.l;
+        btn.onclick=(function(sk){return function(){window._freqSais=sk;renderFrequentation();};})(s.k);
+        saisBar.appendChild(btn);
+      });
+      nav.appendChild(saisBar);
+    }
   }
 
-  var totEnfM=GROUPES_MATIN2.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
-  var totEnfA=GROUPES_APREM2.reduce(function(s,g){return s+kidsShow.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;},0);
-  var matinRows=GROUPES_MATIN2.map(groupRow).join('');
-  var apremRows=GROUPES_APREM2.map(groupRow).join('');
+  // Graphique
+  var graph=el.querySelector('#fq-graph');
+  if(graph&&freqPeriod!=='jour'){
+    var joursL=['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+    var maxB=Math.max(1,kidsM.length,kidsA.length);
+    var bars=joursL.map(function(j){
+      var hM=Math.round(kidsM.length/maxB*64);
+      var hA=Math.round(kidsA.length/maxB*64);
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'        +'<div style="display:flex;gap:2px;align-items:flex-end;height:64px;">'        +'<div style="width:12px;background:#F97316;border-radius:3px 3px 0 0;height:'+Math.max(2,hM)+'px;"></div>'        +'<div style="width:12px;background:#0099E6;border-radius:3px 3px 0 0;height:'+Math.max(2,hA)+'px;"></div>'        +'</div>'        +'<div style="font-size:10px;font-weight:700;color:#374151;margin-top:4px;text-align:center;">'+j+'</div>'        +'</div>';
+    }).join('');
+    graph.innerHTML='<div class="wcard" style="margin-bottom:12px;">'      +'<div style="font-size:13px;font-weight:800;color:#0A0F1E;margin-bottom:12px;">📊 Graphique</div>'      +'<div style="display:flex;gap:4px;align-items:flex-end;height:80px;margin-bottom:10px;">'+bars+'</div>'      +'<div style="display:flex;gap:12px;">'      +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin ('+kidsM.length+')</div>'      +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#0099E6;"></div>Après-midi ('+kidsA.length+')</div>'      +'</div></div>';
+  }
 
-  el.innerHTML=
-    // KPIs matin/aprem
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-    +'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:1.5px solid #FDE68A;border-radius:12px;padding:14px;text-align:center;">'
-    +'<div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;margin-bottom:4px;">🌅 MATIN</div>'
-    +'<div style="font-size:32px;font-weight:800;color:#92400E;">'+totM+'</div>'
-    +'<div style="font-size:10px;color:#B45309;">réservation'+(totM>1?'s':'')+'</div></div>'
-    +'<div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;text-align:center;">'
-    +'<div style="font-size:10px;font-weight:700;color:#1565C0;text-transform:uppercase;margin-bottom:4px;">🌞 APRÈS-MIDI</div>'
-    +'<div style="font-size:32px;font-weight:800;color:#1565C0;">'+totA+'</div>'
-    +'<div style="font-size:10px;color:#1D4ED8;">réservation'+(totA>1?'s':'')+'</div></div>'
-    +'</div>'
-
-    // Navigation
-    +navHTML
-
-    // Graphique
-    +'<div class="wcard" style="margin-bottom:12px;">'
-    +'<div class="wcard-title"><span>📊</span> Évolution semaine '+wk.label+'</div>'
-    +'<div style="display:flex;gap:3px;align-items:flex-end;height:80px;margin-bottom:8px;">'+barHTML+'</div>'
-    +'<div style="display:flex;gap:12px;">'
-    +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#F97316;"></div>Matin ('+totM+')</div>'
-    +'<div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:#0099E6;"></div>Après-midi ('+totA+')</div>'
-    +'</div></div>'
-
-    // Modules
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    +'<div class="wcard">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>🌅</span> Matin</div>'
-    +'<span style="font-size:11px;font-weight:700;color:#F97316;">'+totEnfM+' enfants</span>'
-    +'</div>'+matinRows+'</div>'
-    +'<div class="wcard">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-    +'<div class="wcard-title" style="margin-bottom:0;"><span>🌞</span> Après-midi</div>'
-    +'<span style="font-size:11px;font-weight:700;color:#0099E6;">'+totEnfA+' enfants</span>'
-    +'</div>'+apremRows+'</div>'
-    +'</div>';
+  // Groupes
+  var grp=el.querySelector('#fq-groups');
+  if(grp){
+    var GROUPES_M=[{name:'GM1',emoji:'🐠',min:3,max:5.4,color:'#FF6B35'},{name:'GM2',emoji:'🐬',min:5.5,max:6.4,color:'#8B5CF6'},{name:'GM3',emoji:'🦈',min:6.5,max:7.9,color:'#0099E6'},{name:'GM4',emoji:'🌊',min:8,max:13,color:'#10B981'}];
+    var GROUPES_A=[{name:'GA1',emoji:'🐠',min:3,max:5.4,color:'#FF6B35'},{name:'GA2',emoji:'🐬',min:5.5,max:6.4,color:'#8B5CF6'},{name:'GA3',emoji:'🦈',min:7,max:8,color:'#0099E6'},{name:'GA4',emoji:'🦈',min:9,max:10,color:'#10B981'},{name:'GA5',emoji:'🏄',min:11,max:13,color:'#F59E0B'}];
+    var MAX_G2=20;
+    function groupRow(g,kids){
+      var cnt=kids.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;
+      var pct=Math.round(cnt/MAX_G2*100); var full=cnt>=MAX_G2;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #F3F4F6;">'        +'<span style="font-size:18px;">'+g.emoji+'</span>'        +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#0A0F1E;">'+g.name+'</div>'        +'<div style="height:5px;background:#F3F4F6;border-radius:3px;margin-top:3px;overflow:hidden;">'        +'<div style="height:5px;background:'+(full?'#EF4444':g.color)+';border-radius:3px;width:'+pct+'%;"></div>'        +'</div></div>'        +'<div style="font-size:13px;font-weight:800;color:'+(full?'#EF4444':cnt>0?g.color:'#D1D5DB')+';">'+cnt+'<span style="font-size:10px;color:#9CA3AF;">/'+MAX_G2+'</span></div>'        +'</div>';
+    }
+    var matinRows=GROUPES_M.map(function(g){return groupRow(g,kidsM);}).join('');
+    var apremRows=GROUPES_A.map(function(g){return groupRow(g,kidsA);}).join('');
+    grp.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'      +'<div class="wcard"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'      +'<div class="wcard-title" style="margin-bottom:0;"><span>🌅</span> Matin</div>'      +'<span style="font-size:11px;font-weight:700;color:#F97316;">'+kidsM.length+' enfants</span>'      +'</div>'+matinRows+'</div>'      +'<div class="wcard"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'      +'<div class="wcard-title" style="margin-bottom:0;"><span>🌞</span> Après-midi</div>'      +'<span style="font-size:11px;font-weight:700;color:#0099E6;">'+kidsA.length+' enfants</span>'      +'</div>'+apremRows+'</div>'      +'</div>';
+  }
 }
 
 // ═══ COMPTA ═══
