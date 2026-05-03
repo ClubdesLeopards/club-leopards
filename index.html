@@ -2380,6 +2380,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2481,8 +2483,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -3089,9 +3095,9 @@ function allKids() {
       kids.push({
         id: ch.id || null,
         membre_id: m.id || null,
-        prenom: ch.prenom || (ch.name?ch.name.split(' ')[0]:''),
-        nom: ch.nom || (ch.name?ch.name.split(' ').slice(1).join(' '):''),
-        name: ch.name || ((ch.prenom||'') + ' ' + (ch.nom||'')),
+        prenom: cap(ch.prenom || (ch.name?ch.name.split(' ')[0]:'')),
+        nom: ch.nom || m.nom || '',
+        name: cap(ch.prenom||(ch.name?ch.name.split(' ')[0]:''))+' '+NOM(ch.nom||m.nom||''),
         age: parseFloat(ch.age) || 0,
         dob: ch.dob || ch.date_naissance || '',
         medical: ch.medical || 'RAS',
@@ -4685,10 +4691,12 @@ async function sauvegarderMembreEdit(i){
 
   // Mettre à jour les enfants localement
   (m.children||[]).forEach(function(ch,ci){
-    var nameVal=(document.getElementById('ek-name-'+ci)||{value:ch.name}).value.trim();
+    var nameVal=(document.getElementById('ek-name-'+ci)||{value:ch.prenom||ch.name}).value.trim();
     var ageVal=parseInt((document.getElementById('ek-age-'+ci)||{value:ch.age}).value)||ch.age;
-    ch.name=cap(nameVal||ch.name);
+    // nameVal = seulement le prénom (le champ n'affiche que le prénom)
     ch.prenom=cap(nameVal||ch.prenom||'');
+    ch.nom=ch.nom||m.nom||''; // garder le nom de famille existant
+    ch.name=ch.prenom+' '+NOM(ch.nom||m.nom||''); // reconstruire name complet
     ch.age=ageVal;
   });
 
@@ -7223,6 +7231,8 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
 
 
 
