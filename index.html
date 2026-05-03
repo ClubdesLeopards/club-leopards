@@ -1871,10 +1871,7 @@ textarea{resize:vertical;}
       <!-- PAIEMENTS -->
       <div id="at-paiements" style="display:none;">
         <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-          <button class="btn btn-sm active"    id="pp-jour"    onclick="setPaiPeriod('jour')">Jour</button>
-          <button class="btn btn-sm btn-ghost" id="pp-semaine" onclick="setPaiPeriod('semaine')">Semaine</button>
-          <button class="btn btn-sm btn-ghost" id="pp-mois"    onclick="setPaiPeriod('mois')">Mois</button>
-          <button class="btn btn-sm btn-ghost" id="pp-saison"  onclick="setPaiPeriod('saison')">Saisons</button>
+          <button class="btn btn-sm active" id="pp-saison" onclick="setPaiPeriod('saison')">🌊 Saisons</button>
         </div>
         <div id="paiements-content"></div>
       </div>
@@ -2379,6 +2376,9 @@ textarea{resize:vertical;}
 
 
 
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2476,8 +2476,14 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
 </script>
 <script>
+
+
+
 
 
 
@@ -3748,10 +3754,11 @@ function renderFiches() {
 }
 
 // ═══ PAIEMENTS ═══
-var paiPeriod='jour';
+var paiPeriod='saison';
+var paiSaison=window._paiSaison||'ete';
 function setPaiPeriod(p){
   paiPeriod=p;
-  ['jour','semaine','mois','saison'].forEach(function(x){var btn=document.getElementById('pp-'+x);if(btn)btn.classList.toggle('active',x===p);});
+  var btn=document.getElementById('pp-saison');if(btn)btn.classList.add('active');
   renderPaiements();
 }
 
@@ -4719,10 +4726,10 @@ function renderAdminGroupes(){
       return n && kParent && (n.indexOf(kParent.split(' ').pop())>=0 || kParent.indexOf(n.split(' ').pop())>=0);
     });
   });
-  var active=ST.gPeriod==='après-midi'?GROUPES_APREM:GROUPES_MATIN;
+  var active=(ST.gPeriod==='après-midi'||ST.gPeriod==='aprem')?GROUPES_APREM:GROUPES_MATIN;
   el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">'
     +active.map(function(g){
-      var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;});
+      var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var kPer=k.periode||[]; var pOk=kPer.indexOf(ST.gPeriod)>=0||(ST.gPeriod==='aprem'&&(kPer.indexOf('après-midi')>=0||kPer.indexOf('aprem')>=0))||(ST.gPeriod==='matin'&&kPer.indexOf('matin')>=0); return age>=g.min&&age<=g.max&&pOk;});
       var pct=Math.round(enf.length/MAX_G*100);
       return '<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid '+g.color+';">'
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
@@ -4745,10 +4752,10 @@ function renderAdminGroupes(){
 function imprimerGroupe(gid){
   var wi=Math.max(0,Math.min((SAISONS.ete.semaines.length||9)-1,ST.adminWeekOffset||0));
   var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
-  var active=ST.gPeriod==='après-midi'?GROUPES_APREM:GROUPES_MATIN;
+  var active=(ST.gPeriod==='après-midi'||ST.gPeriod==='aprem')?GROUPES_APREM:GROUPES_MATIN;
   var g=active.find(function(x){return String(x.id)===String(gid);});if(!g)return;
   var kids=allKids();
-  var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return age>=g.min&&age<=g.max&&(k.periode||[]).indexOf(ST.gPeriod)>=0;});
+  var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var kPer=k.periode||[]; var pOk=kPer.indexOf(ST.gPeriod)>=0||(ST.gPeriod==='aprem'&&(kPer.indexOf('après-midi')>=0||kPer.indexOf('aprem')>=0))||(ST.gPeriod==='matin'&&kPer.indexOf('matin')>=0); return age>=g.min&&age<=g.max&&pOk;});
   var win=window.open('','_blank','width=800,height=600');if(!win){toast('Autoriser les popups','ko');return;}
   var rows=enf.length?enf.map(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var med=k.medical&&k.medical!=='RAS'?'<strong style="color:#DC2626;">'+k.medical+'</strong>':'RAS';return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td>'+ageLabel(age)+'</td><td>'+med+'</td></tr>';}).join(''):'<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:16px;">Aucun enfant</td></tr>';
   win.document.write('<html><head><title>'+g.name+' - '+wk.label+'</title><style>body{font-family:Arial,sans-serif;padding:28px;}h1{color:'+g.color+';}table{width:100%;border-collapse:collapse;}th{background:'+g.color+';color:#fff;padding:9px 12px;text-align:left;}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;}tr:nth-child(even){background:#F9FAFB;}@media print{button{display:none!important;}}</style></head><body>'
@@ -4951,16 +4958,37 @@ function renderPaiements(){
   var tM=Object.values(modes).reduce(function(s,v){return s+v;},0);
   var bar=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){return '<div style="flex:'+modes[k]+';background:'+mC[k]+';height:100%;min-width:3px;"></div>';}).join('');
   var leg=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#374151;margin-right:8px;"><span style="width:9px;height:9px;border-radius:2px;background:'+mC[k]+';display:inline-block;"></span>'+mL[k]+' · '+modes[k]+' €</span>';}).join('');
+  // Filtre saison
+  var paiSais=window._paiSaison||'ete';
+  var saisLabels={printemps:'Printemps',ete:'Été',automne:'Automne'};
+  allR=allR.filter(function(r){
+    var sl=(r.saisonLabel||r.saison||'').toLowerCase();
+    return sl.indexOf(saisLabels[paiSais].toLowerCase())>=0||sl.indexOf(paiSais)>=0||sl==='';
+  });
   var pF=window._pFilter||'attente';
   var aF=window._pAlpha||'';
   var liste=pF==='payees'?payees:enAtt;
   if(pF==='payees'&&aF) liste=liste.filter(function(r){return (r.nom||r.nom_famille||'').toUpperCase().indexOf(aF)===0;});
 
-  el.innerHTML='<div id="p-kpi"></div><div id="p-rept"></div><div id="p-flt"></div><div id="p-ab"></div><div id="p-cards"></div>';
+  el.innerHTML='<div id="p-kpi"></div><div id="p-sais"></div><div id="p-rept"></div><div id="p-flt"></div><div id="p-ab"></div><div id="p-cards"></div>';
 
   // KPI
   var kpi=el.querySelector('#p-kpi');
   if(kpi) kpi.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"><div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #F97316;"><div style="font-size:20px;font-weight:800;color:#F97316;">'+enAtt.length+'</div><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">En attente</div><div style="font-size:11px;color:#F97316;font-weight:700;">'+tAtt+' €</div></div><div style="background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid #10B981;"><div style="font-size:20px;font-weight:800;color:#10B981;">'+payees.length+'</div><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;">Payées</div><div style="font-size:11px;color:#10B981;font-weight:700;">'+tPaye+' €</div></div></div>';
+
+  // Boutons saison
+  var saisEl=el.querySelector('#p-sais');
+  if(saisEl){
+    saisEl.style.cssText='display:flex;gap:6px;margin-bottom:12px;';
+    [{k:'printemps',l:'🌸 Printemps'},{k:'ete',l:'☀️ Été'},{k:'automne',l:'🍂 Automne'}].forEach(function(s){
+      var act=paiSais===s.k;
+      var btn=document.createElement('button');
+      btn.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151');
+      btn.textContent=s.l;
+      btn.onclick=(function(k){return function(){window._paiSaison=k;renderPaiements();};})(s.k);
+      saisEl.appendChild(btn);
+    });
+  }
 
   // Répartition
   var rept=el.querySelector('#p-rept');
@@ -4999,7 +5027,7 @@ function renderPaiements(){
   // Cards via DOM
   var pc=el.querySelector('#p-cards');
   if(pc){
-    pc.style.cssText='display:flex;flex-direction:column;gap:8px;';
+    pc.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;';
     pc.innerHTML='';
     liste.forEach(function(r){
       var isV=r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
@@ -7133,6 +7161,9 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
+
+
 
 
 
