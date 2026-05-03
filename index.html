@@ -2439,6 +2439,7 @@ textarea{resize:vertical;}
 
 
 
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2561,8 +2562,10 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
 </script>
 <script>
+
 
 
 
@@ -5353,7 +5356,8 @@ function renderPaiements(){
   var saisLabels={printemps:'Printemps',ete:'Été',automne:'Automne'};
   allR=allR.filter(function(r){
     var sl=(r.saisonLabel||r.saison||'').toLowerCase();
-    return sl.indexOf(saisLabels[paiSais].toLowerCase())>=0||sl.indexOf(paiSais)>=0;
+    var saisMatch={'ete':['été','ete'],'automne':['automne'],'printemps':['printemps']};
+    return (saisMatch[paiSais]||[paiSais]).some(function(k){return sl.indexOf(k)>=0;});
   });
   var pF=window._pFilter||'attente';
   var aF=window._pAlpha||'';
@@ -5666,7 +5670,8 @@ function renderComptabilite(){
     // Filtrer par saison : comparer saisonLabel ou saison
     var resasSais=ST.reservations.filter(function(r){
       var sl=(r.saisonLabel||r.saison||'').toLowerCase();
-      return sl.indexOf(s.label.toLowerCase())>=0||sl.indexOf(s.key)>=0;
+      var km={'ete':['été','ete'],'automne':['automne'],'printemps':['printemps']};
+      return (km[s.key]||[s.key]).some(function(k){return sl.indexOf(k)>=0;});
     });
     var enc=resasSais.filter(function(r){
       return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';
@@ -7494,6 +7499,7 @@ function setGenre(g){
   }
 }
 window.setGenre=setGenre;
+
 
 
 
