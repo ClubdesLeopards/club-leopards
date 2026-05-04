@@ -2473,8 +2473,12 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
+
+
 
 
 
@@ -2832,6 +2836,8 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -2972,6 +2978,11 @@ async function chargerDonnees() {
         };
       });
     }
+
+    // Factures
+    var { data: factures } = await sb.from('factures').select('*').order('created_at', { ascending: false });
+    if(factures) ST.factures = factures;
+    else ST.factures = [];
 
     console.log('✅ Données Supabase chargées — membres:', ST.members.length, 'resas:', ST.reservations.length);
     if (typeof renderAdmin === 'function') renderAdmin();
@@ -6754,6 +6765,8 @@ function renderFactureTab(){
       bar.appendChild(btn);
     });
   },10);
+
+  setTimeout(renderHistoriqueFactures,50);
 }
 
 function toggleFacKid(el){
@@ -6808,6 +6821,26 @@ function genererFacturePDF(mi){
     lignes='<tr><td style="padding:11px 16px;">Prestation Club de Plage</td><td style="padding:11px 16px;text-align:right;font-weight:700;">'+total+' \u20ac</td></tr>';
   }
   var kSec=(m.children||[]).filter(function(ch){var n=cap(ch.prenom||ch.name||'');return !selectedKids.length||selectedKids.indexOf(n)>=0;}).map(function(ch){var dob=ch.dob||ch.date_naissance||'';var ds=dob?new Date(dob).toLocaleDateString('fr-FR'):'';return '<div class="bd">'+cap(ch.prenom||ch.name||'')+(ds?' \u2014 n\u00e9(e) le '+ds:'')+'</div>';}).join('');
+  // Sauvegarder dans Supabase
+  var facData={
+    reference: ref,
+    membre_id: m.id||null,
+    nom_famille: NOM(m.nom||''),
+    email: m.email||'',
+    montant_ttc: totalTTC,
+    montant_ht: totalHT,
+    montant_tva: totalTVA,
+    mode_paiement: mode||null,
+    date_facture: new Date().toISOString().slice(0,10),
+    enfants: JSON.stringify(selectedKids)
+  };
+  sb.from('factures').insert(facData).then(function(res){
+    if(!res.error){
+      ST.factures = ST.factures||[];
+      ST.factures.unshift(Object.assign({},facData,{id:res.data&&res.data[0]&&res.data[0].id}));
+      if(typeof renderHistoriqueFactures==='function') renderHistoriqueFactures();
+    }
+  });
   var win=window.open('','_blank','width=760,height=960');
   if(!win){toast('Autorisez les popups','ko');return;}
   var h=[];
@@ -8053,6 +8086,52 @@ window.envoyerFactureMailPDF=envoyerFactureMailPDF;
 
 
 
+
+
+
+function renderHistoriqueFactures(){
+  var el=document.getElementById('factures-historique'); if(!el) return;
+  var facts=ST.factures||[];
+  if(!facts.length){
+    el.innerHTML='';
+    return;
+  }
+  var rows=facts.map(function(f){
+    return '<tr style="border-bottom:1px solid #F3F4F6;">'
+      +'<td style="padding:10px 12px;font-size:13px;font-weight:700;color:#0077C8;">'+f.reference+'</td>'
+      +'<td style="padding:10px 12px;font-size:13px;">Famille '+f.nom_famille+'</td>'
+      +'<td style="padding:10px 12px;font-size:12px;color:#6B7280;">'+(f.date_facture?new Date(f.date_facture).toLocaleDateString('fr-FR'):'')+'</td>'
+      +'<td style="padding:10px 12px;font-size:14px;font-weight:800;color:#059669;text-align:right;">'+(f.montant_ttc||0)+' €</td>'
+      +'<td style="padding:10px 12px;text-align:right;">'
+      +'<button onclick="reimprimerFacture(&apos;'+f.id+'&apos;)" style="padding:5px 10px;background:#EFF6FF;color:#0077C8;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">🖨️</button>'
+      +'</td>'
+      +'</tr>';
+  }).join('');
+  el.innerHTML='<div class="wcard" style="margin-top:8px;">'
+    +'<div class="wcard-title" style="margin-bottom:12px;">📋 Historique des factures ('+facts.length+')</div>'
+    +'<div style="overflow-x:auto;">'
+    +'<table style="width:100%;border-collapse:collapse;font-size:12px;">'
+    +'<thead><tr style="background:#F3F4F6;">'
+    +'<th style="padding:8px 12px;text-align:left;font-size:11px;color:#6B7280;font-weight:700;">Référence</th>'
+    +'<th style="padding:8px 12px;text-align:left;font-size:11px;color:#6B7280;font-weight:700;">Famille</th>'
+    +'<th style="padding:8px 12px;text-align:left;font-size:11px;color:#6B7280;font-weight:700;">Date</th>'
+    +'<th style="padding:8px 12px;text-align:right;font-size:11px;color:#6B7280;font-weight:700;">Montant</th>'
+    +'<th style="padding:8px 12px;"></th>'
+    +'</tr></thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'</table></div></div>';
+}
+window.renderHistoriqueFactures=renderHistoriqueFactures;
+
+function reimprimerFacture(id){
+  var f=(ST.factures||[]).find(function(x){return String(x.id)===String(id);});
+  if(!f){toast('Facture introuvable','ko');return;}
+  // Retrouver le membre
+  var mi=(DEMO_FAMS.concat(ST.members)).findIndex(function(m){return String(m.id)===String(f.membre_id);});
+  if(mi>=0) genererFacturePDF(mi);
+  else toast('Membre introuvable','ko');
+}
+window.reimprimerFacture=reimprimerFacture;
 
 
 </script>
