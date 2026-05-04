@@ -2468,6 +2468,8 @@ textarea{resize:vertical;}
 
 
 
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2608,8 +2610,12 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
 </script>
 <script>
+
+
 
 
 
@@ -5768,20 +5774,28 @@ function renderComptabilite(){
 }
 function formatRef(ref){
   if(!ref) return '';
-  // Format attendu: "Prenom, Prenom (NOM)" → déjà correct
-  // Reformater pour s'assurer de la casse
-  // Partie entre () = nom famille → tout majuscule
-  var result=ref.replace(/\(([^)]+)\)/g, function(match, nom){
-    return '('+nom.toUpperCase()+')';
-  });
-  // Prénoms avant () = cap() chaque prénom
-  result=result.replace(/^([^(]+)/, function(match){
-    return match.split(',').map(function(p){
-      var t=p.trim();
-      return t?t.charAt(0).toUpperCase()+t.slice(1).toLowerCase():'';
-    }).join(', ');
-  });
-  return result;
+  // Cas 1 : contient des parenthèses → "Prenom (NOM)"
+  if(ref.indexOf('(')>=0){
+    return ref
+      .replace(/\(([^)]+)\)/g,function(m,n){return '('+n.toUpperCase()+')';})
+      .replace(/^([^(]+)/,function(m){
+        return m.split(',').map(function(p){var t=p.trim();return t?t.charAt(0).toUpperCase()+t.slice(1).toLowerCase():'';}).join(', ');
+      });
+  }
+  // Cas 2 : plusieurs mots séparés par virgule → tous prénoms
+  if(ref.indexOf(',')>=0){
+    return ref.split(',').map(function(p){var t=p.trim();return t?t.charAt(0).toUpperCase()+t.slice(1).toLowerCase():'';}).join(', ');
+  }
+  // Cas 3 : un ou deux mots séparés par espace
+  var parts=ref.trim().split(/\s+/);
+  if(parts.length===1){
+    // Un seul mot : cap()
+    return parts[0].charAt(0).toUpperCase()+parts[0].slice(1).toLowerCase();
+  }
+  // Plusieurs mots : dernier mot = NOM (majuscule), les autres = prénoms cap()
+  var nom=parts[parts.length-1].toUpperCase();
+  var prenoms=parts.slice(0,-1).map(function(p){return p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();}).join(' ');
+  return prenoms+' '+nom;
 }
 function renderSuiviQuotidien(){
   var el=document.getElementById('suivi-quotidien-content'); if(!el) return;
@@ -5930,14 +5944,14 @@ function sqUpdateRef(){
       memSel.innerHTML='<option value="">-- Choisir un membre --</option>';
       ST.members.forEach(function(m,i){
         var opt=document.createElement('option'); opt.value=i;
-        var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);
+        var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'')+' '+NOM(m.nom||'');}).filter(Boolean);
         opt.textContent=(enfs.length?enfs.join(', ')+' — ':'')+cap(m.prenom||'')+' '+NOM(m.nom||'');
         memSel.appendChild(opt);
       });
     }
     if(disp&&memSel.value){
       var m=ST.members[parseInt(memSel.value)];
-      if(m){var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);disp.textContent=enfs.join(', ');}
+      if(m){var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'')+' '+NOM(m.nom||'');}).filter(Boolean);disp.textContent=enfs.join(', ');}
     }
   } else if(type==='casquette'){ if(disp) disp.textContent='🧢 Casquette'; }
   else if(type==='tshirt'){ if(disp) disp.textContent='👕 T-Shirt'; }
@@ -8012,6 +8026,8 @@ async function envoyerFactureMailPDF(facRef, email, nom){
   }catch(e){alert('Erreur envoi: '+e.message);}
 }
 window.envoyerFactureMailPDF=envoyerFactureMailPDF;
+
+
 
 
 
