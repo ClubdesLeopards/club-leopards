@@ -2475,6 +2475,13 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
 
@@ -2622,8 +2629,22 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
+
+
+
 </script>
 <script>
+
+
+
+
+
+
+
 
 
 
@@ -4901,6 +4922,7 @@ function renderMembres(){
     var cols=['#3B82F6','#10B981','#F97316','#8B5CF6','#EC4899','#F59E0B'];
     var col=cols[(m.nom||'').charCodeAt(0)%cols.length];
     var nbK=(m.children||[]).length;
+    var kidsNames=(m.children||[]).map(function(ch){return cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'');}).filter(Boolean).join(' · ');
     return '<div onclick="voirFicheMembre('+i+')" style="background:#fff;border-radius:13px;padding:13px;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;border-top:3px solid '+col+';">'
       +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
       +'<div style="width:38px;height:38px;border-radius:50%;background:'+col+'20;color:'+col+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">'+ini+'</div>'
@@ -4909,6 +4931,8 @@ function renderMembres(){
       +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
       +'<span style="background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">'+nbK+' enfant'+(nbK>1?'s':'')+'</span>'
       +(m.droit_image!==false?'<span style="background:#E8F5E9;color:#2E7D32;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">Photo OK</span>':'')
+      +'</div>'
+      +(kidsNames?'<div style="margin-top:5px;font-size:11px;color:#0077C8;font-weight:600;">'+kidsNames+'</div>':'')
       +'</div></div>';
   }).join('');
   el.innerHTML=bar+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">'+cards+'</div>';
@@ -6003,7 +6027,7 @@ async function confirmerSaisieQuotidienne(){
     var m=ST.members[parseInt(memIdx)];
     if(m){
       var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);
-      ref=enfs.length?enfs.join(', ')+' ('+NOM(m.nom||'')+')':(cap(m.prenom||'')+' '+NOM(m.nom||''));
+      ref=enfs.length?enfs.map(function(p){return p+' '+NOM(m.nom||'');}).join(', '):(cap(m.prenom||'')+' '+NOM(m.nom||''));
     }
   } else if(refType==='casquette') ref='🧢 Casquette';
   else if(refType==='tshirt') ref='👕 T-Shirt';
@@ -6622,7 +6646,7 @@ function renderDashboard(){
     +[{icon:'🧒',val:kids.length,lbl:'Enfants',tab:'groupes'},
       {icon:'👨\u200d👩\u200d👧',val:fams.length,lbl:'Familles',tab:'membres'},
       {icon:'💰',val:enc+'€',lbl:'Encaissé',tab:'paiements'},
-      {icon:'✅',val:Math.max(0,(GROUPES_MATIN.length+GROUPES_APREM.length)*MAX_G-kids.length),lbl:'Places libres',tab:'groupes'},
+      
     ].map(function(k){
       var oc='setAdminTab("'+k.tab+'")';
       return '<div onclick="'+oc+'" style="background:rgba(255,255,255,.22);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;">'
@@ -6713,15 +6737,16 @@ function renderFactureTab(){
     var famResas2=resasVal.filter(function(r){return r.membre_id===m.id||(r.nom===m.prenom+' '+NOM(m.nom||''));});
     return famResas2.length>0;
   }).map(function(m,mi){
-    var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
+    var famResas=resasVal.filter(function(r){return String(r.membre_id)===String(m.id)||r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
     var total=famResas.reduce(function(s,r){return s+(r.montant||r.paid||120);},0);
     var kids=(m.children||[]);
     var kidsHTML=kids.map(function(ch,ki){
       var g=getGroupe(parseFloat(ch.age)||0);
-      var bg=g?g.color+'18':'#F3F4F6';var col=g?g.color:'#6B7280';
-      return '<span id="fac-kid-'+mi+'-'+ki+'" onclick="toggleFacKid(this)" data-checked="1" '
-        +'style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;border:2px solid '+(g?g.color:'#D1D5DB')+';cursor:pointer;font-size:12px;font-weight:700;background:'+bg+';color:'+col+';margin:3px;">'
-        +'✓ '+(g?g.emoji+' ':'')+(ch.name||ch.prenom)+'</span>';
+      var bg=g?g.color+'18':'#F3F4F6'; var col=g?g.color:'#6B7280';
+      var dob=ch.dob||ch.date_naissance||'';
+      var dobStr=dob?new Date(dob).toLocaleDateString('fr-FR'):'';
+      var enfNom=cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'');
+      return '<span id="fac-kid-'+mi+'-'+ki+'" data-kid="'+enfNom+'" data-checked="1" onclick="toggleFacKid(this)" style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;border:2px solid '+(g?g.color:'#D1D5DB')+';cursor:pointer;font-size:12px;font-weight:700;background:'+bg+';color:'+col+';margin:3px;">✓ '+enfNom+(dobStr?' · '+dobStr:'')+'</span>';
     }).join('');
     var seancesHTML=famResas.map(function(r){
       var enf=(r.children||[]).map(function(e){return e.name||e.prenom||'';}).join(', ');
@@ -6786,8 +6811,13 @@ function genererFacturePDF(mi){
   var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='valid\u00e9'||r.statut==='paye';});
   var famResas=resasVal.filter(function(r){return String(r.membre_id)===String(m.id)||r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
   var selectedKids=[];
-  document.querySelectorAll('[id^="fac-kid-'+mi+'-"]').forEach(function(el){if(el.dataset.checked==='1')selectedKids.push(el.textContent.replace(/^[^\w]*/,'').trim());});
-  if(!selectedKids.length)(m.children||[]).forEach(function(ch){selectedKids.push(cap(ch.prenom||ch.name||''));});
+  document.querySelectorAll('[id^="fac-kid-'+mi+'-"]').forEach(function(el){
+    if(el.dataset.checked==='1'){
+      var kid=el.getAttribute('data-kid')||el.textContent.replace(/^[^a-zA-ZÀ-ÿ]*/,'').trim();
+      if(kid) selectedKids.push(kid);
+    }
+  });
+  if(!selectedKids.length)(m.children||[]).forEach(function(ch){selectedKids.push(cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||''));});;
   var total=famResas.reduce(function(s,r){return s+(parseFloat(r.montant)||r.paid||120);},0)||120;
   var _num=parseInt(localStorage.getItem('facLastNum')||'0')+1;
   localStorage.setItem('facLastNum',_num);
@@ -6820,7 +6850,14 @@ function genererFacturePDF(mi){
   } else {
     lignes='<tr><td style="padding:11px 16px;">Prestation Club de Plage</td><td style="padding:11px 16px;text-align:right;font-weight:700;">'+total+' \u20ac</td></tr>';
   }
-  var kSec=(m.children||[]).filter(function(ch){var n=cap(ch.prenom||ch.name||'');return !selectedKids.length||selectedKids.indexOf(n)>=0;}).map(function(ch){var dob=ch.dob||ch.date_naissance||'';var ds=dob?new Date(dob).toLocaleDateString('fr-FR'):'';return '<div class="bd">'+cap(ch.prenom||ch.name||'')+(ds?' \u2014 n\u00e9(e) le '+ds:'')+'</div>';}).join('');
+  var kSec=(m.children||[]).filter(function(ch){
+    var n=cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'');
+    return !selectedKids.length||selectedKids.some(function(s){return s.indexOf(cap(ch.prenom||ch.name||''))>=0;});
+  }).map(function(ch){
+    var dob=ch.dob||ch.date_naissance||'';
+    var ds=dob?new Date(dob).toLocaleDateString('fr-FR'):'';
+    return '<div class="bd">'+cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'')+(ds?' — né(e) le '+ds:'')+'</div>';
+  }).join('');
   // Sauvegarder dans Supabase
   var facData={
     reference: ref,
@@ -6834,11 +6871,16 @@ function genererFacturePDF(mi){
     date_facture: new Date().toISOString().slice(0,10),
     enfants: JSON.stringify(selectedKids)
   };
-  sb.from('factures').insert(facData).then(function(res){
+  sb.from('factures').insert(facData).select().then(function(res){
     if(!res.error){
       ST.factures = ST.factures||[];
-      ST.factures.unshift(Object.assign({},facData,{id:res.data&&res.data[0]&&res.data[0].id}));
+      var newFac=Object.assign({},facData,{id:res.data&&res.data[0]?res.data[0].id:null});
+      ST.factures.unshift(newFac);
       if(typeof renderHistoriqueFactures==='function') renderHistoriqueFactures();
+      toast('Facture sauvegardée ✅','ok');
+    } else {
+      console.warn('Facture Supabase error:',res.error);
+      toast('Erreur sauvegarde facture','ko');
     }
   });
   var win=window.open('','_blank','width=760,height=960');
@@ -6945,94 +6987,7 @@ function toutDecocherFac(){
   });
 }
 
-function genererFacturePDF(mi){
-  var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
-  var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
-  // Kids sélectionnés (ceux avec dataset.checked='1')
-  var selectedKids=[];
-  document.querySelectorAll('[id^="fac-kid-'+mi+'-"]').forEach(function(el){
-    if(el.dataset.checked==='1') selectedKids.push(el.textContent.replace(/^✓ /,'').trim());
-  });
-  if(!selectedKids.length)(m.children||[]).forEach(function(ch){selectedKids.push(ch.name||ch.prenom);});
-  var total=famResas.reduce(function(s,r){return s+(r.paid||120);},0)||120;
-  var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
-  var dateF=new Date().toLocaleDateString('fr-FR');
 
-  var lignesHTML=famResas.map(function(r){
-    return '<tr><td style="padding:11px 16px;font-size:13px;color:#374151;">'
-      +(r.slot?r.slot.time+' · '+r.slot.date:'Prestation')
-      +(r.saisonLabel?'<br><span style="font-size:11px;color:#9CA3AF;">'+r.saisonLabel+'</span>':'')+'</td>'
-      +'<td style="padding:11px 16px;text-align:right;font-size:14px;font-weight:700;">'+(r.paid||120)+' €</td></tr>';
-  }).join('');
-
-  var win=window.open('','_blank','width=760,height=960');
-  if(!win){toast('Autorisez les popups','ko');return;}
-  win.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Facture '+ref+'</title>'
-    +'<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;background:#F3F4F6;}'
-    +'.page{max-width:660px;margin:28px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12);}'
-    +'.header{background:linear-gradient(135deg,#0A0F1E 0%,#0D1B3E 60%,#0A2E5C 100%);padding:30px 36px;}'
-    +'.header-inner{display:flex;justify-content:space-between;align-items:flex-start;}'
-    +'.logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:.3px;}'
-    +'.logo-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:5px;line-height:1.6;}'
-    +'.fac-label{text-align:right;}'
-    +'.fac-title{font-size:30px;font-weight:800;color:#FF6B35;letter-spacing:1px;}'
-    +'.fac-ref{font-size:12px;color:rgba(255,255,255,.55);margin-top:4px;}'
-    +'.body{padding:30px 36px;}'
-    +'.section{margin-bottom:22px;}'
-    +'.label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#9CA3AF;margin-bottom:8px;}'
-    +'.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}'
-    +'.box{background:#F9FAFB;border-radius:10px;padding:13px 16px;}'
-    +'.box-name{font-size:15px;font-weight:700;color:#0A0F1E;margin-bottom:3px;}'
-    +'.box-detail{font-size:12px;color:#6B7280;margin-top:2px;}'
-    +'table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;}'
-    +'thead{background:linear-gradient(135deg,#0077C8,#0099E6);}'
-    +'thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;}'
-    +'tbody tr{border-bottom:1px solid #F3F4F6;}'
-    +'tbody tr:last-child{border:none;}'
-    +'.total-row{background:#EFF6FF;}'
-    +'.total-row td{padding:13px 16px;font-size:15px;font-weight:800;}'
-    +'.amount{text-align:right!important;color:#0099E6;font-size:20px!important;}'
-    +'.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#D1FAE5;color:#065F46;}'
-    +'.footer{border-top:1px solid #F3F4F6;padding:18px 36px;display:flex;justify-content:space-between;font-size:11px;color:#9CA3AF;}'
-    +'.btn{background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;padding:12px 32px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;display:block;margin:20px auto;}'
-    +'@media print{.btn{display:none!important;}body{background:#fff;}}'
-    +'</style></head><body>'
-    +'<div class="page">'
-    +'<div class="header"><div class="header-inner">'
-    +'<div><div class="logo">🐆 Club des Léopards</div>'
-    +'<div class="logo-sub">Face au 28 Bd de l\'Océan, La Baule<br>SIRET : 50237123000025<br>clubdesleopards@free.fr · 06 52 03 96 37</div></div>'
-    +'<div class="fac-label"><div class="fac-title">FACTURE</div>'
-    +'<div class="fac-ref">N° '+ref+'</div>'
-    +'<div class="fac-ref">'+dateF+'</div></div>'
-    +'</div></div>'
-    +'<div class="body">'
-    +'<div class="section row2">'
-    +'<div><div class="label">Facturé à</div><div class="box">'
-    +'<div class="box-name">'+m.prenom+' '+NOM(m.nom)+'</div>'
-    +(m.email?'<div class="box-detail">📧 '+m.email+'</div>':'')
-    +(m.tel?'<div class="box-detail">📞 '+m.tel+'</div>':'')
-    +(m.adresse?'<div class="box-detail">🏠 '+m.adresse+'</div>':'')
-    +'</div></div>'
-    +'<div><div class="label">Enfants concernés</div><div class="box">'
-    +selectedKids.map(function(k){return '<div class="box-detail" style="margin-top:3px;">👶 '+k+'</div>';}).join('')
-    +'</div></div></div>'
-    +'<div class="section"><div class="label">Détail des prestations</div>'
-    +'<table><thead><tr><th>Prestation</th><th style="text-align:right;">Montant</th></tr></thead>'
-    +'<tbody>'+(lignesHTML||'<tr><td style="padding:11px 16px;">Prestation Club de Plage</td><td style="padding:11px 16px;text-align:right;font-weight:700;">'+total+' €</td></tr>')
-    +'<tr class="total-row"><td>Total TTC</td><td class="amount">'+total+' €</td></tr>'
-    +'</tbody></table></div>'
-    +'<div class="section"><div class="label">Modes de paiement acceptés</div>'
-    +'<div class="box" style="font-size:12px;color:#374151;line-height:1.9;">'
-    +'Virement bancaire · Chèque à l\'ordre du <strong>Club des Léopards</strong><br>'
-    +'Chèques Vacances · Espèces · Carte bleue sur place</div></div>'
-    +'</div>'
-    +'<div class="footer"><div>🐆 Club des Léopards · La Baule · Saison 2026</div><div>SIRET 50237123000025</div></div>'
-    +'</div>'
-    +'<button class="btn" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>'
-    +'</body></html>');
-  win.document.close();
-}
 
 function envoyerFactureEmail(mi){
   var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m||!m.email)return;
@@ -8132,6 +8087,13 @@ function reimprimerFacture(id){
   else toast('Membre introuvable','ko');
 }
 window.reimprimerFacture=reimprimerFacture;
+
+
+
+
+
+
+
 
 
 </script>
