@@ -1145,7 +1145,11 @@ textarea{resize:vertical;}
 @media(max-width:767px){
   .page.active{ padding-bottom:130px; }
 }
-</style>
+
+    @media (min-width: 768px) {
+      #admin-membres-content .membres-grid { grid-template-columns: repeat(3,1fr) !important; }
+    }
+    </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -2482,8 +2486,54 @@ textarea{resize:vertical;}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* config */
 window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d229ce27008a952-7PIp9uCgub4AfRu9';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2859,6 +2909,58 @@ window.BREVO_KEY='xkeysib-1d54f'+'53f52a4d32fc78c27bda05e802ca6d698426cac16ce9d2
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ═══ SUPABASE ═══
 var SUPABASE_URL = 'https://kpizggqrpdrykoifvily.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwaXpnZ3FycGRyeWtvaWZ2aWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTIzMTMsImV4cCI6MjA5MTk4ODMxM30.2o37ghyn0PhOa1v0vKLshbJ_LHyYUhgjqec4uVSxSD0';
@@ -3005,7 +3107,28 @@ async function chargerDonnees() {
     if(factures) ST.factures = factures;
     else ST.factures = [];
 
-    console.log('✅ Données Supabase chargées — membres:', ST.members.length, 'resas:', ST.reservations.length);
+    var facRes = await sb.from('factures').select('*').order('created_at', { ascending: false });
+    if(facRes.data) ST.factures = facRes.data;
+      // Auto-reconnexion depuis session sauvegardée
+  if(!ST.membreConnecte){
+    var savedEmail=localStorage.getItem('cl_session_email');
+    var savedPass=localStorage.getItem('cl_session_pass');
+    if(savedEmail&&savedPass){
+      var autoRef=await sb.auth.signInWithPassword({email:savedEmail,password:savedPass});
+      if(!autoRef.error&&autoRef.data.user){
+        var autoM=ST.members.find(function(m){return m.email===savedEmail;});
+        if(autoM){
+          ST.membreConnecte=autoM;
+          updateConnectedUI();
+          console.log('✅ Session restaurée:', savedEmail);
+        }
+      } else {
+        localStorage.removeItem('cl_session_email');
+        localStorage.removeItem('cl_session_pass');
+      }
+    }
+  }
+  console.log('✅ Données Supabase chargées — membres:', ST.members.length, 'resas:', ST.reservations.length);
     if (typeof renderAdmin === 'function') renderAdmin();
   } catch(err) {
     console.error('❌ Erreur chargement Supabase:', err);
@@ -3270,6 +3393,222 @@ async function solderAvoirSB(avoirId) {
 
 // ═══ ÉTAT GLOBAL ═══
 var ADMIN_CODE = '2026';
+function genererFacturePDF(mi){
+  var fams=[].concat(DEMO_FAMS,ST.members);
+  var m=fams[mi]; if(!m) return;
+
+  // Réservations du membre
+  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){
+    return r.statut==='valide'||r.statut==='valid\u00e9'||r.statut==='paye';
+  });
+  var famResas=resasVal.filter(function(r){
+    return String(r.membre_id)===String(m.id)||r.nom===('Fam. '+m.nom);
+  });
+
+  // Enfants sélectionnés
+  var selectedKids=[];
+  document.querySelectorAll('[id^="fac-kid-'+mi+'-"]').forEach(function(el){
+    if(el.dataset.checked==='1'){
+      var kid=el.getAttribute('data-kid')||el.textContent.replace(/^[^a-zA-Z\u00C0-\u00FF]*/,'').trim();
+      if(kid) selectedKids.push(kid);
+    }
+  });
+  if(!selectedKids.length)(m.children||[]).forEach(function(ch){
+    selectedKids.push(cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||''));
+  });
+
+  // Total
+  var total=famResas.reduce(function(s,r){return s+(parseFloat(r.montant)||0);},0)||120;
+  var totalTTC=total;
+  var totalHT=Math.round(totalTTC/1.1*100)/100;
+  var totalTVA=Math.round((totalTTC-totalHT)*100)/100;
+
+  // Mode paiement
+  var mode=famResas.length>0?(famResas[0].mode_paiement||''):'';
+  var modeLabel=mode?({cb:'Carte bancaire',virement:'Virement',cheque:'Ch\u00e8que',cheques_vacances:'Ch\u00e8ques Vacances',especes:'Esp\u00e8ces',avoir:'Avoir'}[mode]||mode):'';
+
+  // Numérotation depuis Supabase + localStorage
+  var lastNum=0;
+  (ST.factures||[]).forEach(function(f){
+    var m2=f.reference&&f.reference.match(/-(\d+)$/);
+    if(m2) lastNum=Math.max(lastNum,parseInt(m2[1])||0);
+  });
+  var storedNum=lastNum+1;
+  var ref='FAC-'+new Date().getFullYear()+'-'+String(storedNum).padStart(4,'0');
+  var dateF=new Date().toLocaleDateString('fr-FR');
+
+  // Lignes prestations
+  var allSems=(SAISONS&&SAISONS.ete&&SAISONS.ete.semaines)||[];
+  var lignesHTML='';
+  if(famResas.length>0){
+    famResas.forEach(function(r){
+      var semLabels=(r.semaine_label||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+      if(!semLabels.length) semLabels=['Prestation'];
+      var periode=(r.periode||(r.slot&&r.slot.time)||'');
+      var montantR=parseFloat(r.montant)||120;
+      var enfsR=selectedKids.length?selectedKids.map(function(n){return {prenom:n};}):((m.children||[]).map(function(ch){return {prenom:cap(ch.prenom||ch.name||''),dob:ch.dob||ch.date_naissance||''};}));
+      semLabels.forEach(function(sl){
+        var wk=allSems.find(function(w){return w.label===sl;})||{};
+        var dateStr=wk.debut&&wk.fin?wk.debut.replace(/^Lun /,'Lundi ')+' au '+wk.fin.replace(/^Ven /,'Vendredi '):'';
+        enfsR.forEach(function(enf){
+          lignesHTML+='<tr><td style="padding:10px 16px;font-size:13px;"><strong>'+enf.prenom+'</strong>'+(dateStr?'<br><span style="font-size:11px;color:#6B7280;">'+sl+' \u00b7 '+dateStr+'</span>':'<br><span style="font-size:11px;color:#6B7280;">'+sl+'</span>')+(periode?'<br><span style="font-size:11px;color:#0077C8;">'+periode+'</span>':'')+'</td><td style="padding:10px 16px;text-align:right;font-weight:700;">'+(montantR/Math.max(1,semLabels.length*enfsR.length)).toFixed(2)+' \u20ac</td></tr>';
+        });
+      });
+    });
+  } else {
+    lignesHTML='<tr><td style="padding:11px 16px;">Prestation Club de Plage</td><td style="padding:11px 16px;text-align:right;font-weight:700;">'+total+' \u20ac</td></tr>';
+  }
+
+  // Enfants avec DOB
+  var kSec=(m.children||[]).filter(function(ch){
+    var n=cap(ch.prenom||ch.name||'');
+    return !selectedKids.length||selectedKids.some(function(s){return s.indexOf(n)>=0;});
+  }).map(function(ch){
+    var dob=ch.dob||ch.date_naissance||'';
+    var ds=dob?new Date(dob).toLocaleDateString('fr-FR'):'';
+    return '<div class="bd">'+cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'')+(ds?' \u2014 n\u00e9(e) le '+ds:'')+'</div>';
+  }).join('');
+
+  // Sauvegarder dans Supabase
+  var facData={
+    reference: ref,
+    membre_id: m.id||null,
+    nom_famille: NOM(m.nom||''),
+    email: m.email||'',
+    montant_ttc: totalTTC,
+    montant_ht: totalHT,
+    montant_tva: totalTVA,
+    montant: totalTTC,
+    mode_paiement: mode||null,
+    date_facture: new Date().toISOString().slice(0,10),
+    enfant_nom: selectedKids.join(', '),
+    prestation: 'Club des Leopards'+(famResas.length&&famResas[0].semaine_label?' - '+famResas[0].semaine_label:''),
+    enfants: JSON.stringify(selectedKids)
+  };
+  sb.from('factures').insert(facData).select().then(function(res){
+    if(!res.error){
+      ST.factures=ST.factures||[];
+      ST.factures.unshift(Object.assign({},facData,{id:res.data&&res.data[0]?res.data[0].id:null}));
+      if(typeof renderHistoriqueFactures==='function') renderHistoriqueFactures();
+      toast('Facture '+ref+' sauvegard\u00e9e \u2705','ok');
+    } else {
+      console.error('Facture Supabase error:',JSON.stringify(res.error));
+      toast('Erreur sauvegarde: '+res.error.message,'ko');
+    }
+  });
+
+  // Stocker pour envoi depuis popup
+  window._facEnvoi={ref:ref,email:m.email||'',nom:cap(m.prenom)+' '+NOM(m.nom||''),montant:totalTTC,montantHT:totalHT,montantTVA:totalTVA,brevoKey:BREVO_KEY||''};
+  window._facLignes=lignesHTML;
+  window._facKids=kSec;
+
+  // Ouvrir popup facture
+  var win=window.open('','_blank','width=760,height=960');
+  if(!win){toast('Autorisez les popups','ko');return;}
+
+  var h=[];
+  h.push('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Facture '+ref+'</title>');
+  h.push('<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;background:#F3F4F6;}');
+  h.push('.page{max-width:660px;margin:28px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12);}');
+  h.push('.hd{background:linear-gradient(135deg,#0A0F1E,#0D1B3E);padding:30px 36px;}.hi{display:flex;justify-content:space-between;align-items:flex-start;}');
+  h.push('.logo{font-size:22px;font-weight:800;color:#fff;}.sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:6px;line-height:1.8;}');
+  h.push('.ft{text-align:right;}.ftitle{font-size:28px;font-weight:800;color:#FF6B35;}.fref{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;}');
+  h.push('.body{padding:30px 36px;}.sec{margin-bottom:22px;}.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#9CA3AF;margin-bottom:8px;}');
+  h.push('.r2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}.box{background:#F9FAFB;border-radius:10px;padding:13px 16px;}');
+  h.push('.bn{font-size:15px;font-weight:700;color:#0A0F1E;margin-bottom:4px;}.bd{font-size:12px;color:#374151;margin-top:3px;}');
+  h.push('table{width:100%;border-collapse:collapse;}thead{background:linear-gradient(135deg,#0077C8,#0099E6);}');
+  h.push('thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;}');
+  h.push('tbody tr{border-bottom:1px solid #F3F4F6;}.tr-tot{background:#EFF6FF;border-top:2px solid #0077C8!important;}.tr-sub{background:#F9FAFB;}');
+  h.push('.footer{border-top:2px solid #1E1B4B;padding:16px 36px;}.footer-main{font-size:14px;font-weight:800;color:#1E1B4B;}.footer-sub{font-size:12px;font-weight:700;color:#374151;margin-top:3px;}');
+  h.push('.btns{display:flex;gap:10px;margin:20px 36px;}.btn{flex:1;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;}');
+  h.push('.btn-p{background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;}.btn-m{background:#059669;color:#fff;}');
+  h.push('@media print{.btns{display:none!important;}body{background:#fff;}}</style></head><body>');
+  h.push('<div class="page">');
+  h.push('<div class="hd"><div class="hi">');
+  h.push('<div><div class="logo">Club des L\u00e9opards</div>');
+  h.push('<div class="sub">28 Boulevard de l\'Oc\u00e9an<br>44500 LA BAULE<br>clubdesleopards@free.fr</div></div>');
+  h.push('<div class="ft"><div class="ftitle">FACTURE</div>');
+  h.push('<div class="fref">N\u00b0 '+ref+'</div><div class="fref">'+dateF+'</div></div>');
+  h.push('</div></div>');
+  h.push('<div class="body">');
+  h.push('<div class="sec r2">');
+  h.push('<div><div class="lbl">Factur\u00e9 \u00e0</div><div class="box">');
+  h.push('<div class="bn">Famille '+NOM(m.nom||'')+'</div>');
+  h.push((m.email?'<div class="bd">'+m.email+'</div>':''));
+  h.push((m.tel?'<div class="bd">'+m.tel+'</div>':''));
+  h.push('<div class="bd">44500 LA BAULE</div></div></div>');
+  h.push('<div><div class="lbl">Enfants concern\u00e9s</div><div class="box">'+kSec+'</div></div>');
+  h.push('</div>');
+  h.push('<div class="sec"><div class="lbl">D\u00e9tail des prestations</div>');
+  h.push('<table><thead><tr><th>Prestation</th><th style="text-align:right;">Montant</th></tr></thead><tbody>');
+  h.push(lignesHTML);
+  h.push('<tr class="tr-tot"><td style="padding:12px 16px;font-size:15px;font-weight:800;">Total TTC</td>');
+  h.push('<td style="padding:12px 16px;text-align:right;font-size:20px;font-weight:800;color:#0077C8;">'+totalTTC.toFixed(2)+' \u20ac</td></tr>');
+  h.push('<tr class="tr-sub"><td style="padding:8px 16px;font-size:12px;color:#6B7280;">Total HT (\u00f71,1)</td>');
+  h.push('<td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">'+totalHT.toFixed(2)+' \u20ac</td></tr>');
+  h.push('<tr class="tr-sub"><td style="padding:8px 16px;font-size:12px;color:#6B7280;">TVA (10%)</td>');
+  h.push('<td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">'+totalTVA.toFixed(2)+' \u20ac</td></tr>');
+  h.push((modeLabel?'<tr class="tr-sub"><td style="padding:8px 16px;font-size:12px;color:#374151;">Pay\u00e9 par</td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:700;color:#065F46;">'+modeLabel+'</td></tr>':''));
+  h.push('</tbody></table></div></div>');
+  h.push('<div class="footer">');
+  h.push('<div class="footer-main">Club des L\u00e9opards \u2013 LA BAULE</div>');
+  h.push('<div class="footer-sub">SIRET\u00a0: 50237123000025 \u00b7 clubdesleopards@free.fr</div>');
+  h.push('</div></div>');
+  h.push('<div class="btns">');
+  h.push('<button class="btn btn-p" onclick="window.print()">\ud83d\udda8 Imprimer / PDF</button>');
+  h.push('<button class="btn btn-m" onclick="ouvrirEnvoi()">\u2709\ufe0f Envoyer</button>');
+  h.push('</div>');
+  h.push('<div id="emod" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;align-items:center;justify-content:center;font-family:Arial,sans-serif;">');
+  h.push('<div style="background:#fff;border-radius:20px;padding:32px;max-width:360px;width:90%;text-align:center;">');
+  h.push('<div style="font-size:44px;">📬</div>');
+  h.push('<div style="font-size:18px;font-weight:800;color:#1E1B4B;margin:10px 0;">Envoyer la facture</div>');
+  h.push('<div id="einfo" style="font-size:13px;color:#6B7280;margin-bottom:20px;line-height:1.5;"></div>');
+  h.push('<button onclick="doSend()" style="width:100%;padding:13px;background:linear-gradient(135deg,#059669,#10B981);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;margin-bottom:10px;">Confirmer l\'envoi</button>');
+  h.push('<button onclick="document.getElementById(\'emod\').style.display=\'none\'" style="width:100%;padding:10px;background:#F3F4F6;color:#374151;border:none;border-radius:12px;cursor:pointer;font-size:13px;">Annuler</button>');
+  h.push('</div></div>');
+  h.push('<script>');
+  h.push('function ouvrirEnvoi(){');
+  h.push('  var d=window.opener&&window.opener._facEnvoi||{};');
+  h.push('  var el=document.getElementById(\'einfo\');');
+  h.push('  if(el)el.innerHTML=\'Facture <strong>\'+d.ref+\'</strong><br>à <strong>\'+(d.email||\'email manquant\')+\'</strong>\';');
+  h.push('  document.getElementById(\'emod\').style.display=\'flex\';');
+  h.push('}');
+  h.push('async function doSend(){');
+  h.push('  document.getElementById(\'emod\').style.display=\'none\';');
+  h.push('  var d=window.opener&&window.opener._facEnvoi||{};');
+  h.push('  if(!d.email){alert(\'Email non disponible\');return;}');
+  h.push('  if(!d.brevoKey){alert(\'Clé API manquante\');return;}');
+  h.push('  var d2=window.opener&&window.opener._facEnvoi||{};');
+  h.push('  var lignes2=(window.opener&&window.opener._facLignes)||"";');
+  h.push('  var kSec2=(window.opener&&window.opener._facKids)||"";');
+  h.push('  var mHT=d2.montantHT||0, mTVA=d2.montantTVA||0;');
+  h.push('  var hd1="<div style=\'background:#F3F4F6;padding:24px;font-family:Arial,sans-serif;\'>";');
+  h.push('  var hd2="<div style=\'max-width:620px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;\'>";');
+  h.push('  var hd3="<div style=\'background:linear-gradient(135deg,#0A0F1E,#0D1B3E);padding:28px;display:flex;justify-content:space-between;\'>";');
+  h.push('  var hd4="<div><div style=\'font-size:20px;font-weight:800;color:#fff;\'>Club des Leopards</div><div style=\'font-size:11px;color:rgba(255,255,255,.6)\'>44500 LA BAULE</div></div>";');
+  h.push('  var hd5="<div style=\'text-align:right\'><div style=\'font-size:20px;font-weight:800;color:#FF6B35\'>FACTURE</div><div style=\'font-size:12px;color:rgba(255,255,255,.6)\'>"+d2.ref+"</div></div></div>";');
+  h.push('  var bd1="<div style=\'padding:24px 36px\'>";');
+  h.push('  var bd2="<div style=\'background:#F9FAFB;border-radius:10px;padding:14px;margin-bottom:20px\'>";');
+  h.push('  var bd3="<div style=\'font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px\'>Facture a</div>";');
+  h.push('  var bd4="<div style=\'font-size:14px;font-weight:700;color:#1A1A2E\'>"+d2.nom+"</div><div style=\'font-size:12px;color:#6B7280\'>"+d2.email+"</div>";');
+  h.push('  var bd5="<div style=\'font-size:12px;color:#374151;margin-top:6px\'>"+kSec2+"</div></div>";');
+  h.push('  var tbl1="<table style=\'width:100%;border-collapse:collapse\'><thead><tr style=\'background:#0077C8\'><th style=\'padding:10px 16px;text-align:left;color:#fff\'>Prestation</th><th style=\'padding:10px 16px;text-align:right;color:#fff\'>Montant</th></tr></thead><tbody>";');
+  h.push('  var tbl2="<tr style=\'background:#EFF6FF;border-top:2px solid #0077C8\'><td style=\'padding:12px 16px;font-size:14px;font-weight:800\'>Total TTC</td><td style=\'padding:12px 16px;text-align:right;font-size:18px;font-weight:800;color:#0077C8\'>"+d2.montant+" EUR</td></tr>";');
+  h.push('  var tbl3="<tr style=\'background:#F9FAFB\'><td style=\'padding:8px 16px;font-size:12px;color:#6B7280\'>Total HT</td><td style=\'padding:8px 16px;text-align:right;font-size:12px\'>"+mHT+" EUR</td></tr>";');
+  h.push('  var tbl4="<tr style=\'background:#F9FAFB\'><td style=\'padding:8px 16px;font-size:12px;color:#6B7280\'>TVA 10%</td><td style=\'padding:8px 16px;text-align:right;font-size:12px\'>"+mTVA+" EUR</td></tr></tbody></table></div>";');
+  h.push('  var ft1="<div style=\'background:#1E2A3A;padding:14px 36px\'><div style=\'font-size:13px;font-weight:700;color:#fff\'>Club des Leopards - LA BAULE</div></div></div></div>";');
+  h.push('  var corps=hd1+hd2+hd3+hd4+hd5+bd1+bd2+bd3+bd4+bd5+tbl1+lignes2+tbl2+tbl3+tbl4+ft1;');
+
+  h.push('  try{');
+  h.push('    var rp=await fetch("https://api.brevo.com/v3/smtp/email",{method:"POST",headers:{"api-key":d.brevoKey,"Content-Type":"application/json"},body:JSON.stringify({sender:{name:"Club des Leopards",email:"clubdesleopards44.labaule@gmail.com"},to:[{email:d.email,name:d.nom}],subject:"Facture "+d.ref+" - Club des Leopards",htmlContent:corps})});');
+  h.push('    if(rp.ok){alert("✅ Facture envoyée à "+d.email);}else{var err=await rp.json();alert("Erreur: "+(err.message||rp.status));}');
+  h.push('  }catch(e){alert("Erreur réseau: "+e.message);}');
+  h.push('}');
+  h.push('<\/script></body></html>');
+
+  win.document.write(h.join(''));
+  win.document.close();
+}
 function formatDate(iso){
   if(!iso) return '-';
   var p=iso.slice(0,10).split('-');
@@ -3280,7 +3619,7 @@ window.cap=cap;
 function NOM(s){ return s ? String(s).toUpperCase() : ''; }
 var ST = {
   adminTab:'dashboard', gPeriod:'matin',
-  reservations:[], members:[],
+  reservations:[], members:[], factures:[],
   membreConnecte:null
 };
 
@@ -4188,7 +4527,33 @@ async function confirmerNouvelleResa(){
     }
   }
 
-  // Insérer dans Supabase
+  // Vérifier doublon : enfant déjà inscrit sur la même semaine
+  var semCheckedLabels=Array.from(checks).map(function(cb){return (sems[parseInt(cb.value)]||{}).label||'';}).filter(Boolean);
+  var enfantsIds=enfants.map(function(e){return String(e.id||'');}).filter(Boolean);
+  var doublons=[];
+  ST.reservations.forEach(function(r){
+    var st=r.statut||''; if(st!=='valide'&&st!=='validé'&&st!=='paye') return;
+    var rLabel=r.semaine_label||'';
+    var rPeriode=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+    var rPer=periode.toLowerCase();
+    if(rPeriode!==rPer) return;
+    semCheckedLabels.forEach(function(sl){
+      if(rLabel.indexOf(sl)<0) return;
+      // Vérifier si un des enfants sélectionnés est dans cette réservation
+      var rIds=[];try{rIds=JSON.parse(r.enfants_ids||'[]');}catch(e){}
+      enfantsIds.forEach(function(eid){
+        if(rIds.indexOf(eid)>=0||(String(r.membre_id)===String(m.id)&&!rIds.length)){
+          var enf=enfants.find(function(e){return String(e.id)===eid;});
+          if(enf) doublons.push(cap(enf.prenom||enf.name||'')+' · '+sl);
+        }
+      });
+    });
+  });
+  if(doublons.length){
+    toast('Déjà inscrit : '+doublons.join(', '),'ko');
+    return;
+  }
+    // Insérer dans Supabase
   var resaData={
     membre_id: m.id,
     nom_famille: m.nom||'',
@@ -4473,37 +4838,97 @@ function fermerDocModal() {
 
 // ═══ DASHBOARD ═══
 
-function buildDashFreqNew(kids){
-  var groups=[
-    {id:'g35',label:'3–5 ans',min:3,max:5.9,color:'#F97316',bg:'#FFF7ED',emoji:'🐥'},
-    {id:'g68',label:'6–8 ans',min:6,max:8.9,color:'#0099E6',bg:'#EFF6FF',emoji:'🐬'},
-    {id:'g912',label:'9–12 ans',min:9,max:12.9,color:'#8B5CF6',bg:'#F5F3FF',emoji:'🏅'},
-  ];
+function buildDashFreqNew(allKids){
+  var sais=window._dashSais||'ete';
+  var semIdx=window._dashSemIdx||0;
+  var jour=window._dashJour||'';
+  var sems=(SAISONS&&SAISONS[sais]&&SAISONS[sais].semaines)||[];
+  var wk=sems[semIdx]||sems[0]||{};
+  var jours=['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+
+  // Filtrer réservations par saison
+  var match={'ete':['été','ete'],'automne':['automne'],'printemps':['printemps']};
+  var resasFilt=ST.reservations.filter(function(r){
+    var s=r.statut||''; if(s!=='valide'&&s!=='validé'&&s!=='paye') return false;
+    var sl=(r.saisonLabel||r.saison||'').toLowerCase();
+    return (match[sais]||[sais]).some(function(k){return sl.indexOf(k)>=0;});
+  });
+
+  // Filtrer par semaine si sélectionnée
+  if(wk.label){
+    resasFilt=resasFilt.filter(function(r){
+      var rLabel=r.semaine_label||'';
+      return !rLabel||rLabel.indexOf(wk.label)>=0;
+    });
+  }
+
+  // Enfants depuis réservations filtrées
+  function getKids(resas){
+    var kids=[];
+    resas.forEach(function(r){
+      var enf=r.children||[];
+      if(!enf.length&&r.membre_id){var m=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id);});if(m)enf=m.children||[];}
+      enf.forEach(function(k){kids.push(Object.assign({},k,{periode:r.periode||(r.slot&&r.slot.time)||''}));});
+    });
+    return kids;
+  }
+
+  var kids=getKids(resasFilt);
   var total=kids.length;
+
+  var groups=[
+    {id:'g35',label:'3–5 ans',min:3,max:5.9,color:'#F97316',emoji:'🐥'},
+    {id:'g68',label:'6–8 ans',min:6,max:8.9,color:'#0099E6',emoji:'🐬'},
+    {id:'g912',label:'9–12 ans',min:9,max:12.9,color:'#8B5CF6',emoji:'🏅'},
+  ];
+
   var cardsHTML=groups.map(function(g){
-    var cnt=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
+    var cnt=kids.filter(function(k){var a=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;return a>=g.min&&a<=g.max;}).length;
     var pct=total>0?Math.round(cnt/total*100):0;
-    return '<div onclick="setDashAgeFilter(\''+g.id+'\')" id="dash-age-'+g.id+'" style="background:'+g.bg+';border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;flex:1;min-width:0;transition:all .15s;">'
-      +'<div style="font-size:26px;margin-bottom:6px;">'+g.emoji+'</div>'
-      +'<div style="font-size:24px;font-weight:800;color:'+g.color+';font-family:Syne,sans-serif;line-height:1;">'+cnt+'</div>'
-      +'<div style="font-size:11px;font-weight:700;color:'+g.color+';margin-top:3px;">'+g.label+'</div>'
-      +'<div style="font-size:10px;color:#9CA3AF;">'+pct+'%</div>'
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6;">'
+      +'<span style="font-size:20px;">'+g.emoji+'</span>'
+      +'<div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#374151;">'+g.label+'</div>'
+      +'<div style="height:5px;background:#F3F4F6;border-radius:3px;margin-top:3px;overflow:hidden;">'
+      +'<div style="height:5px;background:'+g.color+';border-radius:3px;width:'+pct+'%;"></div></div></div>'
+      +'<div style="font-size:16px;font-weight:800;color:'+g.color+';">'+cnt+'</div>'
       +'</div>';
   }).join('');
-  var totalCard='<div onclick="setDashAgeFilter(\'tout\')" id="dash-age-tout" style="background:#1E2A3A;border-radius:12px;padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;flex:1;min-width:0;transition:all .15s;">'
-    +'<div style="font-size:26px;margin-bottom:6px;">👥</div>'
-    +'<div style="font-size:24px;font-weight:800;color:#fff;font-family:Syne,sans-serif;line-height:1;">'+total+'</div>'
-    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);margin-top:3px;">Total</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.5);">100%</div>'
+
+  // Sélecteur saison
+  var selSais='<div style="display:flex;gap:4px;margin-bottom:6px;">'
+    +[{k:'ete',l:'☀️ Été'},{k:'automne',l:'🍂 Automne'},{k:'printemps',l:'🌸 Printemps'}].map(function(s){
+      var act=sais===s.k;
+      return '<button id="dbtn-sais-'+s.k+'" style="flex:1;padding:5px;border:none;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151')+';">'+s.l+'</button>';
+    }).join('')
     +'</div>';
-  var barParts=groups.map(function(g){
-    var cnt=kids.filter(function(k){return parseFloat(k.age)>=g.min&&parseFloat(k.age)<=g.max;}).length;
-    var pct=total>0?Math.round(cnt/total*100):0;
-    return '<div style="flex:'+pct+';background:'+g.color+';height:100%;min-width:'+(cnt?'4px':'0')+';"></div>';
-  }).join('');
-  return '<div style="display:flex;gap:8px;margin-bottom:10px;">'+cardsHTML+totalCard+'</div>'
-    +'<div style="height:7px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:12px;">'+barParts+'</div>'
-    +'<div id="dash-kids-list">'+buildDashKidsList('tout',kids)+'</div>';
+
+  // Sélecteur semaine
+  var selSem=sems.length?'<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:10px;">'
+    +sems.map(function(s,idx){
+      var act=semIdx===idx;
+      return '<button id="dbtn-sem-'+idx+'" style="padding:4px 8px;border:none;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;background:'+(act?'#F97316':'#F3F4F6')+';color:'+(act?'#fff':'#374151')+';">'+s.label+'</button>';
+    }).join('')+'</div>':'';
+
+  // Dates de la semaine sélectionnée (Lun XX au Ven XX)
+  var joursHTML='';
+  if(wk.label){
+    // Calculer les dates de chaque jour à partir de wk.debut
+    // wk.debut format : "Lun 7 juillet" ou "Lun 7 juil."
+    // On affiche les 5 jours avec leur date
+    var debutStr=wk.debut||'';
+    var finStr=wk.fin||'';
+
+    joursHTML='<div style="margin-top:10px;border-top:1px solid #E5E7EB;padding-top:10px;">'
+      +'<div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px;">Décompte par jour</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;" id="dash-jours-grid"></div>'
+      +'</div>';
+  }
+
+  var result=selSais+selSem
+    +'<div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">'+total+' enfant'+(total>1?'s':'')+' inscrits</div>'
+    +cardsHTML+joursHTML;
+
+  return result;
 }
 
 function buildDashKidsList(filter,kids){
@@ -4583,8 +5008,13 @@ function genererFacture(){
   var mode=(document.getElementById("fac-mode")||{value:""}).value;
   var date=(document.getElementById("fac-date")||{value:""}).value;
   if(!famille){toast("Nom de famille requis","ko");return;}
-  // Numérotation persistante
-  var _storedNum=parseInt(localStorage.getItem('facLastNum')||'0')+1;
+  // Numérotation depuis historique Supabase
+  var _lastNum=0;
+  (ST.factures||[]).forEach(function(f){
+    var m2=f.reference&&f.reference.match(/-(\d+)$/);
+    if(m2) _lastNum=Math.max(_lastNum,parseInt(m2[1])||0);
+  });
+  var _storedNum=Math.max(_lastNum,parseInt(localStorage.getItem('facLastNum')||'0'))+1;
   localStorage.setItem('facLastNum',_storedNum);
   var numStr=String(_storedNum).padStart(4,'0');
   var facRef='FAC-'+new Date().getFullYear()+'-'+numStr;
@@ -4654,27 +5084,49 @@ function genererFacture(){
 
 
 // ═══ IMPRESSION GROUPES ═══
-function imprimerGroupes() {
-  var kids = allKids();
-  var s = SAISONS.ete;
-  var win = window.open('','_blank','width=800,height=600');
-  if (!win) { toast('Autoriser les popups pour imprimer','ko'); return; }
-  var html = '<html><head><title>Fiche groupe - '+ST.gPeriod+'</title>'
-    +'<style>body{font-family:Arial,sans-serif;padding:20px;} h1{color:#1E1B4B;} table{width:100%;border-collapse:collapse;margin-top:12px;} th{background:#1E1B4B;color:#fff;padding:10px;text-align:left;} td{padding:9px;border-bottom:1px solid #E5E7EB;} tr:nth-child(even){background:#F9FAFB;} @media print{button{display:none;}}</style>'
-    +'</head><body>'
-    +'<h1>🐆 Club des Léopards – '+( ST.gPeriod==='matin'?'Matin':'Après-midi')+'</h1>'
-    +'<p style="color:#9CA3AF;">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'</p>';
-  GROUPES.forEach(function(g){
-    var enf = kids.filter(function(c){var gr=getGroupe(c.age);return gr&&gr.id===g.id&&(c.periode||[]).includes(ST.gPeriod);});
-    if (!enf.length) return;
-    html += '<h2 style="color:'+g.color+';">'+g.emoji+' '+g.name+' – '+g.ages+'</h2>'
-      +'<table><tr><th>Prénom</th><th>Nom</th><th>Âge</th><th>Allergies / Médical</th></tr>'
-      +enf.map(function(c){return '<tr><td>'+c.prenom+'</td><td>'+c.nom+'</td><td>'+c.age+' ans</td><td>'+(c.medical&&c.medical!=='RAS'?'<strong style="color:red;">'+c.medical+'</strong>':'RAS')+'</td></tr>';}).join('')
-      +'</table>';
+function imprimerGroupes(){
+  // Utiliser la même logique de filtrage que renderAdminGroupes
+  var wi=Math.max(0,Math.min((SAISONS.ete.semaines.length||9)-1,ST.adminWeekOffset||0));
+  var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
+  var active=(ST.gPeriod==='après-midi'||ST.gPeriod==='aprem')?GROUPES_APREM:GROUPES_MATIN;
+  var allResas=[].concat(DEMO_RESAS, ST.reservations);
+  var resasActives=allResas.filter(function(r){var s=r.statut||'';return s==='valide'||s==='validé'||s==='en attente'||s==='en_attente';});
+  var wkLabel=wk.label||''; var wkDebut=wk.debut||'';
+  var resasSem=resasActives.filter(function(r){var rLabel=r.semaine_label||'';var rDebut=r.semaine_debut||'';if(!rLabel&&!rDebut)return false;return rLabel.indexOf(wkLabel)>=0||rLabel===wkLabel||(wkDebut&&rDebut===wkDebut);});
+  var resasPer=resasSem.filter(function(r){var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();if(ST.gPeriod==='aprem'||ST.gPeriod==='après-midi')return rPer==='aprem'||rPer==='après-midi';return rPer==='matin';});
+  var membreIds=resasPer.map(function(r){return String(r.membre_id||'');}).filter(Boolean);
+  var allKidsList=allKids();
+
+  var win=window.open('','_blank','width=800,height=900'); if(!win){toast('Autoriser les popups','ko');return;}
+  var html='<!DOCTYPE html><html lang="fr"><head><title>Groupes '+wk.label+'</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:28px;}.groupe{page-break-inside:avoid;margin-bottom:28px;}'
+    +'h1{color:#1E1B4B;}h2{margin-bottom:6px;}table{width:100%;border-collapse:collapse;}'
+    +'th{color:#fff;padding:9px 12px;text-align:left;font-size:12px;}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;font-size:12px;}'
+    +'tr:nth-child(even){background:#F9FAFB;}@media print{button{display:none!important;}}</style></head><body>'
+    +'<h1>🐆 Club des Léopards – '+(ST.gPeriod==='matin'?'Matin':'Après-midi')+'</h1>'
+    +'<h3 style="color:#6B7280;">'+wk.label+' · '+wk.debut+' au '+wk.fin+'</h3>';
+
+  active.forEach(function(g){
+    var enf=allKidsList.filter(function(k){
+      var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+      if(age<g.min||age>g.max) return false;
+      var kMid=String(k.membre_id||'');
+      if(kMid&&membreIds.indexOf(kMid)>=0){
+        var resa=resasPer.find(function(r){return String(r.membre_id)===kMid;});
+        if(resa&&resa.enfants_ids){try{var ids=JSON.parse(resa.enfants_ids);if(ids.length>0&&ids.indexOf(String(k.id))<0)return false;}catch(e){}}
+        return true;
+      }
+      return false;
+    });
+    if(!enf.length) return;
+    html+='<div class="groupe"><h2 style="color:'+g.color+';">'+g.emoji+' '+g.name+' – '+g.ages+' ('+enf.length+'/'+MAX_G+')</h2>'
+      +'<table><thead><tr style="background:'+g.color+'"><th>Prénom</th><th>Nom</th><th>Âge</th><th>Médical</th></tr></thead><tbody>'
+      +enf.map(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var med=k.medical&&k.medical!=='RAS'?'<strong style="color:#DC2626;">'+k.medical+'</strong>':'RAS';return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td>'+ageLabel(age)+'</td><td>'+med+'</td></tr>';}).join('')
+      +'</tbody></table></div>';
   });
-  html += '<br><button onclick="window.print()" style="padding:10px 20px;background:#1E1B4B;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">🖨️ Imprimer</button></body></html>';
-  win.document.write(html);
-  win.document.close();
+  html+='<p style="font-size:11px;color:#9CA3AF;">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'</p>'
+    +'<button onclick="window.print()" style="padding:10px 20px;background:#1E1B4B;color:#fff;border:none;border-radius:8px;cursor:pointer;">🖨️ Imprimer tout</button></body></html>';
+  win.document.write(html); win.document.close();
 }
 
 
@@ -4933,9 +5385,9 @@ function renderMembres(){
       +(m.droit_image!==false?'<span style="background:#E8F5E9;color:#2E7D32;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;">Photo OK</span>':'')
       +'</div>'
       +(kidsNames?'<div style="margin-top:5px;font-size:11px;color:#0077C8;font-weight:600;">'+kidsNames+'</div>':'')
-      +'</div></div>';
+      +'</div>';
   }).join('');
-  el.innerHTML=bar+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">'+cards+'</div>';
+  el.innerHTML=bar+'<div class="membres-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">'+cards+'</div>';
 }
 function voirFicheMembre(i){
   var all=[].concat(DEMO_FAMS,ST.members);var m=all[i];if(!m)return;
@@ -5322,17 +5774,76 @@ function imprimerGroupe(gid){
   var wi=Math.max(0,Math.min((SAISONS.ete.semaines.length||9)-1,ST.adminWeekOffset||0));
   var wk=SAISONS.ete.semaines[wi]||{label:'S1',debut:'',fin:''};
   var active=(ST.gPeriod==='après-midi'||ST.gPeriod==='aprem')?GROUPES_APREM:GROUPES_MATIN;
-  var g=active.find(function(x){return String(x.id)===String(gid);});if(!g)return;
-  var kids=allKids();
-  var enf=kids.filter(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var kPer=k.periode||[]; var pOk=kPer.indexOf(ST.gPeriod)>=0||(ST.gPeriod==='aprem'&&(kPer.indexOf('après-midi')>=0||kPer.indexOf('aprem')>=0))||(ST.gPeriod==='matin'&&kPer.indexOf('matin')>=0); return age>=g.min&&age<=g.max&&pOk;});
-  var win=window.open('','_blank','width=800,height=600');if(!win){toast('Autoriser les popups','ko');return;}
-  var rows=enf.length?enf.map(function(k){var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;var med=k.medical&&k.medical!=='RAS'?'<strong style="color:#DC2626;">'+k.medical+'</strong>':'RAS';return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td>'+ageLabel(age)+'</td><td>'+med+'</td></tr>';}).join(''):'<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:16px;">Aucun enfant</td></tr>';
-  win.document.write('<html><head><title>'+g.name+' - '+wk.label+'</title><style>body{font-family:Arial,sans-serif;padding:28px;}h1{color:'+g.color+';}table{width:100%;border-collapse:collapse;}th{background:'+g.color+';color:#fff;padding:9px 12px;text-align:left;}td{padding:8px 12px;border-bottom:1px solid #E5E7EB;}tr:nth-child(even){background:#F9FAFB;}@media print{button{display:none!important;}}</style></head><body>'
-    +'<h1>'+g.emoji+' '+g.name+' - '+g.ages+'</h1><h3>'+(ST.gPeriod==='matin'?'Matin':'Apres-midi')+' - '+wk.label+' - '+wk.debut+' au '+wk.fin+'</h3>'
-    +'<p>'+enf.length+' / '+MAX_G+' enfants</p>'
-    +'<table><thead><tr><th>Prenom</th><th>Nom</th><th>Age</th><th>Medical</th></tr></thead><tbody>'+rows+'</tbody></table>'
-    +'<p style="font-size:11px;color:#9CA3AF;margin-top:16px;">Imprime le '+new Date().toLocaleDateString('fr-FR')+' - Club des Leopards</p>'
-    +'<button onclick="window.print()" style="margin-top:12px;padding:10px 20px;background:'+g.color+';color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">Imprimer</button>'
+  var g=active.find(function(x){return String(x.id)===String(gid);}); if(!g) return;
+
+  // Même logique que renderAdminGroupes
+  var allResas=[].concat(DEMO_RESAS, ST.reservations);
+  var resasActives=allResas.filter(function(r){
+    var s=r.statut||'';
+    return s==='valide'||s==='validé'||s==='en attente'||s==='en_attente';
+  });
+  var wkLabel=wk.label||'';
+  var wkDebut=wk.debut||'';
+  var resasSem=resasActives.filter(function(r){
+    var rLabel=r.semaine_label||'';
+    var rDebut=r.semaine_debut||'';
+    if(!rLabel&&!rDebut) return false;
+    return rLabel.indexOf(wkLabel)>=0||rLabel===wkLabel||(wkDebut&&rDebut===wkDebut);
+  });
+
+  // Filtrer par période
+  var resasPer=resasSem.filter(function(r){
+    var rPer=(r.periode||(r.slot&&r.slot.time)||'').toLowerCase();
+    if(ST.gPeriod==='aprem'||ST.gPeriod==='après-midi') return rPer==='aprem'||rPer==='après-midi';
+    return rPer==='matin';
+  });
+
+  var membreIds=resasPer.map(function(r){return String(r.membre_id||'');}).filter(Boolean);
+
+  // Enfants depuis les réservations filtrées
+  var allKidsList=allKids();
+  var enf=allKidsList.filter(function(k){
+    var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+    if(age<g.min||age>g.max) return false;
+    // Vérifier que l'enfant est dans une réservation de cette semaine/période
+    var kMid=String(k.membre_id||'');
+    if(kMid&&membreIds.indexOf(kMid)>=0){
+      // Vérifier que CET enfant spécifique est dans les enfants_ids de la réservation
+      var resa=resasPer.find(function(r){return String(r.membre_id)===kMid;});
+      if(resa&&resa.enfants_ids){
+        try{
+          var ids=JSON.parse(resa.enfants_ids);
+          if(ids.length>0&&ids.indexOf(String(k.id))<0) return false;
+        }catch(e){}
+      }
+      return true;
+    }
+    return false;
+  });
+
+  var win=window.open('','_blank','width=800,height=900'); if(!win){toast('Autoriser les popups','ko');return;}
+  var rows=enf.length?enf.map(function(k){
+    var age=k.dob?ageAuClub(k.dob):parseFloat(k.age)||0;
+    var med=k.medical&&k.medical!=='RAS'?'<strong style="color:#DC2626;">'+k.medical+'</strong>':'RAS';
+    return '<tr><td>'+k.prenom+'</td><td>'+k.nom+'</td><td>'+ageLabel(age)+'</td><td>'+med+'</td></tr>';
+  }).join(''):'<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:16px;">Aucun enfant inscrit</td></tr>';
+
+  win.document.write('<!DOCTYPE html><html lang="fr"><head><title>'+g.name+' - '+wk.label+'</title>'
+    +'<style>body{font-family:Arial,sans-serif;padding:28px;color:#1A1A2E;}'
+    +'h1{color:'+g.color+';margin-bottom:4px;}h3{color:#6B7280;font-weight:600;margin-bottom:16px;}'
+    +'table{width:100%;border-collapse:collapse;margin-top:12px;}'
+    +'th{background:'+g.color+';color:#fff;padding:10px 14px;text-align:left;font-size:13px;}'
+    +'td{padding:9px 14px;border-bottom:1px solid #E5E7EB;font-size:13px;}'
+    +'tr:nth-child(even){background:#F9FAFB;}'
+    +'.footer{font-size:11px;color:#9CA3AF;margin-top:20px;border-top:1px solid #E5E7EB;padding-top:10px;}'
+    +'@media print{button{display:none!important;}}</style></head><body>'
+    +'<h1>'+g.emoji+' '+g.name+' – '+g.ages+'</h1>'
+    +'<h3>'+(ST.gPeriod==='matin'?'🌅 Matin':'🌞 Après-midi')+' · '+wk.label+' · '+wk.debut+' au '+wk.fin+'</h3>'
+    +'<p style="font-size:14px;font-weight:700;">'+enf.length+' / '+MAX_G+' enfants</p>'
+    +'<table><thead><tr><th>Prénom</th><th>Nom</th><th>Âge</th><th>Médical</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table>'
+    +'<div class="footer">Imprimé le '+new Date().toLocaleDateString('fr-FR')+' · Club des Léopards</div>'
+    +'<button onclick="window.print()" style="margin-top:16px;padding:10px 24px;background:'+g.color+';color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">🖨️ Imprimer</button>'
     +'</body></html>');
   win.document.close();
 }
@@ -5499,7 +6010,15 @@ function renderPaiements(){
   var modes={cb:0,virement:0,cheque:0,cheques_vacances:0,especes:0,avoir:0};
   var mL={cb:'💳 CB',virement:'🏦 Virement',cheque:'📝 Chèque',cheques_vacances:'🎫 Chq Vac',especes:'💶 Espèces',avoir:'🎟️ Avoir'};
   var mC={cb:'#0077C8',virement:'#10B981',cheque:'#F59E0B',cheques_vacances:'#8B5CF6',especes:'#F97316',avoir:'#EC4899'};
-  payees.forEach(function(r){var m=r.mode_paiement||'';if(modes[m]!==undefined)modes[m]+=parseFloat(r.montant)||0;});
+  payees.forEach(function(r){
+    var m=(r.mode_paiement||'').toLowerCase().trim();
+    // Normaliser les variantes
+    if(m==='cheque_vac'||m==='cheques_vac'||m==='chèques vacances'||m==='cheques vacances') m='cheques_vacances';
+    if(m==='chèque') m='cheque';
+    if(m==='espèces'||m==='espece') m='especes';
+    if(m==='carte'||m==='carte bancaire') m='cb';
+    if(modes[m]!==undefined) modes[m]+=parseFloat(r.montant)||0;
+  });
   var tM=Object.values(modes).reduce(function(s,v){return s+v;},0);
   var bar=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){return '<div style="flex:'+modes[k]+';background:'+mC[k]+';height:100%;min-width:3px;"></div>';}).join('');
   var leg=Object.keys(modes).filter(function(k){return modes[k]>0;}).map(function(k){return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#374151;margin-right:8px;"><span style="width:9px;height:9px;border-radius:2px;background:'+mC[k]+';display:inline-block;"></span>'+mL[k]+' · '+modes[k]+' €</span>';}).join('');
@@ -5829,7 +6348,7 @@ function renderComptabilite(){
 }
 function formatRef(ref){
   if(!ref) return '';
-  // Cas 1 : contient des parenthèses → "Prenom (NOM)"
+  // Cas parenthèses : "Prenom (NOM)"
   if(ref.indexOf('(')>=0){
     return ref
       .replace(/\(([^)]+)\)/g,function(m,n){return '('+n.toUpperCase()+')';})
@@ -5837,28 +6356,51 @@ function formatRef(ref){
         return m.split(',').map(function(p){var t=p.trim();return t?t.charAt(0).toUpperCase()+t.slice(1).toLowerCase():'';}).join(', ');
       });
   }
-  // Cas 2 : plusieurs mots séparés par virgule → tous prénoms
-  if(ref.indexOf(',')>=0){
-    return ref.split(',').map(function(p){var t=p.trim();return t?t.charAt(0).toUpperCase()+t.slice(1).toLowerCase():'';}).join(', ');
-  }
-  // Cas 3 : un ou deux mots séparés par espace
-  var parts=ref.trim().split(/\s+/);
-  if(parts.length===1){
-    // Un seul mot : cap()
-    return parts[0].charAt(0).toUpperCase()+parts[0].slice(1).toLowerCase();
-  }
-  // Plusieurs mots : dernier mot = NOM (majuscule), les autres = prénoms cap()
-  var nom=parts[parts.length-1].toUpperCase();
-  var prenoms=parts.slice(0,-1).map(function(p){return p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();}).join(' ');
-  return prenoms+' '+nom;
+  // Traiter chaque segment séparé par virgule
+  var segments=ref.split(',').map(function(seg){
+    var t=seg.trim();
+    if(!t) return '';
+    var parts=t.split(/\s+/);
+    if(parts.length===1) return parts[0].charAt(0).toUpperCase()+parts[0].slice(1).toLowerCase();
+    // Dernier mot = NOM en majuscule, reste = prénom cap()
+    var nom=parts[parts.length-1].toUpperCase();
+    var prenoms=parts.slice(0,-1).map(function(p){
+      return p?p.charAt(0).toUpperCase()+p.slice(1).toLowerCase():'';
+    }).join(' ');
+    return prenoms+' '+nom;
+  });
+  return segments.join(', ');
 }
 function renderSuiviQuotidien(){
   var el=document.getElementById('suivi-quotidien-content'); if(!el) return;
   var dateDebut=window._sqDateDebut||'';
   var dateFin=window._sqDateFin||'';
 
-  // Entries depuis Supabase uniquement (saisies manuelles)
+  // Entries : Supabase (inclut les paiements validés via resa_id)
   var allEntries=[].concat(SUIVI_QUOTIDIEN);
+  // Ajouter les réservations validées non encore dans SUIVI_QUOTIDIEN
+  var sqResaIds=SUIVI_QUOTIDIEN.map(function(e){return String(e.resa_id||'');}).filter(Boolean);
+  ST.reservations.forEach(function(r){
+    if(r.statut!=='valide'&&r.statut!=='validé'&&r.statut!=='paye') return;
+    var rId=String(r.id||''); if(!rId) return;
+    if(sqResaIds.indexOf(rId)>=0) return; // déjà dans Supabase
+    var dateObj=r.created_at?new Date(r.created_at):new Date();
+    var dateFR=dateObj.toLocaleDateString('fr-FR',{timeZone:'Europe/Paris'});
+    var enf=r.children||[];
+    if(!enf.length&&r.membre_id){var m2=ST.members.find(function(mb){return String(mb.id)===String(r.membre_id);});if(m2)enf=m2.children||[];}
+    var nomFam=r.nom_famille||r.nom||'';
+    var nomMaj=NOM(nomFam.trim().split(/\s+/).pop()||nomFam);
+    var ref2=enf.length?enf.map(function(k){return cap(k.prenom||k.name||'')+' '+NOM(k.nom||nomMaj);}).join(', '):(nomFam?cap(nomFam.split(' ')[0])+' '+nomMaj:'');
+    var mode=(r.mode_paiement||'cb').toLowerCase();
+    var entry={resa_id:rId,date:dateFR,ref:ref2,cb:0,vir:0,chq:0,chqvac:0,esp:0,avoir:0,remb:0,manuel:false};
+    if(mode==='virement') entry.vir=r.montant||0;
+    else if(mode==='cheque') entry.chq=r.montant||0;
+    else if(mode==='cheques_vacances') entry.chqvac=r.montant||0;
+    else if(mode==='especes') entry.esp=r.montant||0;
+    else if(mode==='avoir') entry.avoir=r.montant||0;
+    else entry.cb=r.montant||0;
+    allEntries.push(entry);
+  });
 
   // Tri date décroissante
   allEntries.sort(function(a,b){
@@ -6026,8 +6568,8 @@ async function confirmerSaisieQuotidienne(){
     var memIdx=(document.getElementById('sq-ref-membre')||{value:''}).value;
     var m=ST.members[parseInt(memIdx)];
     if(m){
-      var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'');}).filter(Boolean);
-      ref=enfs.length?enfs.map(function(p){return p+' '+NOM(m.nom||'');}).join(', '):(cap(m.prenom||'')+' '+NOM(m.nom||''));
+      var enfs=(m.children||[]).map(function(k){return cap(k.prenom||k.name||'')+' '+NOM(k.nom||m.nom||'');}).filter(Boolean);
+      ref=enfs.length?enfs.join(', '):(cap(m.prenom||'')+' '+NOM(m.nom||''));
     }
   } else if(refType==='casquette') ref='🧢 Casquette';
   else if(refType==='tshirt') ref='👕 T-Shirt';
@@ -6046,7 +6588,10 @@ async function confirmerSaisieQuotidienne(){
   // Supabase : update si édition, insert si nouveau
   var isEdit=!!window._sqEditId;
   try{
-    var isoDate=dateVal.split('/').length===3?dateVal.split('/').reverse().join('-'):dateVal;
+    var isoDate='';
+  if(dateVal.split('/').length===3){var dp=dateVal.split('/');isoDate=dp[2]+'-'+dp[1]+'-'+dp[0];}
+  else if(dateVal){isoDate=dateVal;}
+  else{isoDate=new Date().toLocaleDateString('fr-FR',{timeZone:'Europe/Paris'}).split('/').reverse().join('-');}
     var payload={date:isoDate, reference:ref, cb:entry.cb, virement:entry.vir, cheque:entry.chq, cheques_vacances:entry.chqvac, especes:entry.esp, avoir_n_moins_1:entry.avoir, remboursement:entry.remb, manuel:true};
     if(isEdit){
       await sb.from('suivi_quotidien').update(payload).eq('id',window._sqEditId);
@@ -6173,7 +6718,13 @@ function ouvrirResultatRecherche(i){var r=_searchResults[i];if(!r)return;if(r.ty
 
 // ═══ NAVIGATION ═══
 function navigate(name){
-  if(name==='admin'&&!adminUnlocked){openAdminLogin();return;}
+  if(name==='admin'){
+    ouvrirCodeAdmin(function(){
+      if(!adminUnlocked){openAdminLogin();}
+      else{_navigateTo('admin');setTimeout(function(){setAdminTab&&setAdminTab('dashboard');},200);}
+    });
+    return;
+  }
   if(name==='reservation'){
     // Bloquer si pas de membre connecté dans cette session
     if(!ST.membreConnecte){
@@ -6380,15 +6931,51 @@ function renderEtape3(saison) {
 }
 
 function toggleSemaine(wi, periode) {
+  var s = SAISONS[currentSaison] || {};
+  var sems = s.semaines || [];
+  var wk = sems[wi] || {};
+  var wkLabel = wk.label || '';
+
+  if(wkLabel && ST.membreConnecte){
+    var memId = String(ST.membreConnecte.id||'');
+    var dejaInscrits = [];
+    // Trouver la première réservation matchante seulement
+    var resaMatch = null;
+    for(var ri=0; ri<ST.reservations.length; ri++){
+      var r=ST.reservations[ri];
+      var st=(r.statut||'').toLowerCase();
+      if(st==='annule'||st==='annulé') continue;
+      if(String(r.membre_id)!==memId) continue;
+      if((r.semaine_label||'').indexOf(wkLabel)<0) continue;
+      resaMatch=r; break;
+    }
+    if(resaMatch){
+      var kids=ST.membreConnecte.children||[];
+      var rIds=[];
+      try{rIds=JSON.parse(resaMatch.enfants_ids||'[]');}catch(e){}
+      // Utiliser enfants_ids.length pour déterminer le nombre inscrits
+      // Les prénoms : prendre les N premiers enfants selon le nombre d'ids
+      var nbInscrits=rIds.length||kids.length;
+      kids.slice(0,nbInscrits).forEach(function(k){
+        var nom=cap(k.prenom||k.name||'');
+        if(nom && dejaInscrits.indexOf(nom)<0) dejaInscrits.push(nom);
+      });
+      if(!dejaInscrits.length) dejaInscrits.push('Votre enfant');
+    }
+    if(dejaInscrits.length){
+      var verb = dejaInscrits.length > 1 ? ' sont déjà inscrits pour ' : ' est déjà inscrit(e) pour ';
+      ouvrirModaleDoublon(dejaInscrits.join(', ') + verb + wkLabel + '.');
+      return;
+    }
+  }
+
   if (!_semainesSelectionnees[periode]) _semainesSelectionnees[periode] = [];
   var arr = _semainesSelectionnees[periode];
   var idx = arr.indexOf(wi);
   if (idx >= 0) arr.splice(idx, 1);
   else arr.push(wi);
-  // Mettre à jour visuellement
-  var s = SAISONS[currentSaison] || {};
   var col = s.color || '#0099E6';
-  var sel = idx < 0; // vient d'être sélectionné
+  var sel = idx < 0;
   var card = document.getElementById('sem-card-' + wi + '-' + periode);
   if (card) {
     card.style.border = '2px solid ' + (sel ? col : 'transparent');
@@ -6716,6 +7303,7 @@ function renderDashboard(){
     +'</div>'
     +'</div>'
     +'</div>';
+  setTimeout(initDashBtns,50);
 }
 
 
@@ -6766,7 +7354,7 @@ function renderFactureTab(){
       +(seancesHTML?'<div style="margin-bottom:12px;">'+seancesHTML+'</div>':'')
       +'<div style="display:flex;gap:8px;">'
       +'<button onclick="genererFacturePDF('+mi+')" style="flex:1;padding:9px 14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">🧾 Générer</button>'
-      +(m.email?'<button onclick="envoyerFactureEmail('+mi+')" style="flex:1;padding:9px 14px;background:#F0FDF4;color:#059669;border:1.5px solid #A7F3D0;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">✉️ Envoyer</button>':'')
+      +(m.email?'<button onclick="genererFacturePDF('+mi+')" style="flex:1;padding:9px 14px;background:#F0FDF4;color:#059669;border:1.5px solid #A7F3D0;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">✉️ Envoyer</button>':'')
       +'</div></div>';
   }).filter(Boolean).join('');
   el.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
@@ -6806,167 +7394,8 @@ function toutDecocherFac(){
     el.innerHTML=el.innerHTML.replace(/^✓ /,'');
   });
 }
-function genererFacturePDF(mi){
-  var fams=[].concat(DEMO_FAMS,ST.members); var m=fams[mi]; if(!m) return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='valid\u00e9'||r.statut==='paye';});
-  var famResas=resasVal.filter(function(r){return String(r.membre_id)===String(m.id)||r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
-  var selectedKids=[];
-  document.querySelectorAll('[id^="fac-kid-'+mi+'-"]').forEach(function(el){
-    if(el.dataset.checked==='1'){
-      var kid=el.getAttribute('data-kid')||el.textContent.replace(/^[^a-zA-ZÀ-ÿ]*/,'').trim();
-      if(kid) selectedKids.push(kid);
-    }
-  });
-  if(!selectedKids.length)(m.children||[]).forEach(function(ch){selectedKids.push(cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||''));});;
-  var total=famResas.reduce(function(s,r){return s+(parseFloat(r.montant)||r.paid||120);},0)||120;
-  var _num=parseInt(localStorage.getItem('facLastNum')||'0')+1;
-  localStorage.setItem('facLastNum',_num);
-  var ref='FAC-'+new Date().getFullYear()+'-'+String(_num).padStart(4,'0');
-  var dateF=new Date().toLocaleDateString('fr-FR');
-  var totalTTC=total, totalHT=Math.round(total/1.1*100)/100, totalTVA=Math.round((total-totalHT)*100)/100;
-  var mode=famResas.length>0?(famResas[0].mode_paiement||''):'';
-  var modeLbl={'cb':'Carte bancaire','virement':'Virement','cheque':'Ch\u00e8que','cheques_vacances':'Ch\u00e8ques Vacances','especes':'Esp\u00e8ces','avoir':'Avoir'};
-  var modeLabel=modeLbl[mode]||mode;
-  var allSems=(SAISONS&&SAISONS.ete&&SAISONS.ete.semaines)||[];
-  var lignes='';
-  if(famResas.length>0){
-    famResas.forEach(function(r){
-      var sls=(r.semaine_label||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
-      if(!sls.length)sls=['Prestation'];
-      var per=(r.periode||(r.slot&&r.slot.time)||'');
-      var mR=parseFloat(r.montant)||r.paid||120;
-      var kids=selectedKids.length?selectedKids.map(function(n){return{prenom:n,dob:''};}):(m.children||[]).map(function(ch){return{prenom:cap(ch.prenom||ch.name||''),dob:ch.dob||ch.date_naissance||''};});
-      sls.forEach(function(sl){
-        var wk=allSems.find(function(w){return w.label===sl;})||{};
-        var ds=wk.debut&&wk.fin?(wk.debut.replace(/^Lun /,'Lundi ')+' au '+wk.fin.replace(/^Ven /,'Vendredi ')):'';
-        kids.forEach(function(k){
-          lignes+='<tr><td style="padding:10px 16px;font-size:13px;"><strong>'+k.prenom+'</strong>'
-            +(ds?'<br><span style="font-size:11px;color:#6B7280;">'+sl+' \u00b7 '+ds+'</span>':'<br><span style="font-size:11px;color:#6B7280;">'+sl+'</span>')
-            +(per?'<br><span style="font-size:11px;color:#0077C8;">'+per+'</span>':'')
-            +'</td><td style="padding:10px 16px;text-align:right;font-weight:700;">'+(mR/Math.max(1,sls.length*kids.length)).toFixed(2)+' \u20ac</td></tr>';
-        });
-      });
-    });
-  } else {
-    lignes='<tr><td style="padding:11px 16px;">Prestation Club de Plage</td><td style="padding:11px 16px;text-align:right;font-weight:700;">'+total+' \u20ac</td></tr>';
-  }
-  var kSec=(m.children||[]).filter(function(ch){
-    var n=cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'');
-    return !selectedKids.length||selectedKids.some(function(s){return s.indexOf(cap(ch.prenom||ch.name||''))>=0;});
-  }).map(function(ch){
-    var dob=ch.dob||ch.date_naissance||'';
-    var ds=dob?new Date(dob).toLocaleDateString('fr-FR'):'';
-    return '<div class="bd">'+cap(ch.prenom||ch.name||'')+' '+NOM(ch.nom||'')+(ds?' — né(e) le '+ds:'')+'</div>';
-  }).join('');
-  // Sauvegarder dans Supabase
-  var facData={
-    reference: ref,
-    membre_id: m.id||null,
-    nom_famille: NOM(m.nom||''),
-    email: m.email||'',
-    montant_ttc: totalTTC,
-    montant_ht: totalHT,
-    montant_tva: totalTVA,
-    mode_paiement: mode||null,
-    date_facture: new Date().toISOString().slice(0,10),
-    enfants: JSON.stringify(selectedKids)
-  };
-  sb.from('factures').insert(facData).select().then(function(res){
-    if(!res.error){
-      ST.factures = ST.factures||[];
-      var newFac=Object.assign({},facData,{id:res.data&&res.data[0]?res.data[0].id:null});
-      ST.factures.unshift(newFac);
-      if(typeof renderHistoriqueFactures==='function') renderHistoriqueFactures();
-      toast('Facture sauvegardée ✅','ok');
-    } else {
-      console.warn('Facture Supabase error:',res.error);
-      toast('Erreur sauvegarde facture','ko');
-    }
-  });
-  var win=window.open('','_blank','width=760,height=960');
-  if(!win){toast('Autorisez les popups','ko');return;}
-  var h=[];
-  h.push('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Facture '+ref+'</title>');
-  h.push('<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;background:#F3F4F6;}');
-  h.push('.page{max-width:660px;margin:28px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12);}');
-  h.push('.hd{background:linear-gradient(135deg,#0A0F1E,#0D1B3E);padding:30px 36px;}');
-  h.push('.hi{display:flex;justify-content:space-between;align-items:flex-start;}');
-  h.push('.logo{font-size:22px;font-weight:800;color:#fff;}.sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:6px;line-height:1.8;}');
-  h.push('.ft{text-align:right;}.ftitle{font-size:28px;font-weight:800;color:#FF6B35;}.fref{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;}');
-  h.push('.body{padding:30px 36px;}.sec{margin-bottom:22px;}');
-  h.push('.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#9CA3AF;margin-bottom:8px;}');
-  h.push('.r2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}.box{background:#F9FAFB;border-radius:10px;padding:13px 16px;}');
-  h.push('.bn{font-size:15px;font-weight:700;color:#0A0F1E;margin-bottom:4px;}.bd{font-size:12px;color:#374151;margin-top:3px;}');
-  h.push('table{width:100%;border-collapse:collapse;}thead{background:linear-gradient(135deg,#0077C8,#0099E6);}');
-  h.push('thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;}');
-  h.push('tbody tr{border-bottom:1px solid #F3F4F6;}.tr-tot{background:#EFF6FF;border-top:2px solid #0077C8!important;}.tr-sub{background:#F9FAFB;}');
-  h.push('.footer{border-top:2px solid #1E1B4B;padding:16px 36px;}.footer-main{font-size:14px;font-weight:800;color:#1E1B4B;}.footer-sub{font-size:12px;font-weight:700;color:#374151;margin-top:3px;}');
-  h.push('.btns{display:flex;gap:10px;margin:20px 36px;}.btn{flex:1;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;}');
-  h.push('.btn-p{background:linear-gradient(135deg,#1E1B4B,#1A6FD4);color:#fff;}.btn-m{background:#059669;color:#fff;}');
-  h.push('@media print{.btns{display:none!important;}body{background:#fff;}}</style></head><body>');
-  h.push('<div class="page">');
-  h.push('<div class="hd"><div class="hi">');
-  h.push('<div><div class="logo">Club des L\u00e9opards</div>');
-  h.push('<div class="sub">28 Boulevard de l\u2019Oc\u00e9an<br>44500 LA BAULE<br>clubdesleopards@free.fr</div></div>');
-  h.push('<div class="ft"><div class="ftitle">FACTURE</div>');
-  h.push('<div class="fref">N\u00b0 '+ref+'</div><div class="fref">'+dateF+'</div></div>');
-  h.push('</div></div>');
-  h.push('<div class="body">');
-  h.push('<div class="sec r2">');
-  h.push('<div><div class="lbl">Factur\u00e9 \u00e0</div><div class="box">');
-  h.push('<div class="bn">Famille '+NOM(m.nom||'')+'</div>');
-  if(m.email)h.push('<div class="bd">'+m.email+'</div>');
-  if(m.tel)h.push('<div class="bd">'+m.tel+'</div>');
-  h.push('<div class="bd">44500 LA BAULE</div></div></div>');
-  h.push('<div><div class="lbl">Enfants concern\u00e9s</div><div class="box">'+kSec+'</div></div>');
-  h.push('</div>');
-  h.push('<div class="sec"><div class="lbl">D\u00e9tail des prestations</div>');
-  h.push('<table><thead><tr><th>Prestation</th><th style="text-align:right;">Montant</th></tr></thead><tbody>');
-  h.push(lignes);
-  h.push('<tr class="tr-tot"><td style="padding:12px 16px;font-size:15px;font-weight:800;">Total TTC</td>');
-  h.push('<td style="padding:12px 16px;text-align:right;font-size:20px;font-weight:800;color:#0077C8;">'+totalTTC.toFixed(2)+' \u20ac</td></tr>');
-  h.push('<tr class="tr-sub"><td style="padding:8px 16px;font-size:12px;color:#6B7280;">Total HT (\u00f71,1)</td>');
-  h.push('<td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">'+totalHT.toFixed(2)+' \u20ac</td></tr>');
-  h.push('<tr class="tr-sub"><td style="padding:8px 16px;font-size:12px;color:#6B7280;">TVA (10%)</td>');
-  h.push('<td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">'+totalTVA.toFixed(2)+' \u20ac</td></tr>');
-  if(modeLabel)h.push('<tr class="tr-sub"><td style="padding:8px 16px;font-size:12px;color:#374151;">Pay\u00e9 par</td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:700;color:#065F46;">'+modeLabel+'</td></tr>');
-  h.push('</tbody></table></div></div>');
-  h.push('<div class="footer"><div class="footer-main">Club des L\u00e9opards \u2013 44500 LA BAULE</div>');
-  h.push('<div class="footer-sub">SIRET\u00a0: 50237123000025 \u00b7 clubdesleopards@free.fr</div></div>');
-  h.push('</div>');
-  h.push('<div class="btns">');
-  h.push('<button class="btn btn-p" onclick="window.print()">\uD83D\uDDA8 Imprimer / PDF</button>');
-  h.push('<button class="btn btn-m" onclick="envFac(\''+ref+'\',\''+m.email+'\',\''+cap(m.prenom)+' '+NOM(m.nom||'')+'\')">✉️ Envoyer</button>');
-  h.push('</div>');
-  h.push('<script>');
-  h.push('async function envFac(r,e,n){');
-  h.push('  if(!confirm("Envoyer la facture "+r+" \u00e0 "+e+" ?"))return;');
-  h.push('  if(!e){alert("Pas d\'email pour ce membre");return;}');
-  h.push('  var bk=window.opener&&window.opener._BREVO_KEY||"";');
-  h.push('  try{');
-  h.push('    var rp=await fetch("https://api.brevo.com/v3/smtp/email",{method:"POST",');
-  h.push('      headers:{"api-key":bk,"Content-Type":"application/json"},');
-  h.push('      body:JSON.stringify({sender:{name:"Club des L\u00e9opards",email:"clubdesleopards44.labaule@gmail.com"},');
-  h.push('        to:[{email:e,name:n}],subject:"Facture "+r+" - Club des L\u00e9opards",');
-  h.push('        htmlContent:"<p>Bonjour "+n+",</p><p>Votre facture <strong>"+r+"</strong> pour votre r\u00e9servation au Club des L\u00e9opards.</p><p>clubdesleopards@free.fr</p><p><strong>Club des L\u00e9opards \u2013 LA BAULE</strong></p>"}});');
-  h.push('    if(rp.ok)alert("Facture envoy\u00e9e \u2705");else alert("Erreur envoi: "+rp.status);');
-  h.push('  }catch(err){alert("Erreur: "+err.message);}');
-  h.push('}');
-  h.push('<\/script></body></html>');
-  win.document.write(h.join(''));
-  win.document.close();
-}
-function envoyerFactureEmail(mi){
-  var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m||!m.email)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
-  var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
-  var total=famResas.reduce(function(s,r){return s+(r.paid||120);},0)||120;
-  var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
-  var lignes=famResas.map(function(r){return(r.slot?r.slot.time+' '+r.slot.date:'')+' '+(r.saisonLabel||'')+' : '+(r.paid||120)+'€';}).join('\n');
-  var subj=encodeURIComponent('Facture '+ref+' · Club des Léopards');
-  var body=encodeURIComponent('Bonjour '+m.prenom+',\n\nVotre facture '+ref+' :\n\n'+lignes+'\n\nTotal : '+total+'€\n\nCordialement,\nClub des Léopards');
-  window.location.href='mailto:'+m.email+'?subject='+subj+'&body='+body;
-}
+
+
 
 
 function toggleFacKid(el, id){
@@ -6989,24 +7418,10 @@ function toutDecocherFac(){
 
 
 
-function envoyerFactureEmail(mi){
-  var fams=[].concat(DEMO_FAMS,ST.members);var m=fams[mi];if(!m||!m.email)return;
-  var resasVal=[].concat(DEMO_RESAS,ST.reservations).filter(function(r){return r.statut==='valide'||r.statut==='validé'||r.statut==='paye';});
-  var famResas=resasVal.filter(function(r){return r.nom===('Fam. '+m.nom)||(r.nom===m.prenom+' '+NOM(m.nom));});
-  var total=famResas.reduce(function(s,r){return s+(r.paid||120);},0)||120;
-  var ref='FAC-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000);
-  var lignes=famResas.map(function(r){return (r.slot?r.slot.time+' '+r.slot.date:'')+' '+(r.saisonLabel||'')+' : '+(r.paid||120)+'€';}).join('\n');
-  var subj=encodeURIComponent('Votre facture '+ref+' · Club des Léopards');
-  var body=encodeURIComponent('Bonjour '+m.prenom+',\n\nVeuillez trouver ci-après le détail de votre facture '+ref+' :\n\n'+lignes+'\n\nTotal : '+total+'€\n\nCordialement,\nClub des Léopards\nclubdesleopards@free.fr · 06 52 03 96 37');
-  window.location.href='mailto:'+m.email+'?subject='+subj+'&body='+body;
-}
 
 
-function envoyerFactureMail(email,ref,nom,prest,montant){
-  var subj=encodeURIComponent('Facture '+ref+' · Club des Léopards');
-  var body=encodeURIComponent('Bonjour,\n\nVeuillez trouver ci-joint votre facture '+ref+'.\n\nPrestation : '+prest+'\nMontant : '+montant+'€\n\nCordialement,\nClub des Léopards\nclubdesleopards@free.fr');
-  window.location.href='mailto:'+email+'?subject='+subj+'&body='+body;
-}
+
+
 
 window.setDashAgeFilter=setDashAgeFilter;
 
@@ -7063,14 +7478,12 @@ window.goSaisonDirect=goSaisonDirect;
 window.toggleFacKid=toggleFacKid;
 window.toutDecocherFac=toutDecocherFac;
 window.genererFacturePDF=genererFacturePDF;
-window.envoyerFactureEmail=envoyerFactureEmail;
 
 
 
 window.toggleFacKid=toggleFacKid;
 window.toutDecocherFac=toutDecocherFac;
 window.genererFacturePDF=genererFacturePDF;
-window.envoyerFactureEmail=envoyerFactureEmail;
 
 
 
@@ -7462,14 +7875,22 @@ async function confirmerPaiementResa(){
   try{
     var sqData={
       date:new Date().toISOString().slice(0,10),
-      reference:(r.children||[]).map(function(k){return k.prenom||(k.name||'').split(' ')[0];}).filter(Boolean).join(', ')||(r.nom||'Famille'),
+      reference:(function(){
+        var enf=r.children||[];
+        var nomFam=r.nom_famille||r.nom||'';
+        var nomMaj=NOM(nomFam.trim().split(/\s+/).pop()||nomFam);
+        if(enf.length) return enf.map(function(k){return cap(k.prenom||k.name||'')+' '+NOM(k.nom||nomMaj);}).join(', ');
+        return nomFam?cap(nomFam.split(' ')[0])+' '+nomMaj:'Famille';
+      })(),
       cb:mode==='cb'?montant:0,
       virement:mode==='virement'?montant:0,
       cheque:mode==='cheque'?montant:0,
       cheques_vacances:mode==='cheque_vac'?montant:0,
       especes:mode==='especes'?montant:0,
       avoir_n_moins_1:0,
-      remboursement:0
+      remboursement:0,
+      resa_id: r.id||null,
+      manuel: false
     };
     var sqRes=await sb.from('suivi_quotidien').insert(sqData);
     if(sqRes.error) console.warn('suivi_quotidien:',sqRes.error.message);
@@ -8095,6 +8516,255 @@ window.reimprimerFacture=reimprimerFacture;
 
 
 
+
+
+
+var _codeAdminCallback=null;
+function ouvrirCodeAdmin(cb){
+  _codeAdminCallback=cb||null;
+  // Créer l'overlay s'il n'existe pas ou s'il est mal placé
+  var ov=document.getElementById('code-admin-overlay');
+  if(!ov||ov.getBoundingClientRect().width===0){
+    if(ov) ov.parentNode.removeChild(ov);
+    ov=document.createElement('div');
+    ov.id='code-admin-overlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(10,15,30,.92);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    ov.innerHTML='<div style="background:linear-gradient(145deg,#0D1B3E,#0A2E5C);border-radius:24px;padding:36px 32px;max-width:360px;width:92%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.5);">'
+      +'<div style="font-size:48px;margin-bottom:12px;">🐆</div>'
+      +'<div style="font-size:22px;font-weight:800;color:#fff;font-family:Syne,sans-serif;margin-bottom:6px;">Espace Admin</div>'
+      +'<div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:28px;">Entrez le code d\'accès</div>'
+      +'<div style="position:relative;margin-bottom:12px;">'
+      +'<input id="cai-dyn" type="password" placeholder="••••••••" '
+      +'style="width:100%;padding:14px 48px 14px 14px;border:1.5px solid rgba(255,255,255,.2);border-radius:14px;font-family:inherit;font-size:18px;box-sizing:border-box;background:rgba(255,255,255,.1);color:#fff;text-align:center;letter-spacing:6px;outline:none;" '
+      +'onkeydown="if(event.key===\'Enter\')validerCodeAdmin();">'
+      +'<button onclick="(function(b){var i=document.getElementById(\'cai-dyn\')||document.getElementById(\'code-admin-input\');if(i){i.type=i.type===\'password\'?\'text\':\'password\';b.textContent=i.type===\'password\'?\'\ud83d\udc41\':\'\ud83d\udc41\u0336\';};})(this);" '
+      +'style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:rgba(255,255,255,.5);">👁</button>'
+      +'</div>'
+      +'<div id="cae-dyn" style="font-size:12px;color:#FF6B6B;margin-bottom:14px;min-height:18px;"></div>'
+      +'<button onclick="validerCodeAdmin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:14px;cursor:pointer;font-size:15px;font-weight:700;font-family:inherit;margin-bottom:10px;">Accéder →</button>'
+      +'<button onclick="fermerCodeAdmin()" style="width:100%;padding:10px;background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);border-radius:14px;cursor:pointer;font-size:13px;font-family:inherit;">Annuler</button>'
+      +'</div>';
+    document.body.appendChild(ov);
+  } else {
+    ov.style.display='flex';
+  }
+  setTimeout(function(){var inp=document.getElementById('cai-dyn')||document.getElementById('code-admin-input');if(inp){inp.value='';inp.focus();}},100);
+  var err=document.getElementById('cae-dyn')||document.getElementById('code-admin-error');if(err)err.textContent='';
+}
+function fermerCodeAdmin(){
+  var ov=document.getElementById('code-admin-overlay');
+  if(ov) ov.style.display='none';
+  _codeAdminCallback=null;
+}
+function validerCodeAdmin(){
+  var inp=document.getElementById('cai-dyn')||document.getElementById('code-admin-input');
+  var err=document.getElementById('cae-dyn')||document.getElementById('code-admin-error');
+  var val=(inp&&inp.value)||'';
+  if(val!=='Leopards1950'){
+    if(err) err.textContent='Code incorrect, veuillez réessayer.';
+    if(inp){inp.value='';inp.focus();}
+    return;
+  }
+  adminUnlocked=true;
+  fermerCodeAdmin();
+  _navigateTo('admin');
+  setTimeout(function(){setAdminTab&&setAdminTab('dashboard');},200);
+}
+window.ouvrirCodeAdmin=ouvrirCodeAdmin;
+window.fermerCodeAdmin=fermerCodeAdmin;
+window.validerCodeAdmin=validerCodeAdmin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function initDashBtns(){
+  // Boutons saison
+  [{k:'ete'},{k:'automne'},{k:'printemps'}].forEach(function(s){
+    var btn=document.getElementById('dbtn-sais-'+s.k);
+    if(btn) btn.onclick=function(){window._dashSais=s.k;window._dashSemIdx=0;renderDashboard();setTimeout(initDashBtns,50);};
+  });
+  // Boutons semaine
+  var sems=(SAISONS&&SAISONS[window._dashSais||'ete']&&SAISONS[window._dashSais||'ete'].semaines)||[];
+  sems.forEach(function(s,idx){
+    var btn=document.getElementById('dbtn-sem-'+idx);
+    if(btn) btn.onclick=(function(i){return function(){window._dashSemIdx=i;renderDashboard();setTimeout(initDashBtns,50);};})(idx);
+  });
+  // Boutons jour avec dates complètes
+  var grid=document.getElementById('dash-jours-grid');
+  if(grid){
+    var joursNoms=['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+    var semIdx=window._dashSemIdx||0;
+    var sais=window._dashSais||'ete';
+    var sems2=(SAISONS&&SAISONS[sais]&&SAISONS[sais].semaines)||[];
+    var wk=sems2[semIdx]||{};
+    var jour=window._dashJour||'';
+
+    // Calculer les 5 dates depuis wk.debut (format "Lun 29 juin")
+    var moisMap={janvier:0,février:1,fevrier:1,mars:2,avril:3,mai:4,juin:5,juillet:6,août:7,aout:7,septembre:8,octobre:9,novembre:10,décembre:11,decembre:11};
+    var debutParts=(wk.debut||'').toLowerCase().split(' ');
+    // debutParts = ["lun","29","juin"]
+    var jourNum=parseInt(debutParts[1])||0;
+    var moisNom=debutParts[2]||'';
+    var moisNum=moisMap[moisNom]!=null?moisMap[moisNom]:5;
+    var annee=2026;
+    var lundi=new Date(annee,moisNum,jourNum);
+    var moisLabels=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+    grid.style.cssText='display:grid;grid-template-columns:repeat(5,1fr);gap:4px;';
+    grid.innerHTML='';
+    joursNoms.forEach(function(j,ji){
+      var dateJ=new Date(lundi); dateJ.setDate(lundi.getDate()+ji);
+      var dateLabel=j+' '+dateJ.getDate()+' '+moisLabels[dateJ.getMonth()];
+      var btn=document.createElement('button');
+      var act=jour===j;
+      btn.style.cssText='text-align:center;padding:8px 4px;border-radius:8px;cursor:pointer;border:none;font-family:inherit;background:'+(act?'#0077C8':'#F3F4F6')+';color:'+(act?'#fff':'#374151')+';line-height:1.3;';
+      btn.innerHTML='<div style="font-size:10px;font-weight:800;">'+j.slice(0,2)+'</div>'
+        +'<div style="font-size:9px;margin-top:1px;">'+dateJ.getDate()+' '+moisLabels[dateJ.getMonth()].slice(0,4)+'</div>';
+      btn.title=dateLabel;
+      btn.onclick=(function(jn){return function(){
+        window._dashJour=window._dashJour===jn?'':jn;
+        renderDashboard();setTimeout(initDashBtns,50);
+      };})(j);
+      grid.appendChild(btn);
+    });
+  }
+}
+window.initDashBtns=initDashBtns;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ouvrirModaleDoublon(msg){
+  var mod=document.getElementById('modale-doublon');
+  if(!mod){
+    mod=document.createElement('div');
+    mod.id='modale-doublon';
+    mod.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:99999;align-items:center;justify-content:center;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#fff;border-radius:20px;padding:32px 24px;max-width:320px;width:88%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.4);';
+    box.innerHTML='<div style="font-size:44px;margin-bottom:10px;">⚠️</div>'
+      +'<div style="font-size:16px;font-weight:800;color:#1E1B4B;margin-bottom:10px;">Déjà inscrit</div>'
+      +'<div id="modale-doublon-msg" style="font-size:13px;color:#374151;line-height:1.6;margin-bottom:20px;"></div>';
+    var btn=document.createElement('button');
+    btn.textContent='Compris';
+    btn.style.cssText='width:100%;padding:13px;background:linear-gradient(135deg,#0077C8,#0099E6);color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;';
+    btn.onclick=function(){mod.style.display='none';};
+    box.appendChild(btn);
+    mod.appendChild(box);
+    document.body.appendChild(mod);
+  }
+  mod.style.display='flex';
+  var msgEl=document.getElementById('modale-doublon-msg');
+  if(msgEl) msgEl.textContent=msg;
+}
+window.ouvrirModaleDoublon=ouvrirModaleDoublon;
+window.ouvrirModaleDoublon=ouvrirModaleDoublon;
+window.ouvrirModaleDoublon = ouvrirModaleDoublon;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function envoyerLienMagique(){
+  var emailEl=document.getElementById('profil-magic-email');
+  if(!emailEl) return;
+  var email=(emailEl.value||'').trim().toLowerCase();
+  if(!email||!email.includes('@')){toast('Entrez votre adresse email','ko');return;}
+  
+  // Vérifier que l'email correspond à un membre existant
+  var membre=ST.members.find(function(m){return (m.email||'').toLowerCase()===email;});
+  if(!membre){toast('Email non trouvé dans nos membres','ko');return;}
+  
+  try{
+    var res=await sb.auth.signInWithOtp({
+      email: email,
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
+    });
+    if(res.error){
+      toast('Erreur : '+res.error.message,'ko');
+    } else {
+      emailEl.value='';
+      toast('✉️ Lien envoyé sur '+email+' — vérifiez votre boîte mail !','ok');
+    }
+  } catch(e){
+    toast('Erreur réseau : '+e.message,'ko');
+  }
+}
+window.envoyerLienMagique=envoyerLienMagique;
+
+
+async function envoyerLienMagique(){
+  var emailEl=document.getElementById('profil-magic-email');
+  if(!emailEl){toast('Champ email introuvable','ko');return;}
+  var email=(emailEl.value||'').trim().toLowerCase();
+  if(!email||!email.includes('@')){toast('Entrez votre adresse email','ko');return;}
+  var membre=ST.members.find(function(m){return (m.email||'').toLowerCase()===email;});
+  if(!membre){toast('Email non trouvé dans nos membres','ko');return;}
+  try{
+    var res=await sb.auth.signInWithOtp({
+      email:email,
+      options:{emailRedirectTo:window.location.origin+window.location.pathname}
+    });
+    if(res.error){toast('Erreur : '+res.error.message,'ko');}
+    else{emailEl.value='';toast('✉️ Lien envoyé sur '+email+' — vérifiez votre boîte mail !','ok');}
+  }catch(e){toast('Erreur : '+e.message,'ko');}
+}
+window.envoyerLienMagique=envoyerLienMagique;
+
+
+function setProfilTab(tab){
+  var panels=['mdp','magic'];
+  var tabs={mdp:'profil-tab-mdp',magic:'profil-tab-magic'};
+  var panelIds={mdp:'profil-panel-mdp',magic:'profil-panel-magic'};
+  panels.forEach(function(t){
+    var btn=document.getElementById(tabs[t]);
+    var panel=document.getElementById(panelIds[t]);
+    var active=(t===tab);
+    if(btn){btn.style.background=active?'#fff':'transparent';btn.style.fontWeight=active?'700':'500';btn.style.color=active?'#0A0F1E':'#6B7280';}
+    if(panel){panel.style.display=active?'block':'none';}
+  });
+}
+window.setProfilTab=setProfilTab;
 
 </script>
 </body>
